@@ -1,0 +1,250 @@
+{
+  "_DataTable-6gWzJf6R.css": {
+    "file": "assets/DataTable-6gWzJf6R.css",
+    "src": "_DataTable-6gWzJf6R.css"
+  },
+  "_DataTable-CoA8WAk9.js": {
+    "file": "assets/DataTable-CoA8WAk9.js",
+    "name": "DataTable",
+    "imports": [
+      "resources/js/app.js"
+    ],
+    "css": [
+      "assets/DataTable-6gWzJf6R.css"
+    ]
+  },
+  "_bootstrap.esm-DO1gfUiZ.js": {
+    "file": "assets/bootstrap.esm-DO1gfUiZ.js",
+    "name": "bootstrap.esm"
+  },
+  "resources/css/app.css": {
+    "file": "assets/app-DaA2pMP-.css",
+    "src": "resources/css/app.css",
+    "isEntry": true,
+    "name": "app",
+    "names": [
+      "app.css"
+    ]
+  },
+  "resources/js/app.js": {
+    "file": "assets/app-Bc-bOtZD.js",
+    "name": "app",
+    "src": "resources/js/app.js",
+    "isEntry": true,
+    "dynamicImports": [
+      "resources/js/views/LoginView.vue",
+      "resources/js/layouts/MainLayout.vue",
+      "resources/js/views/DashboardView.vue",
+      "resources/js/views/master/CustomerView.vue",
+      "resources/js/views/master/DriverView.vue",
+      "resources/js/views/master/VehicleView.vue",
+      "resources/js/views/master/TransporterView.vue",
+      "resources/js/views/shipment/ShipmentOrderView.vue",
+      "resources/js/views/shipment/ShipmentOrderForm.vue",
+      "resources/js/views/shipment/ShipmentOrderForm.vue",
+      "resources/js/views/shipment/TripPlanningView.vue",
+      "resources/js/views/shipment/TripView.vue",
+      "resources/js/views/TrackingView.vue",
+      "resources/js/views/PODView.vue",
+      "resources/js/views/ReportView.vue"
+    ],
+    "css": [
+      "assets/app-BC0VMzYR.css",
+      "assets/app-DaA2pMP-.css"
+    ]
+  },
+  "resources/js/layouts/MainLayout.vue": {
+    "file": "assets/MainLayout-p5aMhCXU.js",
+    "name": "MainLayout",
+    "src": "resources/js/layouts/MainLayout.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js"
+    ],
+    "css": [
+      "assets/MainLayout-DdsdZi3N.css",
+      "assets/app-DaA2pMP-.css"
+    ]
+  },
+  "resources/js/views/DashboardView.vue": {
+    "file": "assets/DashboardView-Do9ab7Zj.js",
+    "name": "DashboardView",
+    "src": "resources/js/views/DashboardView.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js"
+    ],
+    "css": [
+      "assets/DashboardView-CKqaQ8R6.css",
+      "assets/app-DaA2pMP-.css"
+    ]
+  },
+  "resources/js/views/LoginView.vue": {
+    "file": "assets/LoginView-DKeXFf33.js",
+    "name": "LoginView",
+    "src": "resources/js/views/LoginView.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js"
+    ],
+    "css": [
+      "assets/LoginView-BE_0-M6t.css",
+      "assets/app-DaA2pMP-.css"
+    ]
+  },
+  "resources/js/views/PODView.vue": {
+    "file": "assets/PODView-CYq-gEtA.js",
+    "name": "PODView",
+    "src": "resources/js/views/PODView.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js",
+      "_DataTable-CoA8WAk9.js"
+    ],
+    "css": [
+      "assets/PODView-DUM-95D7.css",
+      "assets/app-DaA2pMP-.css"
+    ]
+  },
+  "resources/js/views/ReportView.vue": {
+    "file": "assets/ReportView-D-CaZRhP.js",
+    "name": "ReportView",
+    "src": "resources/js/views/ReportView.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js"
+    ],
+    "css": [
+      "assets/app-DaA2pMP-.css"
+    ]
+  },
+  "resources/js/views/TrackingView.vue": {
+    "file": "assets/TrackingView-SQRzzvwF.js",
+    "name": "TrackingView",
+    "src": "resources/js/views/TrackingView.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js",
+      "_DataTable-CoA8WAk9.js"
+    ],
+    "css": [
+      "assets/TrackingView-CZ-IEm-f.css",
+      "assets/app-DaA2pMP-.css"
+    ]
+  },
+  "resources/js/views/master/CustomerView.vue": {
+    "file": "assets/CustomerView-BFUbTfBc.js",
+    "name": "CustomerView",
+    "src": "resources/js/views/master/CustomerView.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js",
+      "_DataTable-CoA8WAk9.js",
+      "_bootstrap.esm-DO1gfUiZ.js"
+    ],
+    "css": [
+      "assets/CustomerView-CSrjP7Ya.css",
+      "assets/app-DaA2pMP-.css"
+    ]
+  },
+  "resources/js/views/master/DriverView.vue": {
+    "file": "assets/DriverView-PciBj0dc.js",
+    "name": "DriverView",
+    "src": "resources/js/views/master/DriverView.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js",
+      "_DataTable-CoA8WAk9.js",
+      "_bootstrap.esm-DO1gfUiZ.js"
+    ],
+    "css": [
+      "assets/DriverView-DpkUFPqg.css",
+      "assets/app-DaA2pMP-.css"
+    ]
+  },
+  "resources/js/views/master/TransporterView.vue": {
+    "file": "assets/TransporterView-lITbO84e.js",
+    "name": "TransporterView",
+    "src": "resources/js/views/master/TransporterView.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js",
+      "_DataTable-CoA8WAk9.js",
+      "_bootstrap.esm-DO1gfUiZ.js"
+    ],
+    "css": [
+      "assets/TransporterView-DDBM_yVl.css",
+      "assets/app-DaA2pMP-.css"
+    ]
+  },
+  "resources/js/views/master/VehicleView.vue": {
+    "file": "assets/VehicleView-BYyDkoEf.js",
+    "name": "VehicleView",
+    "src": "resources/js/views/master/VehicleView.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js",
+      "_DataTable-CoA8WAk9.js",
+      "_bootstrap.esm-DO1gfUiZ.js"
+    ],
+    "css": [
+      "assets/VehicleView-Dq-i1XHX.css",
+      "assets/app-DaA2pMP-.css"
+    ]
+  },
+  "resources/js/views/shipment/ShipmentOrderForm.vue": {
+    "file": "assets/ShipmentOrderForm-7bRWpyM6.js",
+    "name": "ShipmentOrderForm",
+    "src": "resources/js/views/shipment/ShipmentOrderForm.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js"
+    ],
+    "css": [
+      "assets/ShipmentOrderForm-BIY0X7Z3.css",
+      "assets/app-DaA2pMP-.css"
+    ]
+  },
+  "resources/js/views/shipment/ShipmentOrderView.vue": {
+    "file": "assets/ShipmentOrderView-DbzwbcSc.js",
+    "name": "ShipmentOrderView",
+    "src": "resources/js/views/shipment/ShipmentOrderView.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js",
+      "_DataTable-CoA8WAk9.js"
+    ],
+    "css": [
+      "assets/ShipmentOrderView-Du4xQ2Ke.css",
+      "assets/app-DaA2pMP-.css"
+    ]
+  },
+  "resources/js/views/shipment/TripPlanningView.vue": {
+    "file": "assets/TripPlanningView-DOZk-b72.js",
+    "name": "TripPlanningView",
+    "src": "resources/js/views/shipment/TripPlanningView.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js",
+      "_DataTable-CoA8WAk9.js"
+    ],
+    "css": [
+      "assets/TripPlanningView-Dn0SViBd.css",
+      "assets/app-DaA2pMP-.css"
+    ]
+  },
+  "resources/js/views/shipment/TripView.vue": {
+    "file": "assets/TripView-CHE_5PT5.js",
+    "name": "TripView",
+    "src": "resources/js/views/shipment/TripView.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js",
+      "_DataTable-CoA8WAk9.js"
+    ],
+    "css": [
+      "assets/TripView-CXjREo2m.css",
+      "assets/app-DaA2pMP-.css"
+    ]
+  }
+}
