@@ -5,11 +5,13 @@
         <i class="bi bi-arrow-left"></i> Kembali ke Daftar
       </router-link>
       <h3 class="fw-bold text-gray-900 mb-1">{{ isEdit ? 'Edit Shipment Order' : 'Buat Shipment Order Baru' }}</h3>
-      <p class="text-muted">{{ isEdit ? 'Perbarui data shipment order.' : 'Masukkan data customer, rute, penerima, dan tanggal estimasi untuk order baru.' }}</p>
+      <p class="text-muted">{{ isEdit ? 'Perbarui data shipment order.' : 'Masukkan data customer, rute, penerima, dan
+        tanggal estimasi untuk order baru.' }}</p>
     </div>
 
     <!-- Page Loading Skeleton / Spinner State -->
-    <div v-if="pageLoading" class="card bg-dark-card border-card p-5 text-center my-4 d-flex flex-column align-items-center justify-content-center">
+    <div v-if="pageLoading"
+      class="card bg-dark-card border-card p-5 text-center my-4 d-flex flex-column align-items-center justify-content-center">
       <div class="spinner-border text-primary mb-3" style="width: 3rem; height: 3rem;" role="status"></div>
       <h5 class="text-gray-900 fw-bold">Memuat Data...</h5>
       <p class="text-muted small mb-0">Sedang mengambil data order dan referensi master dari server.</p>
@@ -17,49 +19,38 @@
 
     <div v-else class="card bg-dark-card border-card p-4">
       <form @submit.prevent="handleSubmit">
-        
+
         <h5 class="fw-bold text-gray-900 mb-3 pb-2 border-bottom border-secondary-custom">Informasi Order Utama</h5>
         <div class="row g-3 mb-4">
           <!-- Job Number (Read Only - Only shown in edit mode) -->
           <div class="col-12 col-md-3" v-if="isEdit">
             <label class="form-label text-muted small mb-1">JOB NUMBER (AUTO-GENERATE)</label>
-            <input type="text" :value="jobNumber" class="form-control bg-dark-custom text-info border-secondary-custom fw-bold" readonly disabled />
+            <input type="text" :value="jobNumber"
+              class="form-control bg-dark-custom text-info border-secondary-custom fw-bold" readonly disabled />
           </div>
 
           <!-- Nomor Order (Shipment Customer) -->
           <div class="col-12" :class="isEdit ? 'col-md-3' : 'col-md-4'">
-            <label class="form-label text-muted small mb-1">NOMOR ORDER / SHIPMENT CUSTOMER <span class="text-danger">*</span></label>
-            <input type="text" v-model="form.order_number" class="form-control bg-dark-custom text-gray-900 border-secondary-custom fw-bold" placeholder="E.g. PO-8712398" required :disabled="isEdit && form.status !== 'DRAFT'" />
+            <label class="form-label text-muted small mb-1">NOMOR ORDER / SHIPMENT CUSTOMER <span
+                class="text-danger">*</span></label>
+            <input type="text" v-model="form.order_number"
+              class="form-control bg-dark-custom text-gray-900 border-secondary-custom fw-bold"
+              placeholder="E.g. PO-8712398" required :disabled="isEdit && form.status !== 'DRAFT'" />
           </div>
 
           <!-- Customer Selection -->
           <div class="col-12" :class="isEdit ? 'col-md-3' : 'col-md-4'">
             <label class="form-label text-muted small mb-1">CUSTOMER <span class="text-danger">*</span></label>
-            <v-select
-              v-model="form.customer_id"
-              :options="customers"
-              label="label"
-              :reduce="c => c.id"
-              placeholder="Pilih Customer..."
-              :clearable="false"
-              :disabled="isEdit && form.status !== 'DRAFT'"
-            />
+            <v-select v-model="form.customer_id" :options="customers" label="label" :reduce="c => c.id"
+              placeholder="Pilih Customer..." :clearable="false" :disabled="isEdit && form.status !== 'DRAFT'" />
           </div>
 
           <!-- Order Date -->
           <div class="col-12" :class="isEdit ? 'col-md-3' : 'col-md-4'">
             <label class="form-label text-muted small mb-1">TANGGAL ORDER <span class="text-danger">*</span></label>
-            <VueDatePicker
-              v-model="form.order_date"
-              model-type="yyyy-MM-dd"
-              :enable-time-picker="false"
-              placeholder="Pilih Tanggal Order..."
-              :clearable="false"
-              auto-position="bottom"
-              :disabled="isEdit && form.status !== 'DRAFT'"
-              auto-apply
-              format="dd/MM/yyyy"
-            />
+            <VueDatePicker v-model="form.order_date" model-type="yyyy-MM-dd" :enable-time-picker="false"
+              placeholder="Pilih Tanggal Order..." :clearable="false" auto-position="bottom"
+              :disabled="isEdit && form.status !== 'DRAFT'" auto-apply format="dd/MM/yyyy" />
           </div>
         </div>
 
@@ -68,85 +59,78 @@
           <!-- Origin City -->
           <div class="col-12 col-md-6">
             <label class="form-label text-muted small mb-1">KOTA ASAL <span class="text-danger">*</span></label>
-            <input type="text" v-model="form.origin_city" class="form-control bg-dark-custom text-gray-900 border-secondary-custom" placeholder="E.g. Karawang" required :disabled="isEdit && form.status !== 'DRAFT'" />
+            <input type="text" v-model="form.origin_city"
+              class="form-control bg-dark-custom text-gray-900 border-secondary-custom" placeholder="E.g. Karawang"
+              required :disabled="isEdit && form.status !== 'DRAFT'" />
           </div>
 
           <!-- Destination City -->
           <div class="col-12 col-md-6">
             <label class="form-label text-muted small mb-1">KOTA TUJUAN <span class="text-danger">*</span></label>
-            <input type="text" v-model="form.destination_city" class="form-control bg-dark-custom text-gray-900 border-secondary-custom" placeholder="E.g. Jakarta" required :disabled="isEdit && form.status !== 'DRAFT'" />
+            <input type="text" v-model="form.destination_city"
+              class="form-control bg-dark-custom text-gray-900 border-secondary-custom" placeholder="E.g. Jakarta"
+              required :disabled="isEdit && form.status !== 'DRAFT'" />
           </div>
 
           <!-- Detail Address (Destination Detail) -->
           <div class="col-12">
-            <label class="form-label text-muted small mb-1">DETAIL ALAMAT TUJUAN <span class="text-danger">*</span></label>
-            <textarea v-model="form.detail_address" class="form-control bg-dark-custom text-gray-900 border-secondary-custom" rows="2" placeholder="Alamat lengkap dealer/tujuan pengiriman..." required :disabled="isEdit && form.status !== 'DRAFT'"></textarea>
+            <label class="form-label text-muted small mb-1">DETAIL ALAMAT TUJUAN <span
+                class="text-danger">*</span></label>
+            <textarea v-model="form.detail_address"
+              class="form-control bg-dark-custom text-gray-900 border-secondary-custom" rows="2"
+              placeholder="Alamat lengkap dealer/tujuan pengiriman..." required
+              :disabled="isEdit && form.status !== 'DRAFT'"></textarea>
           </div>
         </div>
 
-        <h5 class="fw-bold text-gray-900 mb-3 pb-2 border-bottom border-secondary-custom">Informasi Penerima & Jadwal</h5>
+        <h5 class="fw-bold text-gray-900 mb-3 pb-2 border-bottom border-secondary-custom">Informasi Penerima & Jadwal
+        </h5>
         <div class="row g-3 mb-4">
           <!-- Recipient Name -->
           <div class="col-12 col-md-6">
             <label class="form-label text-muted small mb-1">NAMA PENERIMA <span class="text-danger">*</span></label>
-            <input type="text" v-model="form.recipient_name" class="form-control bg-dark-custom text-gray-900 border-secondary-custom" placeholder="Nama PIC Penerima" required :disabled="isEdit && form.status !== 'DRAFT'" />
+            <input type="text" v-model="form.recipient_name"
+              class="form-control bg-dark-custom text-gray-900 border-secondary-custom" placeholder="Nama PIC Penerima"
+              required :disabled="isEdit && form.status !== 'DRAFT'" />
           </div>
 
           <!-- Recipient Company -->
           <div class="col-12 col-md-6">
-            <label class="form-label text-muted small mb-1">PERUSAHAAN PENERIMA (COMPANY / DEALER) <span class="text-danger">*</span></label>
-            <input type="text" v-model="form.recipient_company" class="form-control bg-dark-custom text-gray-900 border-secondary-custom" placeholder="Nama Dealer / Perusahaan" required :disabled="isEdit && form.status !== 'DRAFT'" />
+            <label class="form-label text-muted small mb-1">PERUSAHAAN PENERIMA (COMPANY / DEALER) <span
+                class="text-danger">*</span></label>
+            <input type="text" v-model="form.recipient_company"
+              class="form-control bg-dark-custom text-gray-900 border-secondary-custom"
+              placeholder="Nama Dealer / Perusahaan" required :disabled="isEdit && form.status !== 'DRAFT'" />
           </div>
 
           <!-- Expected Delivery Date -->
           <div class="col-12 col-md-4">
-            <label class="form-label text-muted small mb-1">ESTIMASI TANGGAL PENGIRIMAN <span class="text-danger">*</span></label>
-            <VueDatePicker
-              v-model="form.expected_delivery_date"
-              model-type="yyyy-MM-dd"
-              :enable-time-picker="false"
-              placeholder="Pilih Estimasi Tanggal..."
-              :clearable="false"
-              auto-position="bottom"
-              :disabled="isEdit && form.status !== 'DRAFT'"
-              auto-apply
-              format="dd/MM/yyyy"
-            />
+            <label class="form-label text-muted small mb-1">ESTIMASI TANGGAL PENGIRIMAN <span
+                class="text-danger">*</span></label>
+            <VueDatePicker v-model="form.expected_delivery_date" model-type="yyyy-MM-dd" :enable-time-picker="false"
+              placeholder="Pilih Estimasi Tanggal..." :clearable="false" auto-position="bottom"
+              :disabled="isEdit && form.status !== 'DRAFT'" auto-apply format="dd/MM/yyyy" />
           </div>
 
           <!-- Order Type (REGULAR / URGENT) -->
           <div class="col-12 col-md-4">
             <label class="form-label text-muted small mb-1">TIPE ORDER <span class="text-danger">*</span></label>
-            <v-select
-              v-model="form.order_type"
-              :options="['REGULAR', 'URGENT']"
-              placeholder="Pilih Tipe Order..."
-              :clearable="false"
-              :disabled="isEdit && form.status !== 'DRAFT'"
-            />
+            <v-select v-model="form.order_type" :options="['REGULAR', 'URGENT']" placeholder="Pilih Tipe Order..."
+              :clearable="false" :disabled="isEdit && form.status !== 'DRAFT'" />
           </div>
 
           <!-- Transporter Vendor -->
           <div class="col-12 col-md-4">
             <label class="form-label text-muted small mb-1">TRANSPORTER (VENDOR EXPIRED / OPSIONAL)</label>
-            <v-select
-              v-model="form.transporter_id"
-              :options="transporters"
-              label="transporter_name"
-              :reduce="t => t.id"
-              placeholder="Pilih Transporter..."
-            />
+            <v-select v-model="form.transporter_id" :options="transporters" label="transporter_name" :reduce="t => t.id"
+              placeholder="Pilih Transporter..." />
           </div>
 
           <!-- Status selection (if editing) -->
           <div class="col-12 col-md-4" v-if="isEdit">
             <label class="form-label text-muted small mb-1">STATUS ORDER <span class="text-danger">*</span></label>
-            <v-select
-              v-model="form.status"
-              :options="['DRAFT', 'ASSIGNED', 'IN_TRANSIT', 'DELIVERED', 'CANCELLED']"
-              placeholder="Pilih Status..."
-              :clearable="false"
-            />
+            <v-select v-model="form.status" :options="['DRAFT', 'ASSIGNED', 'IN_TRANSIT', 'DELIVERED', 'CANCELLED']"
+              placeholder="Pilih Status..." :clearable="false" />
           </div>
         </div>
 
@@ -199,7 +183,7 @@ const form = reactive({
 onMounted(async () => {
   try {
     await fetchMasterData();
-    
+
     if (route.params.id) {
       isEdit.value = true;
       await fetchOrderDetails(route.params.id);
