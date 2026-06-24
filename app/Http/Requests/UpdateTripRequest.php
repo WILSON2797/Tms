@@ -18,7 +18,7 @@ class UpdateTripRequest extends FormRequest
             'mot_id' => 'sometimes|required|exists:modes_of_transport,id',
             'mod_id' => 'sometimes|required|exists:modes_of_delivery,id',
             'transporter_id' => 'nullable|exists:transporters,id',
-            'driver_id' => 'nullable|exists:drivers,id',
+            'driver_id' => 'nullable|exists:users,id',
             'vehicle_id' => 'nullable|exists:vehicles,id',
             'status' => 'sometimes|required|string|in:DRAFT,IN_TRANSIT,DELIVERED,CANCELLED',
             'shipment_order_ids' => 'sometimes|required|array|min:1',

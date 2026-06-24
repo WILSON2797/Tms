@@ -18,7 +18,7 @@ class StoreTripRequest extends FormRequest
             'mot_id' => 'required|exists:modes_of_transport,id',
             'mod_id' => 'required|exists:modes_of_delivery,id',
             'transporter_id' => 'nullable|exists:transporters,id',
-            'driver_id' => 'nullable|exists:drivers,id',
+            'driver_id' => 'nullable|exists:users,id',
             'vehicle_id' => 'nullable|exists:vehicles,id',
             'status' => 'nullable|string|in:DRAFT,IN_TRANSIT,DELIVERED,CANCELLED',
             'shipment_order_ids' => 'required|array|min:1',

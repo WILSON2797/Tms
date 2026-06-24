@@ -15,6 +15,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import 'vue-toastification/dist/index.css';
 import '../css/app.css';
+import '../css/tailwind-admin.css';
 
 import App from './App.vue';
 

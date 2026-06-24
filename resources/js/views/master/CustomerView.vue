@@ -1,46 +1,25 @@
 <template>
   <div class="customer-view">
-    <div class="d-flex align-items-center justify-content-between mb-4">
-      <div>
-        <h3 class="fw-bold text-white mb-1">Customer Management</h3>
-        <p class="text-muted">Kelola data pelanggan, alamat, PIC, dan informasi kontak.</p>
-      </div>
-      <button 
-        v-if="authStore.hasPermission('create-master')" 
-        class="btn btn-primary d-flex align-items-center gap-2"
-        @click="openAddModal"
-      >
-        <i class="bi bi-plus-lg"></i>
-        <span>Tambah Customer</span>
-      </button>
-    </div>
-
-    <!-- Filter & Search Panel -->
-    <div class="card bg-dark-card border-card p-3 mb-4">
-      <div class="row g-3 align-items-center">
-        <div class="col-12 col-md-4">
-          <div class="input-group">
-            <span class="input-group-text bg-dark-custom text-muted-custom border-secondary-custom">
-              <i class="bi bi-search"></i>
-            </span>
-            <input
-              type="text"
-              class="form-control bg-dark-custom text-white border-secondary-custom"
-              v-model="searchQuery"
-              placeholder="Cari customer..."
-            />
-          </div>
-        </div>
-      </div>
-    </div>
-
     <!-- Table Card -->
     <DataTable 
       :columns="columns" 
-      :data="filteredCustomers" 
+      :data="customers" 
       :loading="loading" 
       empty-text="Belum ada data customer."
+      title="Customer Management"
+      subtitle="Kelola data pelanggan, alamat, PIC, dan informasi kontak."
     >
+      <template #actions>
+        <button 
+          v-if="authStore.hasPermission('create-master')" 
+          class="btn btn-primary d-flex align-items-center gap-2"
+          @click="openAddModal"
+        >
+          <i class="bi bi-plus-lg"></i>
+          <span>Tambah Customer</span>
+        </button>
+      </template>
+
       <template #cell(is_active)="{ value }">
         <span class="badge" :class="value ? 'bg-success' : 'bg-danger'">
           {{ value ? 'Aktif' : 'Non-Aktif' }}
@@ -76,12 +55,12 @@
       ref="modalRef"
     >
       <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content bg-dark-card border-card text-white">
+        <div class="modal-content bg-dark-card border-card text-gray-900 dark:text-white">
           <div class="modal-header border-secondary-custom">
             <h5 class="modal-title fw-bold" id="customerModalLabel">
               {{ isEdit ? 'Edit Customer' : 'Tambah Customer' }}
             </h5>
-            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            <button type="button" class="btn-close dark:btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <form @submit.prevent="handleSubmit">
             <div class="modal-body">
@@ -90,7 +69,7 @@
                   <label class="form-label text-muted small mb-1">KODE CUSTOMER</label>
                   <input 
                     type="text" 
-                    class="form-control bg-dark-custom text-white border-secondary-custom" 
+                    class="form-control bg-dark-custom text-gray-900 dark:text-white border-secondary-custom" 
                     v-model="form.customer_code" 
                     placeholder="E.g. CUST-01" 
                     required 
@@ -101,7 +80,7 @@
                   <label class="form-label text-muted small mb-1">NAMA CUSTOMER</label>
                   <input 
                     type="text" 
-                    class="form-control bg-dark-custom text-white border-secondary-custom" 
+                    class="form-control bg-dark-custom text-gray-900 dark:text-white border-secondary-custom" 
                     v-model="form.customer_name" 
                     placeholder="Nama Perusahaan" 
                     required 
@@ -110,7 +89,7 @@
                 <div class="col-12">
                   <label class="form-label text-muted small mb-1">ALAMAT</label>
                   <textarea 
-                    class="form-control bg-dark-custom text-white border-secondary-custom" 
+                    class="form-control bg-dark-custom text-gray-900 dark:text-white border-secondary-custom" 
                     v-model="form.address" 
                     placeholder="Alamat kantor..." 
                     rows="3"
@@ -120,7 +99,7 @@
                   <label class="form-label text-muted small mb-1">KOTA</label>
                   <input 
                     type="text" 
-                    class="form-control bg-dark-custom text-white border-secondary-custom" 
+                    class="form-control bg-dark-custom text-gray-900 dark:text-white border-secondary-custom" 
                     v-model="form.city" 
                     placeholder="Jakarta" 
                   />
@@ -129,7 +108,7 @@
                   <label class="form-label text-muted small mb-1">NAMA PIC</label>
                   <input 
                     type="text" 
-                    class="form-control bg-dark-custom text-white border-secondary-custom" 
+                    class="form-control bg-dark-custom text-gray-900 dark:text-white border-secondary-custom" 
                     v-model="form.pic_name" 
                     placeholder="PIC Hubungan" 
                   />
@@ -138,7 +117,7 @@
                   <label class="form-label text-muted small mb-1">TELEPON</label>
                   <input 
                     type="text" 
-                    class="form-control bg-dark-custom text-white border-secondary-custom" 
+                    class="form-control bg-dark-custom text-gray-900 dark:text-white border-secondary-custom" 
                     v-model="form.phone" 
                     placeholder="0812xxxxxx" 
                   />
@@ -147,7 +126,7 @@
                   <label class="form-label text-muted small mb-1">EMAIL</label>
                   <input 
                     type="email" 
-                    class="form-control bg-dark-custom text-white border-secondary-custom" 
+                    class="form-control bg-dark-custom text-gray-900 dark:text-white border-secondary-custom" 
                     v-model="form.email" 
                     placeholder="office@mail.com" 
                   />
@@ -160,7 +139,7 @@
                       id="isActiveSwitch" 
                       v-model="form.is_active" 
                     />
-                    <label class="form-check-label text-light" for="isActiveSwitch">Status Aktif</label>
+                    <label class="form-check-label text-gray-700 dark:text-gray-300" for="isActiveSwitch">Status Aktif</label>
                   </div>
                 </div>
               </div>
@@ -321,50 +300,4 @@ const handleDelete = async (customer) => {
 };
 </script>
 
-<style scoped>
-.customer-view {
-  background-color: #0b0f19;
-}
 
-.text-muted {
-  color: #8c98a5 !important;
-}
-
-.bg-dark-card {
-  background-color: #111827 !important;
-}
-
-.border-card {
-  border: 1px solid rgba(255, 255, 255, 0.05) !important;
-  border-radius: 12px;
-}
-
-.bg-dark-custom {
-  background-color: rgba(10, 15, 26, 0.6) !important;
-}
-
-.border-secondary-custom {
-  border-color: rgba(255, 255, 255, 0.08) !important;
-}
-
-.form-control:focus {
-  background-color: rgba(10, 15, 26, 0.8) !important;
-  border-color: #0d6efd !important;
-  color: #fff !important;
-  box-shadow: 0 0 10px rgba(13, 110, 253, 0.25) !important;
-}
-
-.table-header-custom {
-  background-color: rgba(255, 255, 255, 0.02);
-}
-
-.btn-outline-info:hover {
-  background-color: rgba(13, 202, 240, 0.1);
-  color: #0dcaf0;
-}
-
-.btn-outline-danger:hover {
-  background-color: rgba(220, 53, 69, 0.1);
-  color: #dc3545;
-}
-</style>

@@ -15,10 +15,7 @@ class RepositoryServiceProvider extends ServiceProvider
             \App\Repositories\Contracts\CustomerRepositoryInterface::class,
             \App\Repositories\Eloquent\CustomerRepository::class
         );
-        $this->app->bind(
-            \App\Repositories\Contracts\DriverRepositoryInterface::class,
-            \App\Repositories\Eloquent\DriverRepository::class
-        );
+
         $this->app->bind(
             \App\Repositories\Contracts\VehicleRepositoryInterface::class,
             \App\Repositories\Eloquent\VehicleRepository::class

@@ -5,7 +5,6 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CustomerController;
-use App\Http\Controllers\Api\DriverController;
 use App\Http\Controllers\Api\VehicleController;
 use App\Http\Controllers\Api\TransporterController;
 use App\Http\Controllers\Api\ShipmentOrderController;
@@ -20,12 +19,28 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/modes-of-transport', [\App\Http\Controllers\Api\ModeController::class, 'modesOfTransport']);
     Route::get('/modes-of-delivery', [\App\Http\Controllers\Api\ModeController::class, 'modesOfDelivery']);
 
+    Route::get('/drivers', function () {
+        $drivers = \App\Models\User::whereHas('role', function ($query) {
+            $query->where('slug', 'driver');
+        })->get()
+        ->map(function ($user) {
+            return [
+                'id' => $user->id,
+                'driver_name' => $user->name,
+                'is_active' => true,
+                'license_type' => null
+            ];
+        });
+        return response()->json([
+            'success' => true,
+            'data' => $drivers
+        ]);
+    });
+
     // Master Data - View
     Route::middleware('permission:view-master')->group(function () {
         Route::get('/customers', [CustomerController::class, 'index']);
         Route::get('/customers/{customer}', [CustomerController::class, 'show']);
-        Route::get('/drivers', [DriverController::class, 'index']);
-        Route::get('/drivers/{driver}', [DriverController::class, 'show']);
         Route::get('/vehicles', [VehicleController::class, 'index']);
         Route::get('/vehicles/{vehicle}', [VehicleController::class, 'show']);
         Route::get('/transporters', [TransporterController::class, 'index']);
@@ -35,7 +50,6 @@ Route::middleware('auth:sanctum')->group(function () {
     // Master Data - Create
     Route::middleware('permission:create-master')->group(function () {
         Route::post('/customers', [CustomerController::class, 'store']);
-        Route::post('/drivers', [DriverController::class, 'store']);
         Route::post('/vehicles', [VehicleController::class, 'store']);
         Route::post('/transporters', [TransporterController::class, 'store']);
     });
@@ -43,8 +57,6 @@ Route::middleware('auth:sanctum')->group(function () {
     // Master Data - Edit
     Route::middleware('permission:edit-master')->group(function () {
         Route::put('/customers/{customer}', [CustomerController::class, 'update']);
-        Route::post('/drivers/{driver}', [DriverController::class, 'update']); // Support multipart/form-data via POST
-        Route::put('/drivers/{driver}', [DriverController::class, 'update']);
         Route::put('/vehicles/{vehicle}', [VehicleController::class, 'update']);
         Route::put('/transporters/{transporter}', [TransporterController::class, 'update']);
     });
@@ -52,7 +64,6 @@ Route::middleware('auth:sanctum')->group(function () {
     // Master Data - Delete
     Route::middleware('permission:delete-master')->group(function () {
         Route::delete('/customers/{customer}', [CustomerController::class, 'destroy']);
-        Route::delete('/drivers/{driver}', [DriverController::class, 'destroy']);
         Route::delete('/vehicles/{vehicle}', [VehicleController::class, 'destroy']);
         Route::delete('/transporters/{transporter}', [TransporterController::class, 'destroy']);
     });

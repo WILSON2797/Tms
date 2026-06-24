@@ -8,9 +8,10 @@
     <meta name="description" content="Aplikasi pengelolaan logistik, shipment order, driver assignment, dan POD terintegrasi.">
 
     <!-- CSS and JS Bundled Assets -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="bg-dark text-white">
+<body>
     <div id="app"></div>
 </body>
 </html>

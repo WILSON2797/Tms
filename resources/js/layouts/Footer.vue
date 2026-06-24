@@ -1,27 +1,13 @@
 <template>
-  <footer class="app-footer px-4 py-3 mt-auto text-center border-top-card bg-dark-card">
-    <div class="d-flex flex-column flex-sm-row align-items-center justify-content-between text-muted small">
+  <footer class="border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 py-4 px-6 mt-auto">
+    <div class="flex flex-col sm:flex-row items-center justify-between text-gray-500 dark:text-gray-400 text-xs gap-2">
       <span>&copy; {{ currentYear }} Transportation Management System (TMS). All rights reserved.</span>
-      <span class="mt-2 mt-sm-0">
-        Membangun Masa Depan Logistik yang Terkoneksi.
-      </span>
+      <span class="sm:text-right">Membangun Masa Depan Logistik yang Terkoneksi.</span>
     </div>
   </footer>
 </template>
 
 <script setup>
 import { ref } from 'vue';
-
 const currentYear = ref(new Date().getFullYear());
 </script>
-
-<style scoped>
-.app-footer {
-  background-color: #111827;
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.text-muted {
-  color: #8c98a5 !important;
-}
-</style>

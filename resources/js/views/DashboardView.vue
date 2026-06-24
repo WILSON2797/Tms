@@ -2,10 +2,10 @@
   <div class="dashboard-view">
     <div class="d-flex align-items-center justify-content-between mb-4">
       <div>
-        <h3 class="fw-bold text-white mb-1">Dashboard</h3>
+        <h3 class="fw-bold text-gray-900 mb-1">Dashboard</h3>
         <p class="text-muted">Selamat datang kembali, {{ authStore.user?.name }}. Berikut adalah ringkasan hari ini.</p>
       </div>
-      <div class="text-white bg-dark-card border-card px-3 py-2 rounded-3 d-flex align-items-center gap-2">
+      <div class="text-gray-900 bg-white border-card px-3 py-2 rounded-3 d-flex align-items-center gap-2 shadow-sm">
         <i class="bi bi-calendar-event text-primary"></i>
         <span>{{ currentDate }}</span>
       </div>
@@ -14,10 +14,10 @@
     <!-- Stats Cards Grid -->
     <div class="row g-4 mb-4">
       <div class="col-12 col-sm-6 col-xl-3" v-for="stat in stats" :key="stat.title">
-        <div class="stat-card p-4 d-flex align-items-center justify-content-between">
+        <div class="stat-card p-4 d-flex align-items-center justify-content-between bg-white shadow-sm">
           <div>
             <span class="text-muted text-uppercase fs-7 small fw-bold d-block mb-1">{{ stat.title }}</span>
-            <h2 class="text-white fw-bold mb-0">{{ stat.value }}</h2>
+            <h2 class="text-gray-900 fw-bold mb-0">{{ stat.value }}</h2>
           </div>
           <div class="icon-box" :class="stat.colorClass">
             <i class="bi" :class="stat.icon"></i>
@@ -30,8 +30,8 @@
     <div class="row g-4">
       <!-- Quick Action Panel -->
       <div class="col-12 col-lg-8">
-        <div class="card bg-dark-card border-card p-4 h-100">
-          <h5 class="text-white fw-bold mb-3">Quick Navigation & Actions</h5>
+        <div class="card bg-white border-card p-4 h-100 shadow-sm">
+          <h5 class="text-gray-900 fw-bold mb-3">Quick Navigation & Actions</h5>
           <div class="row g-3">
             <div class="col-12 col-md-6" v-if="authStore.hasPermission('create-shipment')">
               <div class="action-btn-card p-3 d-flex align-items-center gap-3" @click="goToRoute('Shipments')">
@@ -39,7 +39,7 @@
                   <i class="bi bi-box-seam text-primary"></i>
                 </div>
                 <div>
-                  <h6 class="text-white fw-bold mb-0">Create Shipment</h6>
+                  <h6 class="text-gray-900 fw-bold mb-0">Create Shipment</h6>
                   <small class="text-muted">Input order pengiriman baru</small>
                 </div>
               </div>
@@ -51,7 +51,7 @@
                   <i class="bi bi-map text-success"></i>
                 </div>
                 <div>
-                  <h6 class="text-white fw-bold mb-0">Trip Planning</h6>
+                  <h6 class="text-gray-900 fw-bold mb-0">Trip Planning</h6>
                   <small class="text-muted">Buat trip & combine shipment</small>
                 </div>
               </div>
@@ -63,7 +63,7 @@
                   <i class="bi bi-geo-alt text-warning"></i>
                 </div>
                 <div>
-                  <h6 class="text-white fw-bold mb-0">Track Shipments</h6>
+                  <h6 class="text-gray-900 fw-bold mb-0">Track Shipments</h6>
                   <small class="text-muted">Pantau timeline pengiriman</small>
                 </div>
               </div>
@@ -75,7 +75,7 @@
                   <i class="bi bi-file-earmark-check text-info"></i>
                 </div>
                 <div>
-                  <h6 class="text-white fw-bold mb-0">Proof of Delivery</h6>
+                  <h6 class="text-gray-900 fw-bold mb-0">Proof of Delivery</h6>
                   <small class="text-muted">Kelola data penerimaan (POD)</small>
                 </div>
               </div>
@@ -86,15 +86,15 @@
 
       <!-- Info Panel -->
       <div class="col-12 col-lg-4">
-        <div class="card bg-dark-card border-card p-4 h-100">
-          <h5 class="text-white fw-bold mb-3">Informasi Akun</h5>
+        <div class="card bg-white border-card p-4 h-100 shadow-sm">
+          <h5 class="text-gray-900 fw-bold mb-3">Informasi Akun</h5>
           <div class="mb-3">
             <span class="text-muted d-block small">NAMA PENGGUNA</span>
-            <span class="text-white fw-bold">{{ authStore.user?.name }}</span>
+            <span class="text-gray-900 fw-bold">{{ authStore.user?.name }}</span>
           </div>
           <div class="mb-3">
             <span class="text-muted d-block small">EMAIL</span>
-            <span class="text-white fw-bold">{{ authStore.user?.email }}</span>
+            <span class="text-gray-900 fw-bold">{{ authStore.user?.email }}</span>
           </div>
           <div class="mb-3">
             <span class="text-muted d-block small">ROLE LEVEL</span>
@@ -134,29 +134,24 @@ const goToRoute = (routeName) => {
 
 <style scoped>
 .dashboard-view {
-  background-color: #0b0f19;
   min-height: 100%;
 }
 
 .text-muted {
-  color: #8c98a5 !important;
-}
-
-.bg-dark-card {
-  background-color: #111827 !important;
+  color: #667085 !important;
 }
 
 .border-card {
-  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
   border-radius: 12px;
 }
 
 /* Stats Card */
 .stat-card {
-  background-color: #111827;
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  background-color: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 12px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
 }
 
 .icon-box {
@@ -185,15 +180,15 @@ const goToRoute = (routeName) => {
 
 /* Action Button Card */
 .action-btn-card {
-  background-color: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  background-color: #f9fafb;
+  border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 10px;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .action-btn-card:hover {
-  background-color: rgba(255, 255, 255, 0.04);
+  background-color: #f3f4f6;
   border-color: rgba(13, 110, 253, 0.3);
   transform: translateY(-2px);
 }

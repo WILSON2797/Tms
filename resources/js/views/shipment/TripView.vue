@@ -1,30 +1,25 @@
 <template>
   <div class="trip-view">
-    <div class="d-flex align-items-center justify-content-between mb-4">
-      <div>
-        <h3 class="fw-bold text-white mb-1">Trip List (Daftar Trip)</h3>
-        <p class="text-muted">Kelola dan pantau seluruh trip perjalanan yang sudah terdaftar, status pengiriman, penugasan driver, dan armada.</p>
-      </div>
-    </div>
-
     <!-- Table Card -->
     <DataTable 
       :columns="columns" 
       :data="trips" 
       :loading="loading" 
       empty-text="Belum ada rencana trip pengiriman."
+      title="Trip List (Daftar Trip)"
+      subtitle="Kelola dan pantau seluruh trip perjalanan yang sudah terdaftar, status pengiriman, penugasan driver, dan armada."
     >
       <template #cell(trip_number)="{ value }">
         <span class="text-info fw-bold">{{ value }}</span>
       </template>
       <template #cell(mot)="{ value }">
-        <span class="text-white">{{ value }}</span>
+        <span class="text-gray-900">{{ value }}</span>
       </template>
       <template #cell(mod)="{ value }">
         <span class="text-info fw-bold">{{ value }}</span>
       </template>
       <template #cell(shipment_orders)="{ value }">
-        <span class="text-white">{{ value ? value.length : 0 }} Order</span>
+        <span class="text-gray-900">{{ value ? value.length : 0 }} Order</span>
       </template>
       <template #cell(status)="{ value }">
         <span class="badge" :class="getStatusBadgeClass(value)">
@@ -51,13 +46,13 @@
       class="modal-backdrop-custom d-flex align-items-center justify-content-center"
       @click.self="closeDetailModal"
     >
-      <div class="modal-dialog-custom bg-dark-card border-card p-4 rounded-4 shadow-lg text-white">
+      <div class="modal-dialog-custom bg-dark-card border-card p-4 rounded-4 shadow-lg text-gray-900 dark:text-white">
         <div class="d-flex justify-content-between align-items-center mb-3 border-bottom border-secondary-custom pb-2">
-          <h5 class="fw-bold text-white mb-0">
+          <h5 class="fw-bold text-gray-900 dark:text-white mb-0">
             <i class="bi bi-truck text-primary me-2"></i>
             Detail Trip - {{ selectedTrip?.trip_number }}
           </h5>
-          <button type="button" class="btn-close btn-close-white" @click="closeDetailModal"></button>
+          <button type="button" class="btn-close dark:btn-close-white" @click="closeDetailModal"></button>
         </div>
 
         <div v-if="detailLoading" class="text-center py-5">
@@ -70,7 +65,7 @@
           <div class="row g-3 small mb-4 bg-dark-custom p-3 rounded-3 border border-secondary-custom">
             <div class="col-6 col-md-4">
               <span class="text-muted d-block mb-1">TANGGAL TRIP</span>
-              <strong class="text-white">{{ formatDate(selectedTrip?.trip_date) }}</strong>
+              <strong class="text-gray-900 dark:text-white">{{ formatDate(selectedTrip?.trip_date) }}</strong>
             </div>
             <div class="col-6 col-md-4">
               <span class="text-muted d-block mb-1">STATUS TRIP</span>
@@ -78,30 +73,30 @@
             </div>
             <div class="col-6 col-md-4">
               <span class="text-muted d-block mb-1">MODE OF TRANSPORT (MOT)</span>
-              <strong class="text-white">{{ selectedTrip?.mot }}</strong>
+              <strong class="text-gray-900 dark:text-white">{{ selectedTrip?.mot }}</strong>
             </div>
             <div class="col-6 col-md-4">
               <span class="text-muted d-block mb-1">MODE OF DELIVERY (MOD)</span>
-              <strong class="text-white">{{ selectedTrip?.mod }}</strong>
+              <strong class="text-gray-900 dark:text-white">{{ selectedTrip?.mod }}</strong>
             </div>
             <div class="col-12 col-md-8">
               <span class="text-muted d-block mb-1">TRANSPORTER (VENDOR)</span>
-              <strong class="text-white">{{ selectedTrip?.transporter?.transporter_name || '-' }}</strong>
+              <strong class="text-gray-900 dark:text-white">{{ selectedTrip?.transporter?.transporter_name || '-' }}</strong>
             </div>
             <div class="col-6">
               <span class="text-muted d-block mb-1">DRIVER (SUPIR)</span>
-              <strong class="text-white">{{ selectedTrip?.driver?.driver_name || '-' }}</strong>
+              <strong class="text-gray-900 dark:text-white">{{ selectedTrip?.driver?.driver_name || '-' }}</strong>
             </div>
             <div class="col-6">
               <span class="text-muted d-block mb-1">VEHICLE (NO. KENDARAAN)</span>
-              <strong class="text-white">{{ selectedTrip?.vehicle?.vehicle_no || '-' }} ({{ selectedTrip?.vehicle?.vehicle_type || '-' }})</strong>
+              <strong class="text-gray-900 dark:text-white">{{ selectedTrip?.vehicle?.vehicle_no || '-' }} ({{ selectedTrip?.vehicle?.vehicle_type || '-' }})</strong>
             </div>
           </div>
 
           <!-- Consolidated Orders list -->
-          <h6 class="fw-bold text-white mb-2">Shipment Orders yang Dikonsolidasikan (Console)</h6>
+          <h6 class="fw-bold text-gray-900 dark:text-white mb-2">Shipment Orders yang Dikonsolidasikan (Console)</h6>
           <div class="table-responsive" style="max-height: 250px; overflow-y: auto;">
-            <table class="table table-dark table-hover mb-0 align-middle table-sm small">
+            <table class="table table-hover mb-0 align-middle table-sm small">
               <thead class="bg-dark-custom text-muted sticky-top">
                 <tr>
                   <th>Job / Order No.</th>
@@ -243,26 +238,8 @@ const getOrderStatusBadgeClass = (status) => {
 </script>
 
 <style scoped>
-.trip-view {
-  background-color: #0b0f19;
-}
 
-.bg-dark-card {
-  background-color: #111827 !important;
-}
 
-.border-card {
-  border: 1px solid rgba(255, 255, 255, 0.05) !important;
-  border-radius: 12px;
-}
-
-.bg-dark-custom {
-  background-color: rgba(10, 15, 26, 0.6) !important;
-}
-
-.border-secondary-custom {
-  border-color: rgba(255, 255, 255, 0.08) !important;
-}
 
 .text-muted {
   color: #8c98a5 !important;

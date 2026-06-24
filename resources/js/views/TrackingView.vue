@@ -1,16 +1,13 @@
 <template>
   <div class="tracking-view">
-    <div class="mb-4">
-      <h3 class="fw-bold text-white mb-1">Live Shipment Tracking</h3>
-      <p class="text-muted">Daftar seluruh shipment order. Klik ikon peta pada kolom aksi untuk melacak posisi pengiriman dan lini masa perjalanan secara real-time.</p>
-    </div>
-
     <!-- Data Table of Orders -->
     <DataTable 
       :columns="columns" 
       :data="orders" 
       :loading="loading" 
       empty-text="Belum ada data shipment order."
+      title="Live Shipment Tracking"
+      subtitle="Daftar seluruh shipment order. Klik ikon peta pada kolom aksi untuk melacak posisi pengiriman dan lini masa perjalanan secara real-time."
     >
       <template #cell(order_number)="{ row }">
         <div class="fw-bold text-info text-nowrap">{{ row.order_number }}</div>
@@ -18,11 +15,11 @@
       </template>
 
       <template #cell(origin_city)="{ value }">
-        <span class="text-white">{{ value }}</span>
+        <span class="text-gray-900">{{ value }}</span>
       </template>
 
       <template #cell(destination_city)="{ value }">
-        <span class="text-white fw-semibold">{{ value }}</span>
+        <span class="text-gray-900 fw-semibold">{{ value }}</span>
       </template>
 
       <template #cell(status)="{ value }">
@@ -44,105 +41,107 @@
     </DataTable>
 
     <!-- Live Tracking Map & Timeline Modal (Side-by-Side) -->
-    <div 
-      v-if="showModal" 
-      class="modal-backdrop-custom d-flex align-items-center justify-content-center"
-      @click.self="closeModal"
-    >
-      <div class="modal-dialog-custom bg-dark-card border-card p-4 rounded-4 shadow-lg text-white">
-        <div class="d-flex justify-content-between align-items-center mb-3 border-bottom border-secondary-custom pb-2">
-          <h5 class="fw-bold text-white mb-0">
-            <i class="bi bi-geo-alt text-primary me-2"></i>
-            Live Tracking - {{ selectedOrder?.order_number }} ({{ selectedOrder?.job_number }})
-          </h5>
-          <button type="button" class="btn-close btn-close-white" @click="closeModal"></button>
-        </div>
+    <Teleport to="body">
+      <div 
+        v-if="showModal" 
+        class="modal-backdrop-custom d-flex align-items-center justify-content-center"
+        @click.self="closeModal"
+      >
+        <div class="modal-dialog-custom bg-dark-card border-card p-4 rounded-4 shadow-lg text-gray-900">
+          <div class="d-flex justify-content-between align-items-center mb-3 border-bottom border-secondary-custom pb-2">
+            <h5 class="fw-bold text-gray-900 mb-0">
+              <i class="bi bi-geo-alt text-primary me-2"></i>
+              Live Tracking - {{ selectedOrder?.order_number }} ({{ selectedOrder?.job_number }})
+            </h5>
+            <button type="button" class="btn-close" @click="closeModal"></button>
+          </div>
 
-        <div v-if="modalLoading" class="text-center py-5">
-          <div class="spinner-border text-primary mb-2" role="status"></div>
-          <p class="text-muted small">Memuat data pelacakan...</p>
-        </div>
+          <div v-if="modalLoading" class="text-center py-5">
+            <div class="spinner-border text-primary mb-2" role="status"></div>
+            <p class="text-muted small">Memuat data pelacakan...</p>
+          </div>
 
-        <div v-else>
-          <!-- Driver GPS Signal / Online Status Bar -->
-          <div v-if="selectedOrder?.trip" class="mb-3 p-2 px-3 rounded bg-dark-custom border border-secondary-custom d-flex flex-wrap align-items-center justify-content-between gap-2" style="font-size: 13px;">
-            <div class="d-flex align-items-center gap-3">
-              <span class="d-flex align-items-center gap-1">
-                <i class="bi bi-person-fill text-muted me-1"></i>Supir: <strong class="text-white">{{ selectedOrder.trip.driver?.driver_name || '-' }}</strong>
-              </span>
-              <span class="text-muted">|</span>
-              <span class="d-flex align-items-center gap-1">
-                <i class="bi bi-truck text-muted me-1"></i>Plat: <strong class="text-white">{{ selectedOrder.trip.vehicle?.vehicle_no || '-' }}</strong>
-              </span>
-            </div>
-            
-            <div class="d-flex align-items-center gap-3">
-              <div class="d-flex align-items-center gap-2">
-                <span class="legend-dot" :class="getDriverStatus(selectedOrder.trip).badgeClass" style="width: 8px; height: 8px; margin-right: 0;"></span>
-                <span class="fw-bold" :class="getDriverStatus(selectedOrder.trip).status === 'ONLINE' ? 'text-success' : 'text-danger'">
-                  {{ getDriverStatus(selectedOrder.trip).status }}
+          <div v-else>
+            <!-- Driver GPS Signal / Online Status Bar -->
+            <div v-if="selectedOrder?.trip" class="mb-3 p-2 px-3 rounded bg-dark-custom border border-secondary-custom d-flex flex-wrap align-items-center justify-content-between gap-2" style="font-size: 13px;">
+              <div class="d-flex align-items-center gap-3">
+                <span class="d-flex align-items-center gap-1">
+                  <i class="bi bi-person-fill text-muted me-1"></i>Supir: <strong class="text-gray-900">{{ selectedOrder.trip.driver?.driver_name || '-' }}</strong>
                 </span>
-                <span class="text-muted" style="font-size: 12px;">({{ getDriverStatus(selectedOrder.trip).text }})</span>
+                <span class="text-muted">|</span>
+                <span class="d-flex align-items-center gap-1">
+                  <i class="bi bi-truck text-muted me-1"></i>Plat: <strong class="text-gray-900">{{ selectedOrder.trip.vehicle?.vehicle_no || '-' }}</strong>
+                </span>
               </div>
-              <span class="text-muted">|</span>
-              <span class="text-muted" style="font-size: 12px;">
-                Update Terakhir: <strong class="text-info">{{ getDriverStatus(selectedOrder.trip).timeText }}</strong>
-              </span>
-            </div>
-          </div>
-
-          <div class="row g-4">
-          <!-- Left: Map Container -->
-          <div class="col-12 col-lg-7">
-            <div id="map-container" class="position-relative border border-secondary-custom rounded-3 overflow-hidden bg-black" style="height: 450px;">
-              <div id="map" class="w-100 h-100" style="position: absolute; top:0; bottom:0; left:0; right:0;"></div>
-            </div>
-            <div class="mt-2 text-muted small d-flex align-items-center gap-3 justify-content-center flex-wrap">
-              <span><span class="legend-dot bg-primary"></span> Rencana Rute</span>
-              <span><span class="legend-dot bg-success"></span> Lintasan GPS Supir</span>
-              <span><span class="legend-dot bg-warning"></span> Posisi Truk Live</span>
-            </div>
-          </div>
-
-          <!-- Right: Vertical Timeline -->
-          <div class="col-12 col-lg-5 d-flex flex-column">
-            <h6 class="fw-bold text-white mb-3 border-bottom border-secondary-custom pb-2">Lini Masa Perjalanan</h6>
-            <div class="timeline flex-grow-1 overflow-auto pe-2" style="max-height: 400px;">
-              <div 
-                v-for="(log, idx) in selectedOrder?.status_logs" 
-                :key="log.id" 
-                class="timeline-item"
-                :class="{ 'first-item': idx === 0 }"
-              >
-                <!-- Icon/Marker -->
-                <div class="timeline-marker" :class="getStatusMarkerClass(log.status)">
-                  <i class="bi" :class="getStatusIconClass(log.status)"></i>
-                </div>
-                
-                <!-- Content -->
-                <div class="timeline-content">
-                  <div class="d-flex align-items-center justify-content-between mb-1">
-                    <h6 class="fw-bold text-white mb-0" style="font-size: 14px;">{{ log.status }}</h6>
-                    <span class="text-muted small">{{ formatDateTime(log.created_at) }}</span>
-                  </div>
-                  <p class="text-muted small mb-1">{{ log.description }}</p>
-                  <span class="text-info small fs-7" v-if="log.changer">
-                    <i class="bi bi-person me-1"></i>Oleh: {{ log.changer.name }}
+              
+              <div class="d-flex align-items-center gap-3">
+                <div class="d-flex align-items-center gap-2">
+                  <span class="legend-dot" :class="getDriverStatus(selectedOrder.trip).badgeClass" style="width: 8px; height: 8px; margin-right: 0;"></span>
+                  <span class="fw-bold" :class="getDriverStatus(selectedOrder.trip).status === 'ONLINE' ? 'text-success' : 'text-danger'">
+                    {{ getDriverStatus(selectedOrder.trip).status }}
                   </span>
+                  <span class="text-muted" style="font-size: 12px;">({{ getDriverStatus(selectedOrder.trip).text }})</span>
+                </div>
+                <span class="text-muted">|</span>
+                <span class="text-muted" style="font-size: 12px;">
+                  Update Terakhir: <strong class="text-info">{{ getDriverStatus(selectedOrder.trip).timeText }}</strong>
+                </span>
+              </div>
+            </div>
+
+            <div class="row g-4">
+            <!-- Left: Map Container -->
+            <div class="col-12 col-lg-7">
+              <div id="map-container" class="position-relative border border-secondary-custom rounded-3 overflow-hidden bg-light" style="height: 450px;">
+                <div id="map" class="w-100 h-100" style="position: absolute; top:0; bottom:0; left:0; right:0;"></div>
+              </div>
+              <div class="mt-2 text-muted small d-flex align-items-center gap-3 justify-content-center flex-wrap">
+                <span><span class="legend-dot bg-primary"></span> Rencana Rute</span>
+                <span><span class="legend-dot bg-success"></span> Lintasan GPS Supir</span>
+                <span><span class="legend-dot bg-warning"></span> Posisi Truk Live</span>
+              </div>
+            </div>
+
+            <!-- Right: Vertical Timeline -->
+            <div class="col-12 col-lg-5 d-flex flex-column">
+              <h6 class="fw-bold text-gray-900 mb-3 border-bottom border-secondary-custom pb-2">Lini Masa Perjalanan</h6>
+              <div class="timeline flex-grow-1 overflow-auto pe-2" style="max-height: 400px;">
+                <div 
+                  v-for="(log, idx) in selectedOrder?.status_logs" 
+                  :key="log.id" 
+                  class="timeline-item"
+                  :class="{ 'first-item': idx === 0 }"
+                >
+                  <!-- Icon/Marker -->
+                  <div class="timeline-marker" :class="getStatusMarkerClass(log.status)">
+                    <i class="bi" :class="getStatusIconClass(log.status)"></i>
+                  </div>
+                  
+                  <!-- Content -->
+                  <div class="timeline-content">
+                    <div class="d-flex align-items-center justify-content-between mb-1">
+                      <h6 class="fw-bold text-gray-900 mb-0" style="font-size: 14px;">{{ log.status }}</h6>
+                      <span class="text-muted small">{{ formatDateTime(log.created_at) }}</span>
+                    </div>
+                    <p class="text-muted small mb-1">{{ log.description }}</p>
+                    <span class="text-info small fs-7" v-if="log.changer">
+                      <i class="bi bi-person me-1"></i>Oleh: {{ log.changer.name }}
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-        </div>
+          </div>
 
-        <div class="d-flex justify-content-end border-top border-secondary-custom mt-4 pt-3">
-          <button type="button" class="btn btn-secondary" @click="closeModal">
-            Tutup
-          </button>
+          <div class="d-flex justify-content-end border-top border-secondary-custom mt-4 pt-3">
+            <button type="button" class="btn btn-secondary" @click="closeModal">
+              Tutup
+            </button>
+          </div>
         </div>
       </div>
-    </div>
+    </Teleport>
   </div>
 </template>
 
@@ -418,11 +417,14 @@ const initMap = async () => {
     }
   }
 
-  // Fit bounds dynamically
-  if (mapMarkers.value.length > 0) {
-    const group = L.featureGroup(mapMarkers.value);
-    map.fitBounds(group.getBounds().pad(0.2));
-  }
+  // Fit bounds dynamically after a short delay to allow container dimensions to settle in the DOM
+  setTimeout(() => {
+    map.invalidateSize();
+    if (mapMarkers.value.length > 0) {
+      const group = L.featureGroup(mapMarkers.value);
+      map.fitBounds(group.getBounds().pad(0.2));
+    }
+  }, 250);
 };
 
 const getDriverStatus = (trip) => {
@@ -494,31 +496,6 @@ const getStatusIconClass = (status) => {
 </script>
 
 <style scoped>
-.tracking-view {
-  background-color: #0b0f19;
-}
-
-.bg-dark-card {
-  background-color: #111827 !important;
-}
-
-.border-card {
-  border: 1px solid rgba(255, 255, 255, 0.05) !important;
-  border-radius: 12px;
-}
-
-.bg-dark-custom {
-  background-color: rgba(10, 15, 26, 0.6) !important;
-}
-
-.border-secondary-custom {
-  border-color: rgba(255, 255, 255, 0.08) !important;
-}
-
-.text-muted {
-  color: #8c98a5 !important;
-}
-
 .fs-7 {
   font-size: 0.785rem;
 }
@@ -565,7 +542,7 @@ const getStatusIconClass = (status) => {
   top: 15px;
   bottom: 15px;
   width: 2px;
-  background-color: rgba(255, 255, 255, 0.08);
+  background-color: rgba(0, 0, 0, 0.08);
 }
 
 .timeline-item {
@@ -590,7 +567,7 @@ const getStatusIconClass = (status) => {
   font-size: 0.75rem;
   color: #fff;
   z-index: 2;
-  border: 2px solid #111827;
+  border: 2px solid #ffffff;
 }
 
 .timeline-item.first-item .timeline-marker {
@@ -599,8 +576,8 @@ const getStatusIconClass = (status) => {
 }
 
 .timeline-content {
-  background-color: rgba(10, 15, 26, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.03);
+  background-color: #f8f9fa;
+  border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 8px;
   padding: 12px 15px;
 }

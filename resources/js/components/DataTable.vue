@@ -1,16 +1,21 @@
 <template>
-  <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4 bg-dark-card border-card">
-    <!-- Header: Custom actions & Title -->
-    <div v-if="title || subtitle || $slots.actions"
-      class="card-header border-bottom border-secondary-custom py-3 px-4 d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3">
-      <div v-if="title || subtitle">
-        <h5 v-if="title" class="fw-bold text-white mb-1" style="font-size: 16px;">{{ title }}</h5>
-        <div v-if="subtitle" class="text-muted small" v-html="subtitle"></div>
-      </div>
-      <div class="d-flex gap-2 flex-wrap ms-auto">
-        <slot name="actions"></slot>
-      </div>
+  <div>
+    <!-- Title and Subtitle above the card -->
+    <div v-if="title || subtitle" class="mb-4">
+      <h3 v-if="title" class="fw-bold text-gray-900 mb-1" style="font-size: 22px;">{{ title }}</h3>
+      <p v-if="subtitle" class="text-muted mb-0 small" v-html="subtitle"></p>
     </div>
+
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4 bg-dark-card border-card position-relative">
+      <!-- Thin Loading Progress Bar for silent updates -->
+      <div v-if="loading && table.getRowModel().rows.length > 0" class="loading-line"></div>
+      <!-- Header: Custom actions slot -->
+      <div v-if="$slots.actions"
+        class="card-header border-bottom border-secondary-custom py-3 px-4 d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3">
+        <div class="d-flex gap-2 flex-wrap ms-auto">
+          <slot name="actions"></slot>
+        </div>
+      </div>
 
     <!-- Table content -->
     <div class="table-responsive">
@@ -23,7 +28,7 @@
                 width: header.column.columnDef.meta?.width || (shouldStretch(header.column.columnDef) ? 'auto' : '1%'),
                 minWidth: header.column.columnDef.meta?.width || (shouldStretch(header.column.columnDef) ? 'auto' : (isSearchDisabled(header.column.columnDef) ? 'auto' : '120px'))
               }"
-              class="fw-bold text-center align-middle">
+              :class="['fw-bold text-center align-middle', isNoColumn(header.column.columnDef) ? 'col-no' : '', isSelectColumn(header.column.columnDef) ? 'col-select' : '']">
               <span v-if="!header.isPlaceholder">
                 <flex-render :render="header.column.columnDef.header" :props="header.getContext()" />
               </span>
@@ -36,11 +41,11 @@
                 width: header.column.columnDef.meta?.width || (shouldStretch(header.column.columnDef) ? 'auto' : '1%'),
                 minWidth: header.column.columnDef.meta?.width || (shouldStretch(header.column.columnDef) ? 'auto' : (isSearchDisabled(header.column.columnDef) ? 'auto' : '120px'))
               }"
-              class="p-2 border-bottom border-secondary-custom align-middle">
+              :class="['p-2 border-bottom border-secondary-custom align-middle', isNoColumn(header.column.columnDef) ? 'col-no' : '', isSelectColumn(header.column.columnDef) ? 'col-select' : '']">
               <div
                 v-if="!header.isPlaceholder && header.column.getCanFilter() && !isSearchDisabled(header.column.columnDef)"
                 class="w-100 px-1">
-                <input type="text" class="form-control form-control-sm rounded-3 w-100 bg-dark-custom text-white border-secondary-custom" placeholder="Search..."
+                <input type="text" class="form-control form-control-sm rounded-3 w-100 bg-dark-custom text-gray-900 dark:text-white border-secondary-custom" placeholder="Search..."
                   :value="header.column.getFilterValue() || ''"
                   @input="header.column.setFilterValue($event.target.value)" :style="{
                     fontSize: '13px',
@@ -53,7 +58,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-if="loading">
+          <tr v-if="loading && table.getRowModel().rows.length === 0">
             <td :colspan="columns.length" class="text-center py-5">
               <div class="spinner-border text-primary spinner-border-sm me-2" role="status"></div>
               <span class="text-muted small">Loading records...</span>
@@ -68,14 +73,14 @@
           <template v-else>
             <tr v-for="row in table.getRowModel().rows" :key="row.id">
               <td v-for="cell in row.getVisibleCells()" :key="cell.id"
-                :class="isCentered(cell.column.columnDef) ? 'text-center' : 'text-start'"
+                :class="[isCentered(cell.column.columnDef) ? 'text-center' : 'text-start', isNoColumn(cell.column.columnDef) ? 'col-no' : '', isSelectColumn(cell.column.columnDef) ? 'col-select' : '']"
                 :style="{ 
                   width: cell.column.columnDef.meta?.width || (shouldStretch(cell.column.columnDef) ? 'auto' : '1%'),
                   minWidth: cell.column.columnDef.meta?.width || (shouldStretch(cell.column.columnDef) ? 'auto' : (isSearchDisabled(cell.column.columnDef) ? 'auto' : '120px'))
                 }">
                 <!-- Slot support for custom column overrides -->
                 <slot :name="`cell(${cell.column.id})`" :value="cell.getValue()" :row="row.original" :index="row.index">
-                  <span v-if="cell.column.id === 'no' || cell.column.id === 'index'">
+                  <span v-if="isNoColumn(cell.column.columnDef)">
                     {{ (table.getState().pagination.pageIndex * table.getState().pagination.pageSize) + row.index + 1 }}
                   </span>
                   <flex-render v-else :render="cell.column.columnDef.cell" :props="cell.getContext()" />
@@ -102,7 +107,7 @@
         <!-- Rows per page -->
         <div class="d-flex align-items-center">
           <span class="me-2 small text-muted">Rows per page:</span>
-          <select class="form-select form-select-sm border-secondary-custom bg-dark-custom text-white rounded-3"
+          <select class="form-select form-select-sm border-secondary-custom bg-dark-custom text-gray-900 dark:text-white rounded-3"
             :value="table.getState().pagination.pageSize" @change="e => table.setPageSize(Number(e.target.value))"
             style="width: auto;">
             <option v-for="size in [10, 25, 50, 100]" :key="size" :value="size">{{ size }}</option>
@@ -150,6 +155,7 @@
       </div>
     </div>
   </div>
+</div>
 </template>
 
 <script setup>
@@ -238,14 +244,28 @@ watch([globalFilter, columnFilters, () => props.data], () => {
   paginationState.value.pageIndex = 0;
 });
 
+const isNoColumn = (columnDef) => {
+  const id = (columnDef.id || columnDef.accessorKey || '').toLowerCase();
+  const header = typeof columnDef.header === 'string' ? columnDef.header.toLowerCase() : '';
+  return id === 'no' || id === 'index' || header === 'no' || header === '#';
+};
+
+const isSelectColumn = (columnDef) => {
+  const id = (columnDef.id || columnDef.accessorKey || '').toLowerCase();
+  const header = typeof columnDef.header === 'string' ? columnDef.header.toLowerCase() : '';
+  return id === 'select' || header === 'select';
+};
+
 const shouldStretch = (columnDef) => {
   if (columnDef.meta?.stretch) return true;
+  if (isNoColumn(columnDef) || isSelectColumn(columnDef)) return false;
   const id = (columnDef.id || columnDef.accessorKey || '').toLowerCase();
-  return id.includes('description') || id.includes('project') || id.includes('name') || id.includes('address') || id.includes('detail');
+  return id.includes('description') || id.includes('project') || id.includes('name') || id.includes('address') || id.includes('detail') || id.includes('number') || id.includes('code') || id.includes('vehicle');
 };
 
 const isSearchDisabled = (columnDef) => {
   if (columnDef.meta?.disableSearch) return true;
+  if (isNoColumn(columnDef)) return true;
   const id = (columnDef.id || columnDef.accessorKey || '').toLowerCase();
   const header = typeof columnDef.header === 'string' ? columnDef.header.toLowerCase() : '';
   return ['index', 'actions', 'action', 'no'].includes(id) || ['no', 'action', 'actions'].includes(header);
@@ -254,6 +274,7 @@ const isSearchDisabled = (columnDef) => {
 const isCentered = (columnDef) => {
   if (columnDef.meta?.align === 'center') return true;
   if (columnDef.meta?.align === 'left' || columnDef.meta?.align === 'right') return false;
+  if (isNoColumn(columnDef)) return true;
   const id = (columnDef.id || columnDef.accessorKey || '').toLowerCase();
   const header = typeof columnDef.header === 'string' ? columnDef.header.toLowerCase() : '';
   return ['index', 'actions', 'action', 'no', 'volume', 'uom', 'qty', 'locator', 'created_at', 'create date'].includes(id) ||
@@ -271,8 +292,6 @@ const isCentered = (columnDef) => {
   white-space: nowrap;
 }
 
-
-
 .table-premium td.allow-wrap,
 .table-premium td .line-clamp-3 {
   white-space: normal !important;
@@ -289,6 +308,10 @@ const isCentered = (columnDef) => {
 }
 
 .table-search th {
+  background-color: #ffffff !important;
+}
+
+.dark .table-search th {
   background-color: #111827 !important;
 }
 
@@ -307,44 +330,74 @@ const isCentered = (columnDef) => {
   min-width: 32px;
   height: 32px;
   transition: all 0.2s ease;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.18);
+  background-color: #ffffff;
+  color: #1f2937;
+  font-weight: 600;
+}
+
+.dark .page-link {
+  border: 1px solid rgba(255, 255, 255, 0.15);
   background-color: rgba(10, 15, 26, 0.6);
-  color: #0d6efd;
 }
 
 .page-link:hover {
+  background-color: #f3f4f6;
+  color: #0d6efd;
+  border-color: #0d6efd;
+}
+
+.dark .page-link:hover {
   background-color: rgba(255, 255, 255, 0.05);
-  color: #0a58ca;
 }
 
 .page-item.disabled .page-link {
   cursor: not-allowed;
+  background-color: #f9fafb;
+  color: #d1d5db;
+  border-color: rgba(0, 0, 0, 0.08);
+}
+
+.dark .page-item.disabled .page-link {
   background-color: rgba(17, 24, 39, 0.5);
   color: #6c757d;
   border-color: rgba(255, 255, 255, 0.05);
 }
 
 .page-item.disabled .page-link.bg-dark-custom {
-  background-color: rgba(10, 15, 26, 0.6) !important;
+  background-color: #f3f4f6 !important;
   color: #0d6efd !important;
-  border-color: rgba(255, 255, 255, 0.08) !important;
+  border-color: rgba(0, 0, 0, 0.08) !important;
   opacity: 1;
 }
 
-.bg-dark-card {
-  background-color: #111827 !important;
-}
-
-.border-card {
-  border: 1px solid rgba(255, 255, 255, 0.05) !important;
-  border-radius: 12px;
-}
-
-.bg-dark-custom {
+.dark .page-item.disabled .page-link.bg-dark-custom {
   background-color: rgba(10, 15, 26, 0.6) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
 }
 
-.border-secondary-custom {
-  border-color: rgba(255, 255, 255, 0.08) !important;
+/* Linear Loading Line for Silent Updates */
+.loading-line {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 3px;
+  width: 100%;
+  background-color: rgba(13, 110, 253, 0.1);
+  overflow: hidden;
+  z-index: 100;
+}
+.loading-line::after {
+  content: '';
+  position: absolute;
+  left: -50%;
+  height: 100%;
+  width: 50%;
+  background-color: #0d6efd;
+  animation: progressAnimation 1.2s infinite linear;
+}
+@keyframes progressAnimation {
+  0% { left: -50%; }
+  100% { left: 100%; }
 }
 </style>

@@ -1,34 +1,17 @@
 <template>
   <div class="vehicle-view">
-    <div class="d-flex align-items-center justify-content-between mb-4">
-      <div>
-        <h3 class="fw-bold text-white mb-1">Vehicle Management</h3>
-        <p class="text-muted">Kelola armada kendaraan, tipe, kepemilikan, dan kapasitas muatan (berat/volume).</p>
-      </div>
-      <button v-if="authStore.hasPermission('create-master')" class="btn btn-primary d-flex align-items-center gap-2"
-        @click="openAddModal">
-        <i class="bi bi-plus-lg"></i>
-        <span>Tambah Kendaraan</span>
-      </button>
-    </div>
-
-    <!-- Filter & Search Panel -->
-    <div class="card bg-dark-card border-card p-3 mb-4">
-      <div class="row g-3 align-items-center">
-        <div class="col-12 col-md-4">
-          <div class="input-group">
-            <span class="input-group-text bg-dark-custom text-muted-custom border-secondary-custom">
-              <i class="bi bi-search"></i>
-            </span>
-            <input type="text" class="form-control bg-dark-custom text-white border-secondary-custom"
-              v-model="searchQuery" placeholder="Cari nomor polisi / tipe..." />
-          </div>
-        </div>
-      </div>
-    </div>
-
     <!-- Table Card -->
-    <DataTable :columns="columns" :data="filteredVehicles" :loading="loading" empty-text="Belum ada data kendaraan.">
+    <DataTable :columns="columns" :data="vehicles" :loading="loading" empty-text="Belum ada data kendaraan."
+      title="Vehicle Management"
+      subtitle="Kelola armada kendaraan, tipe, kepemilikan, dan kapasitas muatan (berat/volume).">
+      <template #actions>
+        <button v-if="authStore.hasPermission('create-master')" class="btn btn-primary d-flex align-items-center gap-2"
+          @click="openAddModal">
+          <i class="bi bi-plus-lg"></i>
+          <span>Tambah Kendaraan</span>
+        </button>
+      </template>
+
       <template #cell(capacity_weight)="{ value }">
         {{ value }} Kg
       </template>
@@ -63,51 +46,51 @@
     <div class="modal fade" id="vehicleModal" tabindex="-1" aria-labelledby="vehicleModalLabel" aria-hidden="true"
       ref="modalRef">
       <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content bg-dark-card border-card text-white">
+        <div class="modal-content bg-dark-card border-card text-gray-900 dark:text-white">
           <div class="modal-header border-secondary-custom">
             <h5 class="modal-title fw-bold" id="vehicleModalLabel">
               {{ isEdit ? 'Edit Kendaraan' : 'Tambah Kendaraan' }}
             </h5>
-            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            <button type="button" class="btn-close dark:btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <form @submit.prevent="handleSubmit">
             <div class="modal-body">
               <div class="row g-3">
                 <div class="col-12 col-md-6">
                   <label class="form-label text-muted small mb-1">NO POLISI</label>
-                  <input type="text" class="form-control bg-dark-custom text-white border-secondary-custom"
+                  <input type="text" class="form-control bg-dark-custom text-gray-900 dark:text-white border-secondary-custom"
                     v-model="form.vehicle_no" placeholder="E.g. B 1234 CD" required :disabled="isEdit" />
                 </div>
                 <div class="col-12 col-md-6">
                   <label class="form-label text-muted small mb-1">TIPE KENDARAAN</label>
-                  <input type="text" class="form-control bg-dark-custom text-white border-secondary-custom"
+                  <input type="text" class="form-control bg-dark-custom text-gray-900 dark:text-white border-secondary-custom"
                     v-model="form.vehicle_type" placeholder="E.g. CDE Box / CDD / Wingbox" required />
                 </div>
                 <div class="col-12 col-md-6">
                   <label class="form-label text-muted small mb-1">BRAND (MEREK)</label>
-                  <input type="text" class="form-control bg-dark-custom text-white border-secondary-custom"
+                  <input type="text" class="form-control bg-dark-custom text-gray-900 dark:text-white border-secondary-custom"
                     v-model="form.brand" placeholder="E.g. Isuzu / Hino" />
                 </div>
                 <div class="col-12 col-md-6">
                   <label class="form-label text-muted small mb-1">MODEL</label>
-                  <input type="text" class="form-control bg-dark-custom text-white border-secondary-custom"
+                  <input type="text" class="form-control bg-dark-custom text-gray-900 dark:text-white border-secondary-custom"
                     v-model="form.model" placeholder="E.g. Elf / Dutro" />
                 </div>
                 <div class="col-12 col-md-6">
                   <label class="form-label text-muted small mb-1">KAPASITAS BERAT (KG)</label>
                   <input type="number" step="0.01"
-                    class="form-control bg-dark-custom text-white border-secondary-custom"
+                    class="form-control bg-dark-custom text-gray-900 dark:text-white border-secondary-custom"
                     v-model="form.capacity_weight" placeholder="E.g. 2000.00" />
                 </div>
                 <div class="col-12 col-md-6">
                   <label class="form-label text-muted small mb-1">KAPASITAS VOLUME (CBM)</label>
                   <input type="number" step="0.01"
-                    class="form-control bg-dark-custom text-white border-secondary-custom"
+                    class="form-control bg-dark-custom text-gray-900 dark:text-white border-secondary-custom"
                     v-model="form.capacity_volume" placeholder="E.g. 6.00" />
                 </div>
                 <div class="col-12 col-md-6">
                   <label class="form-label text-muted small mb-1">KEPEMILIKAN (OWNERSHIP)</label>
-                  <select class="form-select bg-dark-custom text-white border-secondary-custom" v-model="form.ownership"
+                  <select class="form-select bg-dark-custom text-gray-900 dark:text-white border-secondary-custom" v-model="form.ownership"
                     required>
                     <option value="internal">Internal</option>
                     <option value="external">Eksternal (Vendor / Transporter)</option>
@@ -116,7 +99,7 @@
                 <div class="col-12 col-md-6 d-flex align-items-center mt-auto">
                   <div class="form-check form-switch">
                     <input class="form-check-input" type="checkbox" id="isActiveSwitch" v-model="form.is_active" />
-                    <label class="form-check-label text-light" for="isActiveSwitch">Status Aktif</label>
+                    <label class="form-check-label text-gray-700 dark:text-gray-300" for="isActiveSwitch">Status Aktif</label>
                   </div>
                 </div>
               </div>
@@ -273,51 +256,4 @@ const handleDelete = async (vehicle) => {
 };
 </script>
 
-<style scoped>
-.vehicle-view {
-  background-color: #0b0f19;
-}
 
-.text-muted {
-  color: #8c98a5 !important;
-}
-
-.bg-dark-card {
-  background-color: #111827 !important;
-}
-
-.border-card {
-  border: 1px solid rgba(255, 255, 255, 0.05) !important;
-  border-radius: 12px;
-}
-
-.bg-dark-custom {
-  background-color: rgba(10, 15, 26, 0.6) !important;
-}
-
-.border-secondary-custom {
-  border-color: rgba(255, 255, 255, 0.08) !important;
-}
-
-.form-control:focus,
-.form-select:focus {
-  background-color: rgba(10, 15, 26, 0.8) !important;
-  border-color: #0d6efd !important;
-  color: #fff !important;
-  box-shadow: 0 0 10px rgba(13, 110, 253, 0.25) !important;
-}
-
-.table-header-custom {
-  background-color: rgba(255, 255, 255, 0.02);
-}
-
-.btn-outline-info:hover {
-  background-color: rgba(13, 202, 240, 0.1);
-  color: #0dcaf0;
-}
-
-.btn-outline-danger:hover {
-  background-color: rgba(220, 53, 69, 0.1);
-  color: #dc3545;
-}
-</style>

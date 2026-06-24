@@ -1,15 +1,15 @@
 <template>
   <div class="pod-view">
-    <div class="mb-4 d-flex justify-content-between align-items-center">
-      <div>
-        <h3 class="fw-bold text-white mb-1">Proof of Delivery (POD)</h3>
-        <p class="text-muted">Kelola bukti pengiriman (Nama Penerima, Foto Barang, Tanda Tangan Digital) untuk menyelesaikan shipment order.</p>
-      </div>
-    </div>
-
-    <!-- Filter Tab/Selection for Premium UX -->
-    <div class="card bg-dark-card border-card p-3 mb-4">
-      <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+    <!-- Data Table -->
+    <DataTable 
+      :columns="columns" 
+      :data="filteredOrders" 
+      :loading="loading" 
+      empty-text="Tidak ada shipment order untuk filter ini."
+      title="Proof of Delivery (POD)"
+      subtitle="Kelola bukti pengiriman (Nama Penerima, Foto Barang, Tanda Tangan Digital) untuk menyelesaikan shipment order."
+    >
+      <template #actions>
         <div class="d-flex gap-2">
           <button 
             @click="statusFilter = 'ACTIVE'" 
@@ -26,19 +26,8 @@
             Selesai (DELIVERED)
           </button>
         </div>
-        <div class="text-muted small">
-          Menampilkan order yang siap di-POD atau telah diselesaikan.
-        </div>
-      </div>
-    </div>
+      </template>
 
-    <!-- Data Table -->
-    <DataTable 
-      :columns="columns" 
-      :data="filteredOrders" 
-      :loading="loading" 
-      empty-text="Tidak ada shipment order untuk filter ini."
-    >
       <template #cell(job_number)="{ value }">
         <span class="text-info fw-bold">{{ value }}</span>
       </template>
@@ -71,156 +60,154 @@
       </template>
     </DataTable>
 
-    <!-- Modal Submit POD (Glassmorphism & premium UI) -->
-    <div 
-      v-if="showModal" 
-      class="modal-backdrop-custom d-flex align-items-center justify-content-center"
-      @click.self="closePodModal"
-    >
-      <div class="modal-dialog-custom bg-dark-card border-card p-4 rounded-4 shadow-lg text-white">
-        <div class="d-flex justify-content-between align-items-center mb-3 border-bottom border-secondary-custom pb-2">
-          <h5 class="fw-bold text-white mb-0">
-            <i class="bi bi-file-earmark-check text-primary me-2"></i>
-            Submit POD - {{ selectedOrder?.job_number }}
-          </h5>
-          <button type="button" class="btn-close btn-close-white" @click="closePodModal"></button>
-        </div>
-
-        <form @submit.prevent="submitPod">
-          <div class="mb-3">
-            <label class="form-label text-muted small fw-bold">NAMA PENERIMA</label>
-            <input 
-              type="text" 
-              v-model="podForm.pod_recipient_name" 
-              class="form-control bg-dark-custom text-white border-secondary-custom" 
-              placeholder="Masukkan nama lengkap penerima..." 
-              required 
-            />
+    <!-- Modal Submit POD -->
+    <Teleport to="body">
+      <div 
+        v-if="showModal" 
+        class="modal-backdrop-custom d-flex align-items-center justify-content-center"
+        @click.self="closePodModal"
+      >
+        <div class="modal-dialog-custom bg-dark-card border-card p-4 rounded-4 shadow-lg text-gray-900">
+          <div class="d-flex justify-content-between align-items-center mb-3 border-bottom border-secondary-custom pb-2">
+            <h5 class="fw-bold text-gray-900 mb-0">
+              <i class="bi bi-file-earmark-check text-primary me-2"></i>
+              Submit POD - {{ selectedOrder?.job_number }}
+            </h5>
+            <button type="button" class="btn-close" @click="closePodModal"></button>
           </div>
 
-          <div class="mb-3">
-            <label class="form-label text-muted small fw-bold">FOTO PENYERAHAN BARANG (POD)</label>
-            <div 
-              class="photo-upload-zone border border-dashed border-secondary-custom rounded-3 p-3 text-center bg-dark-custom"
-              @click="$refs.photoInput.click()"
-              style="cursor: pointer;"
-            >
+          <form @submit.prevent="submitPod">
+            <div class="mb-3">
+              <label class="form-label text-muted small fw-bold">NAMA PENERIMA</label>
               <input 
-                type="file" 
-                ref="photoInput" 
-                class="d-none" 
-                accept="image/*" 
-                capture="environment"
-                @change="handlePhotoUpload" 
+                type="text" 
+                v-model="podForm.pod_recipient_name" 
+                class="form-control bg-dark-custom text-gray-900 border-secondary-custom" 
+                placeholder="Masukkan nama lengkap penerima..." 
+                required 
               />
-              <div v-if="!podForm.pod_photo" class="py-3">
-                <i class="bi bi-camera fs-2 text-muted mb-2 d-block"></i>
-                <span class="text-white small">Klik untuk Mengambil Foto atau Mengunggah Berkas</span>
-                <p class="text-muted small mb-0 mt-1">Format: JPG, PNG, GIF</p>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label text-muted small fw-bold">FOTO PENYERAHAN BARANG (POD)</label>
+              <div 
+                class="photo-upload-zone border border-dashed border-secondary-custom rounded-3 p-3 text-center bg-dark-custom"
+                @click="$refs.photoInput.click()"
+                style="cursor: pointer;"
+              >
+                <input 
+                  type="file" 
+                  ref="photoInput" 
+                  class="d-none" 
+                  accept="image/*" 
+                  capture="environment"
+                  @change="handlePhotoUpload" 
+                />
+                <div v-if="!podForm.pod_photo" class="py-3">
+                  <i class="bi bi-camera fs-2 text-muted mb-2 d-block"></i>
+                  <span class="text-gray-900 small">Klik untuk Mengambil Foto atau Mengunggah Berkas</span>
+                  <p class="text-muted small mb-0 mt-1">Format: JPG, PNG, GIF</p>
+                </div>
+                <div v-else class="position-relative d-inline-block">
+                  <img :src="podForm.pod_photo" class="img-fluid rounded-2 max-h-150" alt="Preview Foto" />
+                  <button 
+                    type="button" 
+                    class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1 rounded-circle"
+                    @click.stop="clearPhoto"
+                  >
+                    <i class="bi bi-x"></i>
+                  </button>
+                </div>
               </div>
-              <div v-else class="position-relative d-inline-block">
-                <img :src="podForm.pod_photo" class="img-fluid rounded-2 max-h-150" alt="Preview Foto" />
-                <button 
-                  type="button" 
-                  class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1 rounded-circle"
-                  @click.stop="clearPhoto"
-                >
-                  <i class="bi bi-x"></i>
+            </div>
+
+            <div class="mb-4">
+              <div class="d-flex justify-content-between align-items-center mb-1">
+                <label class="form-label text-muted small fw-bold mb-0">TANDA TANGAN DIGITAL</label>
+                <button type="button" class="btn btn-link btn-sm text-decoration-none text-danger p-0" @click="clearSignature">
+                  <i class="bi bi-eraser me-1"></i>Bersihkan
                 </button>
               </div>
+              <div class="signature-canvas-container border border-secondary-custom rounded-3 bg-white p-2">
+                <canvas 
+                  ref="canvasRef" 
+                  class="w-100" 
+                  height="150"
+                  @mousedown="startDrawing" 
+                  @mousemove="draw" 
+                  @mouseup="stopDrawing" 
+                  @mouseleave="stopDrawing"
+                  @touchstart="startDrawingTouch"
+                  @touchmove="drawTouch"
+                  @touchend="stopDrawing"
+                ></canvas>
+              </div>
             </div>
-          </div>
 
-          <div class="mb-4">
-            <div class="d-flex justify-content-between align-items-center mb-1">
-              <label class="form-label text-muted small fw-bold mb-0">TANDA TANGAN DIGITAL</label>
-              <button type="button" class="btn btn-link btn-sm text-decoration-none text-danger p-0" @click="clearSignature">
-                <i class="bi bi-eraser me-1"></i>Bersihkan
+            <div class="d-flex justify-content-end gap-2 border-top border-secondary-custom pt-3">
+              <button type="button" class="btn btn-secondary" @click="closePodModal">Batal</button>
+              <button type="submit" class="btn btn-primary" :disabled="submitting">
+                <span v-if="submitting" class="spinner-border spinner-border-sm me-2" role="status"></span>
+                Kirim Bukti POD
               </button>
             </div>
-            <div class="signature-canvas-container border border-secondary-custom rounded-3 bg-white p-2">
-              <canvas 
-                ref="canvasRef" 
-                class="w-100" 
-                height="150"
-                @mousedown="startDrawing" 
-                @mousemove="draw" 
-                @mouseup="stopDrawing" 
-                @mouseleave="stopDrawing"
-                @touchstart="startDrawingTouch"
-                @touchmove="drawTouch"
-                @touchend="stopDrawingTouch"
-              ></canvas>
-            </div>
-            <div class="text-muted small mt-1">
-              * Tanda tangan langsung pada area putih di atas menggunakan mouse atau layar sentuh.
-            </div>
-          </div>
-
-          <div class="d-flex justify-content-end gap-2 border-top border-secondary-custom pt-3">
-            <button type="button" class="btn btn-secondary" @click="closePodModal" :disabled="submitting">
-              Batal
-            </button>
-            <button type="submit" class="btn btn-primary d-flex align-items-center gap-2" :disabled="submitting">
-              <span v-if="submitting" class="spinner-border spinner-border-sm" role="status"></span>
-              <i v-else class="bi bi-send"></i>
-              <span>Kirim Bukti POD</span>
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-
-    <!-- Modal View POD (Read-Only) -->
-    <div 
-      v-if="showViewModal" 
-      class="modal-backdrop-custom d-flex align-items-center justify-content-center"
-      @click.self="closeViewModal"
-    >
-      <div class="modal-dialog-custom bg-dark-card border-card p-4 rounded-4 shadow-lg text-white">
-        <div class="d-flex justify-content-between align-items-center mb-3 border-bottom border-secondary-custom pb-2">
-          <h5 class="fw-bold text-white mb-0">
-            <i class="bi bi-file-earmark-text text-success me-2"></i>
-            Detail Proof of Delivery - {{ selectedOrder?.job_number }}
-          </h5>
-          <button type="button" class="btn-close btn-close-white" @click="closeViewModal"></button>
-        </div>
-
-        <div class="row g-3 small mb-3">
-          <div class="col-6">
-            <span class="text-muted d-block mb-1">NAMA PENERIMA</span>
-            <strong class="text-white fs-6">{{ selectedOrder?.pod_recipient_name }}</strong>
-          </div>
-          <div class="col-6">
-            <span class="text-muted d-block mb-1">TANGGAL DITERIMA</span>
-            <strong class="text-white fs-6">{{ formatDateTime(selectedOrder?.pod_received_at) }}</strong>
-          </div>
-        </div>
-
-        <div class="row g-3">
-          <div class="col-6">
-            <span class="text-muted d-block mb-1">FOTO DOKUMENTASI</span>
-            <div class="pod-image-preview-wrapper border border-secondary-custom rounded bg-black d-flex align-items-center justify-content-center overflow-hidden">
-              <img v-if="selectedOrder?.pod_photo_path" :src="`/storage/${selectedOrder.pod_photo_path}`" class="img-fluid" alt="Foto POD" />
-              <span v-else class="text-muted">Tidak ada foto</span>
-            </div>
-          </div>
-          <div class="col-6">
-            <span class="text-muted d-block mb-1">TANDA TANGAN</span>
-            <div class="pod-image-preview-wrapper border border-secondary-custom rounded bg-white p-2 d-flex align-items-center justify-content-center overflow-hidden">
-              <img v-if="selectedOrder?.pod_signature_path" :src="`/storage/${selectedOrder.pod_signature_path}`" class="img-fluid signature-filter" alt="Tanda Tangan POD" />
-              <span v-else class="text-muted">Tidak ada TTD</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="d-flex justify-content-end border-top border-secondary-custom mt-4 pt-3">
-          <button type="button" class="btn btn-secondary" @click="closeViewModal">
-            Tutup
-          </button>
+          </form>
         </div>
       </div>
-    </div>
+    </Teleport>
+
+    <!-- Modal View Detail POD -->
+    <Teleport to="body">
+      <div 
+        v-if="showViewModal" 
+        class="modal-backdrop-custom d-flex align-items-center justify-content-center"
+        @click.self="closeViewModal"
+      >
+        <div class="modal-dialog-custom bg-dark-card border-card p-4 rounded-4 shadow-lg text-gray-900">
+          <div class="d-flex justify-content-between align-items-center mb-3 border-bottom border-secondary-custom pb-2">
+            <h5 class="fw-bold text-gray-900 mb-0">
+              <i class="bi bi-file-earmark-text text-success me-2"></i>
+              Detail Proof of Delivery - {{ selectedOrder?.job_number }}
+            </h5>
+            <button type="button" class="btn-close" @click="closeViewModal"></button>
+          </div>
+
+          <div class="row g-3 small mb-3">
+            <div class="col-6">
+              <span class="text-muted d-block mb-1">NAMA PENERIMA</span>
+              <strong class="text-gray-900 fs-6">{{ selectedOrder?.pod_recipient_name }}</strong>
+            </div>
+            <div class="col-6">
+              <span class="text-muted d-block mb-1">TANGGAL DITERIMA</span>
+              <strong class="text-gray-900 fs-6">{{ formatDateTime(selectedOrder?.pod_received_at) }}</strong>
+            </div>
+          </div>
+
+          <div class="row g-3">
+            <div class="col-6">
+              <span class="text-muted d-block mb-1">FOTO DOKUMENTASI</span>
+              <div class="pod-image-preview-wrapper border border-secondary-custom rounded bg-white d-flex align-items-center justify-content-center overflow-hidden">
+                <img v-if="selectedOrder?.pod_photo_path" :src="`/storage/${selectedOrder.pod_photo_path}`" class="img-fluid" alt="Foto POD" />
+                <span v-else class="text-muted">Tidak ada foto</span>
+              </div>
+            </div>
+            <div class="col-6">
+              <span class="text-muted d-block mb-1">TANDA TANGAN</span>
+              <div class="pod-image-preview-wrapper border border-secondary-custom rounded bg-white p-2 d-flex align-items-center justify-content-center overflow-hidden">
+                <img v-if="selectedOrder?.pod_signature_path" :src="`/storage/${selectedOrder.pod_signature_path}`" class="img-fluid signature-filter" alt="Tanda Tangan POD" />
+                <span v-else class="text-muted">Tidak ada TTD</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="d-flex justify-content-end border-top border-secondary-custom mt-4 pt-3">
+            <button type="button" class="btn btn-secondary" @click="closeViewModal">
+              Tutup
+            </button>
+          </div>
+        </div>
+      </div>
+    </Teleport>
   </div>
 </template>
 
@@ -317,7 +304,9 @@ const openPodModal = (order) => {
   
   // Set up signature canvas on next tick once rendered
   nextTick(() => {
-    initCanvas();
+    setTimeout(() => {
+      initCanvas();
+    }, 200);
   });
 };
 
@@ -497,30 +486,6 @@ const submitPod = async () => {
 </script>
 
 <style scoped>
-.pod-view {
-  background-color: #0b0f19;
-}
-
-.bg-dark-card {
-  background-color: #111827 !important;
-}
-
-.border-card {
-  border: 1px solid rgba(255, 255, 255, 0.05) !important;
-  border-radius: 12px;
-}
-
-.bg-dark-custom {
-  background-color: rgba(10, 15, 26, 0.6) !important;
-}
-
-.border-secondary-custom {
-  border-color: rgba(255, 255, 255, 0.08) !important;
-}
-
-.text-muted {
-  color: #8c98a5 !important;
-}
 
 /* Modal styles */
 .modal-backdrop-custom {

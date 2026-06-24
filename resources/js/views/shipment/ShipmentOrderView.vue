@@ -1,27 +1,25 @@
 <template>
   <div class="shipment-order-view">
-    <div class="d-flex align-items-center justify-content-between mb-4">
-      <div>
-        <h3 class="fw-bold text-white mb-1">Shipment Orders (Jobs)</h3>
-        <p class="text-muted">Kelola order pengiriman, nomor referensi customer, kota asal/tujuan, penerima, dan tipe order.</p>
-      </div>
-      <router-link 
-        v-if="authStore.hasPermission('create-shipment')" 
-        :to="{ name: 'CreateShipmentOrder' }"
-        class="btn btn-primary d-flex align-items-center gap-2"
-      >
-        <i class="bi bi-plus-lg"></i>
-        <span>Buat Shipment Order</span>
-      </router-link>
-    </div>
-
     <!-- Table Card -->
     <DataTable 
       :columns="columns" 
       :data="orders" 
       :loading="loading" 
       empty-text="Belum ada data shipment order."
+      title="Shipment Orders (Jobs)"
+      subtitle="Kelola order pengiriman, nomor referensi customer, kota asal/tujuan, penerima, dan tipe order."
     >
+      <template #actions>
+        <router-link 
+          v-if="authStore.hasPermission('create-shipment')" 
+          :to="{ name: 'CreateShipmentOrder' }"
+          class="btn btn-primary d-flex align-items-center gap-2"
+        >
+          <i class="bi bi-plus-lg"></i>
+          <span>Buat Shipment Order</span>
+        </router-link>
+      </template>
+
       <template #cell(job_number)="{ value }">
         <span class="text-info fw-bold">{{ value }}</span>
       </template>
@@ -76,14 +74,11 @@ const orders = ref([]);
 const columns = [
   { accessorKey: 'no', header: 'No', meta: { disableSearch: true, width: '55px', align: 'center' } },
   { accessorKey: 'job_number', header: 'Job Number' },
-  { accessorKey: 'order_number', header: 'No. Order Customer' },
   { accessorKey: 'customer.customer_name', header: 'Customer' },
   { accessorKey: 'order_date', header: 'Tgl Order' },
   { accessorKey: 'origin_city', header: 'Asal' },
   { accessorKey: 'destination_city', header: 'Tujuan' },
-  { accessorKey: 'recipient_name', header: 'Penerima' },
-  { accessorKey: 'recipient_company', header: 'Dealer/Perusahaan' },
-  { accessorKey: 'expected_delivery_date', header: 'Estimasi Sampai' },
+  { accessorKey: 'receiver_name', header: 'Penerima' },
   { accessorKey: 'order_type', header: 'Tipe' },
   { accessorKey: 'status', header: 'Status' },
   { accessorKey: 'actions', header: 'Aksi' }
@@ -135,11 +130,4 @@ const getStatusBadgeClass = (status) => {
 </script>
 
 <style scoped>
-.shipment-order-view {
-  background-color: #0b0f19;
-}
-
-.text-muted {
-  color: #8c98a5 !important;
-}
 </style>

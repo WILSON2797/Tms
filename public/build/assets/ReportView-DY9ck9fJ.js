@@ -1,1 +1,0 @@
-import{_ as t,o,c as s,d as r}from"./app-ClnlSciE.js";/* empty css            */const c={},a={class:"p-4"};function n(_,e){return o(),s("div",a,[...e[0]||(e[0]=[r("h3",{class:"text-white"},"Placeholder",-1)])])}const l=t(c,[["render",n]]);export{l as default};

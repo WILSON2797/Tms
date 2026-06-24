@@ -1,7 +1,7 @@
 <template>
   <div class="trip-planning-view">
     <div class="mb-4">
-      <h3 class="fw-bold text-white mb-1">Waiting Dispatch (Menunggu Pengiriman)</h3>
+      <h3 class="fw-bold text-gray-900 mb-1">Waiting Dispatch (Menunggu Pengiriman)</h3>
       <p class="text-muted">Pilih satu atau beberapa shipment order di bawah ini, lalu klik tombol untuk membuat rencana trip baru secara langsung.</p>
     </div>
 
@@ -11,8 +11,6 @@
       :data="unassignedOrders" 
       :loading="loading" 
       empty-text="Tidak ada shipment order DRAFT yang belum ditugaskan."
-      title="Shipment Orders Pool (Belum Ditugaskan)"
-      subtitle="Daftar order berstatus DRAFT yang siap dikonsolidasikan ke dalam trip."
     >
       <!-- Top header actions slot in DataTable -->
       <template #actions>
@@ -28,7 +26,7 @@
       </template>
 
       <!-- Custom Cell Renderers -->
-      <template #cell(select)="{ row }">
+      <template #cell(action_select)="{ row }">
         <div class="form-check d-flex justify-content-center">
           <input 
             type="checkbox" 
@@ -48,11 +46,11 @@
       </template>
 
       <template #cell(origin_city)="{ value }">
-        <span class="text-white">{{ value }}</span>
+        <span class="text-gray-900">{{ value }}</span>
       </template>
 
       <template #cell(destination_city)="{ value }">
-        <span class="text-white fw-semibold">{{ value }}</span>
+        <span class="text-gray-900 fw-semibold">{{ value }}</span>
       </template>
 
       <template #cell(detail_address)="{ value }">
@@ -69,87 +67,90 @@
     </DataTable>
 
     <!-- Create Trip Modal (Direct Modal UX - Premium design) -->
-    <div 
-      v-if="showModal" 
-      class="modal-backdrop-custom d-flex align-items-center justify-content-center"
-      @click.self="closeCreateTripModal"
-    >
-      <div class="modal-dialog-custom bg-dark-card border-card p-4 rounded-4 shadow-lg text-white">
-        <div class="d-flex justify-content-between align-items-center mb-3 border-bottom border-secondary-custom pb-2">
-          <h5 class="fw-bold text-white mb-0">
-            <i class="bi bi-truck text-primary me-2"></i>
-            Buat Rencana Trip ({{ selectedOrderIds.length }} Order Terpilih)
-          </h5>
-          <button type="button" class="btn-close btn-close-white" @click="closeCreateTripModal"></button>
+    <!-- Create Trip Modal (Direct Modal UX - Premium design) -->
+    <Teleport to="body">
+      <div 
+        v-if="showModal" 
+        class="modal-backdrop-custom d-flex align-items-center justify-content-center"
+        @click.self="closeCreateTripModal"
+      >
+        <div class="modal-dialog-custom bg-dark-card border-card p-4 rounded-4 shadow-lg text-gray-900">
+          <div class="d-flex justify-content-between align-items-center mb-3 border-bottom border-secondary-custom pb-2">
+            <h5 class="fw-bold text-gray-900 mb-0">
+              <i class="bi bi-truck text-primary me-2"></i>
+              Buat Rencana Trip ({{ selectedOrderIds.length }} Order Terpilih)
+            </h5>
+            <button type="button" class="btn-close" @click="closeCreateTripModal"></button>
+          </div>
+
+          <form @submit.prevent="handleSubmit">
+            <div class="row g-3">
+              <!-- Trip Date -->
+              <div class="col-12 col-md-6">
+                <label class="form-label text-muted small mb-1">TANGGAL TRIP <span class="text-danger">*</span></label>
+                <input type="date" v-model="form.trip_date" class="form-control bg-dark-custom text-gray-900 border-secondary-custom" required />
+              </div>
+
+              <!-- Mode Of Transport (MOT) -->
+              <div class="col-12 col-md-6">
+                <label class="form-label text-muted small mb-1">MODE OF TRANSPORT (MOT) <span class="text-danger">*</span></label>
+                <select v-model="form.mot_id" class="form-select bg-dark-custom text-gray-900 border-secondary-custom" required>
+                  <option value="">Pilih Mode Of Transport...</option>
+                  <option v-for="m in mots" :key="m.id" :value="m.id">{{ m.name }}</option>
+                </select>
+              </div>
+
+              <!-- Mode Of Delivery (MOD) -->
+              <div class="col-12 col-md-6">
+                <label class="form-label text-muted small mb-1">MODE OF DELIVERY (MOD) <span class="text-danger">*</span></label>
+                <select v-model="form.mod_id" class="form-select bg-dark-custom text-gray-900 border-secondary-custom" required>
+                  <option value="">Pilih Mode Of Delivery...</option>
+                  <option v-for="m in mods" :key="m.id" :value="m.id">{{ m.name }}</option>
+                </select>
+              </div>
+
+              <!-- Transporter Vendor -->
+              <div class="col-12 col-md-6">
+                <label class="form-label text-muted small mb-1">TRANSPORTER (VENDOR)</label>
+                <select v-model="form.transporter_id" class="form-select bg-dark-custom text-gray-900 border-secondary-custom">
+                  <option value="">Pilih Transporter...</option>
+                  <option v-for="t in transporters" :key="t.id" :value="t.id">{{ t.transporter_name }}</option>
+                </select>
+              </div>
+
+              <!-- Driver -->
+              <div class="col-12 col-md-6">
+                <label class="form-label text-muted small mb-1">DRIVER (SUPIR) <span class="text-danger">*</span></label>
+                <select v-model="form.driver_id" class="form-select bg-dark-custom text-gray-900 border-secondary-custom" required>
+                  <option value="">Pilih Driver...</option>
+                  <option v-for="d in drivers" :key="d.id" :value="d.id">{{ d.driver_name }}{{ d.license_type ? ' (' + d.license_type + ')' : '' }}</option>
+                </select>
+              </div>
+
+              <!-- Vehicle -->
+              <div class="col-12 col-md-6">
+                <label class="form-label text-muted small mb-1">VEHICLE (ARMADA TRUK) <span class="text-danger">*</span></label>
+                <select v-model="form.vehicle_id" class="form-select bg-dark-custom text-gray-900 border-secondary-custom" required>
+                  <option value="">Pilih Kendaraan...</option>
+                  <option v-for="v in vehicles" :key="v.id" :value="v.id">{{ v.vehicle_no }} - {{ v.vehicle_type }} ({{ v.brand }})</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="d-flex justify-content-end gap-2 border-top border-secondary-custom mt-4 pt-3">
+              <button type="button" class="btn btn-secondary" @click="closeCreateTripModal" :disabled="submitLoading">
+                Batal
+              </button>
+              <button type="submit" class="btn btn-primary d-flex align-items-center gap-2" :disabled="submitLoading">
+                <span v-if="submitLoading" class="spinner-border spinner-border-sm" role="status"></span>
+                <i class="bi bi-send"></i>
+                <span>Simpan Rencana Trip</span>
+              </button>
+            </div>
+          </form>
         </div>
-
-        <form @submit.prevent="handleSubmit">
-          <div class="row g-3">
-            <!-- Trip Date -->
-            <div class="col-12 col-md-6">
-              <label class="form-label text-muted small mb-1">TANGGAL TRIP <span class="text-danger">*</span></label>
-              <input type="date" v-model="form.trip_date" class="form-control bg-dark-custom text-white border-secondary-custom" required />
-            </div>
-
-            <!-- Mode Of Transport (MOT) -->
-            <div class="col-12 col-md-6">
-              <label class="form-label text-muted small mb-1">MODE OF TRANSPORT (MOT) <span class="text-danger">*</span></label>
-              <select v-model="form.mot_id" class="form-select bg-dark-custom text-white border-secondary-custom" required>
-                <option value="">Pilih Mode Of Transport...</option>
-                <option v-for="m in mots" :key="m.id" :value="m.id">{{ m.name }}</option>
-              </select>
-            </div>
-
-            <!-- Mode Of Delivery (MOD) -->
-            <div class="col-12 col-md-6">
-              <label class="form-label text-muted small mb-1">MODE OF DELIVERY (MOD) <span class="text-danger">*</span></label>
-              <select v-model="form.mod_id" class="form-select bg-dark-custom text-white border-secondary-custom" required>
-                <option value="">Pilih Mode Of Delivery...</option>
-                <option v-for="m in mods" :key="m.id" :value="m.id">{{ m.name }}</option>
-              </select>
-            </div>
-
-            <!-- Transporter Vendor -->
-            <div class="col-12 col-md-6">
-              <label class="form-label text-muted small mb-1">TRANSPORTER (VENDOR)</label>
-              <select v-model="form.transporter_id" class="form-select bg-dark-custom text-white border-secondary-custom">
-                <option value="">Pilih Transporter...</option>
-                <option v-for="t in transporters" :key="t.id" :value="t.id">{{ t.transporter_name }}</option>
-              </select>
-            </div>
-
-            <!-- Driver -->
-            <div class="col-12 col-md-6">
-              <label class="form-label text-muted small mb-1">DRIVER (SUPIR) <span class="text-danger">*</span></label>
-              <select v-model="form.driver_id" class="form-select bg-dark-custom text-white border-secondary-custom" required>
-                <option value="">Pilih Driver...</option>
-                <option v-for="d in drivers" :key="d.id" :value="d.id">{{ d.driver_name }}{{ d.license_type ? ' (' + d.license_type + ')' : '' }}</option>
-              </select>
-            </div>
-
-            <!-- Vehicle -->
-            <div class="col-12 col-md-6">
-              <label class="form-label text-muted small mb-1">VEHICLE (ARMADA TRUK) <span class="text-danger">*</span></label>
-              <select v-model="form.vehicle_id" class="form-select bg-dark-custom text-white border-secondary-custom" required>
-                <option value="">Pilih Kendaraan...</option>
-                <option v-for="v in vehicles" :key="v.id" :value="v.id">{{ v.vehicle_no }} - {{ v.vehicle_type }} ({{ v.brand }})</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="d-flex justify-content-end gap-2 border-top border-secondary-custom mt-4 pt-3">
-            <button type="button" class="btn btn-secondary" @click="closeCreateTripModal" :disabled="submitLoading">
-              Batal
-            </button>
-            <button type="submit" class="btn btn-primary d-flex align-items-center gap-2" :disabled="submitLoading">
-              <span v-if="submitLoading" class="spinner-border spinner-border-sm" role="status"></span>
-              <i v-else class="bi bi-send"></i>
-              <span>Simpan Rencana Trip</span>
-            </button>
-          </div>
-        </form>
       </div>
-    </div>
+    </Teleport>
   </div>
 </template>
 
@@ -186,18 +187,6 @@ const form = reactive({
 // Computed dynamic reactive columns config for TanStack Table
 const columns = computed(() => [
   {
-    accessorKey: 'select',
-    header: () => h('div', { class: 'form-check d-flex justify-content-center' }, [
-      h('input', {
-        type: 'checkbox',
-        class: 'form-check-input',
-        checked: isAllSelected.value,
-        onChange: (e) => { isAllSelected.value = e.target.checked }
-      })
-    ]),
-    meta: { disableSearch: true, width: '50px', align: 'center' }
-  },
-  {
     accessorKey: 'no',
     header: 'No',
     meta: { disableSearch: true, width: '55px', align: 'center' }
@@ -225,6 +214,19 @@ const columns = computed(() => [
   {
     accessorKey: 'order_type',
     header: 'Order Type',
+  },
+  {
+    accessorKey: 'action_select',
+    header: () => h('div', { class: 'd-flex align-items-center justify-content-center gap-2' }, [
+      h('span', { class: 'fw-bold text-uppercase' }, 'Pilih'),
+      h('input', {
+        type: 'checkbox',
+        class: 'form-check-input m-0',
+        checked: isAllSelected.value,
+        onChange: (e) => { isAllSelected.value = e.target.checked }
+      })
+    ]),
+    meta: { disableSearch: true, width: '130px', align: 'center' }
   }
 ]);
 
@@ -347,37 +349,6 @@ const handleSubmit = async () => {
 </script>
 
 <style scoped>
-.trip-planning-view {
-  background-color: #0b0f19;
-}
-
-.bg-dark-card {
-  background-color: #111827 !important;
-}
-
-.border-card {
-  border: 1px solid rgba(255, 255, 255, 0.05) !important;
-  border-radius: 12px;
-}
-
-.bg-dark-custom {
-  background-color: rgba(10, 15, 26, 0.6) !important;
-}
-
-.border-secondary-custom {
-  border-color: rgba(255, 255, 255, 0.08) !important;
-}
-
-.text-muted {
-  color: #8c98a5 !important;
-}
-
-.form-control:focus, .form-select:focus {
-  background-color: rgba(10, 15, 26, 0.8) !important;
-  border-color: #0d6efd !important;
-  color: #fff !important;
-  box-shadow: 0 0 10px rgba(13, 110, 253, 0.25) !important;
-}
 
 /* Modal styles */
 .modal-backdrop-custom {
