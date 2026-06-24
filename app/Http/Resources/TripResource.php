@@ -20,7 +20,13 @@ class TripResource extends JsonResource
             'transporter_id' => $this->transporter_id,
             'transporter' => new TransporterResource($this->whenLoaded('transporter')),
             'driver_id' => $this->driver_id,
-            'driver' => new DriverResource($this->whenLoaded('driver')),
+            'driver' => $this->whenLoaded('driver', function () {
+                return [
+                    'id' => $this->driver->id,
+                    'driver_name' => $this->driver->name,
+                    'username' => $this->driver->username,
+                ];
+            }),
             'vehicle_id' => $this->vehicle_id,
             'vehicle' => new VehicleResource($this->whenLoaded('vehicle')),
             'status' => $this->status,
