@@ -24,7 +24,12 @@ const routes = [
         component: () => import('../views/master/CustomerView.vue'),
         meta: { permission: 'view-master' }
       },
-
+      {
+        path: 'master/users',
+        name: 'Users',
+        component: () => import('../views/master/UserView.vue'),
+        meta: { permission: 'view-master' }
+      },
       {
         path: 'master/vehicles',
         name: 'Vehicles',

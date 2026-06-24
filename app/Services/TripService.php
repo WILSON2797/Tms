@@ -41,11 +41,15 @@ class TripService
             $trip = $this->tripRepository->create($data);
 
             if (!empty($shipmentOrderIds)) {
+                $orderUpdate = [
+                    'trip_id' => $trip->id,
+                    'status' => 'ASSIGNED'
+                ];
+                if (!empty($trip->driver_id)) {
+                    $orderUpdate['assigned_at'] = now();
+                }
                 ShipmentOrder::whereIn('id', $shipmentOrderIds)
-                    ->update([
-                        'trip_id' => $trip->id,
-                        'status' => 'ASSIGNED'
-                    ]);
+                    ->update($orderUpdate);
 
                 foreach ($shipmentOrderIds as $orderId) {
                     ShipmentStatusLog::create([
@@ -102,11 +106,21 @@ class TripService
                         $orderStatus = 'DELIVERED';
                     }
 
+                    $orderUpdate = [
+                        'trip_id' => $trip->id,
+                        'status' => $orderStatus
+                    ];
+                    if (!empty($trip->driver_id)) {
+                        $orderUpdate['assigned_at'] = now();
+                    }
+                    if ($orderStatus === 'IN_TRANSIT') {
+                        $orderUpdate['accepted_at'] = now();
+                    } elseif ($orderStatus === 'DELIVERED') {
+                        $orderUpdate['pod_received_at'] = now();
+                    }
+
                     ShipmentOrder::whereIn('id', $shipmentOrderIds)
-                        ->update([
-                            'trip_id' => $trip->id,
-                            'status' => $orderStatus
-                        ]);
+                        ->update($orderUpdate);
 
                     foreach ($shipmentOrderIds as $orderId) {
                         ShipmentStatusLog::create([
@@ -148,8 +162,15 @@ class TripService
                 if ($orderStatus !== null && $trip->status !== 'CANCELLED') {
                     $currentOrderIds = ShipmentOrder::where('trip_id', $trip->id)->pluck('id')->toArray();
                     
+                    $orderUpdate = ['status' => $orderStatus];
+                    if ($orderStatus === 'IN_TRANSIT') {
+                        $orderUpdate['accepted_at'] = now();
+                    } elseif ($orderStatus === 'DELIVERED') {
+                        $orderUpdate['pod_received_at'] = now();
+                    }
+
                     ShipmentOrder::where('trip_id', $trip->id)
-                        ->update(['status' => $orderStatus]);
+                        ->update($orderUpdate);
 
                     foreach ($currentOrderIds as $orderId) {
                         ShipmentStatusLog::create([

@@ -26,6 +26,10 @@ class ShipmentOrderResource extends JsonResource
             'expected_delivery_date' => $this->expected_delivery_date?->format('Y-m-d'),
             'order_type' => $this->order_type,
             'status' => $this->status,
+            'assigned_at' => $this->assigned_at?->toDateTimeString(),
+            'accepted_at' => $this->accepted_at?->toDateTimeString(),
+            'arrived_at' => $this->arrived_at?->toDateTimeString(),
+            'pod_received_at' => $this->pod_received_at?->toDateTimeString(),
             'created_by' => $this->created_by,
             'creator' => $this->whenLoaded('creator', function () {
                 return [

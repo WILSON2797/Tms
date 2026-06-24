@@ -9,9 +9,19 @@
       title="Live Shipment Tracking"
       subtitle="Daftar seluruh shipment order. Klik ikon peta pada kolom aksi untuk melacak posisi pengiriman dan lini masa perjalanan secara real-time."
     >
-      <template #cell(order_number)="{ row }">
-        <div class="fw-bold text-info text-nowrap">{{ row.order_number }}</div>
-        <div class="small text-muted">{{ row.job_number }}</div>
+      <template #cell(order_number)="{ value }">
+        <span class="fw-bold text-gray-900">{{ value }}</span>
+      </template>
+      <template #cell(job_number)="{ value }">
+        <span class="text-info fw-bold">{{ value }}</span>
+      </template>
+      <template #cell(trip_number)="{ row }">
+        <span v-if="row.trip" class="fw-medium text-success">{{ row.trip.trip_number }}</span>
+        <span v-else class="text-muted">-</span>
+      </template>
+      <template #cell(driver)="{ row }">
+        <span v-if="row.trip && row.trip.driver" class="text-gray-900">{{ row.trip.driver.driver_name }}</span>
+        <span v-else class="text-muted">-</span>
       </template>
 
       <template #cell(origin_city)="{ value }">
@@ -86,6 +96,34 @@
                 <span class="text-muted" style="font-size: 12px;">
                   Update Terakhir: <strong class="text-info">{{ getDriverStatus(selectedOrder.trip).timeText }}</strong>
                 </span>
+              </div>
+            </div>
+
+            <!-- Milestones Timestamps Panel -->
+            <div class="row g-3 mb-3" style="font-size: 13px;">
+              <div class="col-6 col-md-3">
+                <div class="p-2.5 rounded bg-dark-custom border border-secondary-custom text-center h-100">
+                  <span class="text-muted d-block small mb-1">ASSIGNED DATE</span>
+                  <strong class="text-gray-900">{{ selectedOrder?.assigned_at ? formatDateTime(selectedOrder.assigned_at) : '-' }}</strong>
+                </div>
+              </div>
+              <div class="col-6 col-md-3">
+                <div class="p-2.5 rounded bg-dark-custom border border-secondary-custom text-center h-100">
+                  <span class="text-muted d-block small mb-1">TASK ACCEPT DATE</span>
+                  <strong class="text-gray-900">{{ selectedOrder?.accepted_at ? formatDateTime(selectedOrder.accepted_at) : '-' }}</strong>
+                </div>
+              </div>
+              <div class="col-6 col-md-3">
+                <div class="p-2.5 rounded bg-dark-custom border border-secondary-custom text-center h-100">
+                  <span class="text-muted d-block small mb-1">ARRIVED DATE</span>
+                  <strong class="text-gray-900">{{ selectedOrder?.arrived_at ? formatDateTime(selectedOrder.arrived_at) : '-' }}</strong>
+                </div>
+              </div>
+              <div class="col-6 col-md-3">
+                <div class="p-2.5 rounded bg-dark-custom border border-secondary-custom text-center h-100">
+                  <span class="text-muted d-block small mb-1">HANDOVER DATE (HO)</span>
+                  <strong class="text-gray-900">{{ selectedOrder?.pod_received_at ? formatDateTime(selectedOrder.pod_received_at) : '-' }}</strong>
+                </div>
               </div>
             </div>
 
@@ -167,7 +205,10 @@ const mapMarkers = ref([]);
 
 const columns = [
   { accessorKey: 'no', header: 'No', meta: { disableSearch: true, width: '55px', align: 'center' } },
-  { accessorKey: 'order_number', header: 'No. Order / Job Number' },
+  { accessorKey: 'order_number', header: 'Order Number' },
+  { accessorKey: 'job_number', header: 'Job Number' },
+  { accessorKey: 'trip_number', header: 'Trip Number' },
+  { accessorKey: 'driver', header: 'Driver' },
   { accessorKey: 'customer.customer_name', header: 'Customer' },
   { accessorKey: 'origin_city', header: 'Origin' },
   { accessorKey: 'destination_city', header: 'Destination' },

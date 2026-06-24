@@ -13,17 +13,23 @@
 
     <!-- Stats Cards Grid -->
     <div class="row g-4 mb-4">
-      <div class="col-12 col-sm-6 col-xl-3" v-for="stat in stats" :key="stat.title">
-        <div class="stat-card p-4 d-flex align-items-center justify-content-between bg-white shadow-sm">
-          <div>
-            <span class="text-muted text-uppercase fs-7 small fw-bold d-block mb-1">{{ stat.title }}</span>
-            <h2 class="text-gray-900 fw-bold mb-0">{{ stat.value }}</h2>
-          </div>
-          <div class="icon-box" :class="stat.colorClass">
-            <i class="bi" :class="stat.icon"></i>
+      <div v-if="loadingStats" class="col-12 text-center py-4">
+        <div class="spinner-border text-primary spinner-border-sm mb-2" role="status"></div>
+        <span class="ms-2 text-muted small">Memuat statistik...</span>
+      </div>
+      <template v-else>
+        <div class="col-12 col-sm-6 col-xl-3" v-for="stat in stats" :key="stat.title">
+          <div class="stat-card p-4 d-flex align-items-center justify-content-between bg-white shadow-sm">
+            <div>
+              <span class="text-muted text-uppercase fs-7 small fw-bold d-block mb-1">{{ stat.title }}</span>
+              <h2 class="text-gray-900 fw-bold mb-0">{{ stat.value }}</h2>
+            </div>
+            <div class="icon-box" :class="stat.colorClass">
+              <i class="bi" :class="stat.icon"></i>
+            </div>
           </div>
         </div>
-      </div>
+      </template>
     </div>
 
     <!-- Quick Actions & Info Panel -->
@@ -110,21 +116,33 @@
 import { ref, onMounted } from 'vue';
 import { useAuthStore } from '../stores/auth';
 import { useRouter } from 'vue-router';
+import axios from 'axios';
 
 const authStore = useAuthStore();
 const router = useRouter();
 
 const currentDate = ref('');
-const stats = ref([
-  { title: 'Total Orders Today', value: '12', icon: 'bi-box-seam', colorClass: 'bg-primary-soft text-primary' },
-  { title: 'Pending Orders', value: '4', icon: 'bi-clock-history', colorClass: 'bg-warning-soft text-warning' },
-  { title: 'In Transit', value: '5', icon: 'bi-truck', colorClass: 'bg-info-soft text-info' },
-  { title: 'Delivered', value: '3', icon: 'bi-check-circle', colorClass: 'bg-success-soft text-success' }
-]);
+const stats = ref([]);
+const loadingStats = ref(false);
+
+const fetchStats = async () => {
+  loadingStats.value = true;
+  try {
+    const response = await axios.get('/dashboard/stats');
+    if (response.data.success) {
+      stats.value = response.data.data;
+    }
+  } catch (err) {
+    console.error('Gagal mengambil data statistik dashboard:', err);
+  } finally {
+    loadingStats.value = false;
+  }
+};
 
 onMounted(() => {
   const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
   currentDate.value = new Date().toLocaleDateString('id-ID', options);
+  fetchStats();
 });
 
 const goToRoute = (routeName) => {

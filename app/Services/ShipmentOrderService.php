@@ -19,7 +19,7 @@ class ShipmentOrderService
     public function getAllOrders()
     {
         return $this->shipmentOrderRepository->getModel()
-            ->with(['customer', 'transporter', 'creator'])
+            ->with(['customer', 'transporter', 'creator', 'trip.driver'])
             ->orderBy('created_at', 'desc')
             ->get();
     }
@@ -101,8 +101,8 @@ class ShipmentOrderService
                 throw new \Exception('Shipment Order not found.');
             }
 
-            if ($order->status !== 'IN_TRANSIT' && $order->status !== 'ASSIGNED') {
-                throw new \Exception('Cannot submit POD for orders that are not in transit or assigned.');
+            if ($order->status !== 'IN_TRANSIT' && $order->status !== 'ASSIGNED' && $order->status !== 'ARRIVED') {
+                throw new \Exception('Cannot submit POD for orders that are not in transit, assigned, or arrived.');
             }
 
             $photoPath = null;
@@ -133,6 +133,37 @@ class ShipmentOrderService
                 'status' => 'DELIVERED',
                 'description' => 'Proof of Delivery submitted. Received by ' . $data['pod_recipient_name'] . '.',
                 'changed_by' => auth()->id() ?? 1
+            ]);
+
+            return $order->fresh();
+        });
+    }
+
+    /**
+     * Mark shipment order as arrived.
+     */
+    public function markAsArrived($id)
+    {
+        return DB::transaction(function () use ($id) {
+            $order = $this->shipmentOrderRepository->find($id);
+            if (!$order) {
+                throw new \Exception('Shipment Order not found.');
+            }
+
+            if ($order->status !== 'IN_TRANSIT') {
+                throw new \Exception('Only orders in IN_TRANSIT status can be marked as ARRIVED.');
+            }
+
+            $order->update([
+                'status' => 'ARRIVED',
+                'arrived_at' => now(),
+            ]);
+
+            ShipmentStatusLog::create([
+                'shipment_order_id' => $order->id,
+                'status' => 'ARRIVED',
+                'description' => 'Driver arrived at destination.',
+                'changed_by' => auth()->id() ?? $order->trip->driver_id ?? 1
             ]);
 
             return $order->fresh();

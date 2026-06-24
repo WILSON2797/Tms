@@ -5,8 +5,7 @@
         <i class="bi bi-arrow-left"></i> Kembali ke Daftar
       </router-link>
       <h3 class="fw-bold text-gray-900 mb-1">{{ isEdit ? 'Edit Shipment Order' : 'Buat Shipment Order Baru' }}</h3>
-      <p class="text-muted">{{ isEdit ? 'Perbarui data shipment order.' : 'Masukkan data customer, rute, penerima, dan
-        tanggal estimasi untuk order baru.' }}</p>
+      <p class="text-muted">{{ isEdit ? 'Perbarui data shipment order.' : 'Masukkan data customer, rute, penerima, dan tanggal estimasi untuk order baru.' }}</p>
     </div>
 
     <!-- Page Loading Skeleton / Spinner State -->

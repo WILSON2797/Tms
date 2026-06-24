@@ -15,6 +15,7 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/me', [AuthController::class, 'me']);
+    Route::get('/dashboard/stats', [\App\Http\Controllers\Api\DashboardController::class, 'stats']);
 
     Route::get('/modes-of-transport', [\App\Http\Controllers\Api\ModeController::class, 'modesOfTransport']);
     Route::get('/modes-of-delivery', [\App\Http\Controllers\Api\ModeController::class, 'modesOfDelivery']);
@@ -45,6 +46,14 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/vehicles/{vehicle}', [VehicleController::class, 'show']);
         Route::get('/transporters', [TransporterController::class, 'index']);
         Route::get('/transporters/{transporter}', [TransporterController::class, 'show']);
+        Route::get('/users', [\App\Http\Controllers\Api\UserController::class, 'index']);
+        Route::get('/users/{id}', [\App\Http\Controllers\Api\UserController::class, 'show']);
+        Route::get('/roles', function () {
+            return response()->json([
+                'success' => true,
+                'data' => \App\Models\Role::orderBy('name')->get()
+            ]);
+        });
     });
 
     // Master Data - Create
@@ -52,6 +61,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/customers', [CustomerController::class, 'store']);
         Route::post('/vehicles', [VehicleController::class, 'store']);
         Route::post('/transporters', [TransporterController::class, 'store']);
+        Route::post('/users', [\App\Http\Controllers\Api\UserController::class, 'store']);
     });
 
     // Master Data - Edit
@@ -59,6 +69,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/customers/{customer}', [CustomerController::class, 'update']);
         Route::put('/vehicles/{vehicle}', [VehicleController::class, 'update']);
         Route::put('/transporters/{transporter}', [TransporterController::class, 'update']);
+        Route::put('/users/{id}', [\App\Http\Controllers\Api\UserController::class, 'update']);
     });
 
     // Master Data - Delete
@@ -66,6 +77,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('/customers/{customer}', [CustomerController::class, 'destroy']);
         Route::delete('/vehicles/{vehicle}', [VehicleController::class, 'destroy']);
         Route::delete('/transporters/{transporter}', [TransporterController::class, 'destroy']);
+        Route::delete('/users/{id}', [\App\Http\Controllers\Api\UserController::class, 'destroy']);
     });
 
     // Shipment Orders - View
@@ -110,4 +122,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Location GPS Tracking Ping
     Route::post('/trips/{id}/location', [TripController::class, 'submitLocation']);
+    
+    // Arrived Destination confirmation
+    Route::post('/shipment-orders/{id}/arrive', [ShipmentOrderController::class, 'markArrived']);
 });

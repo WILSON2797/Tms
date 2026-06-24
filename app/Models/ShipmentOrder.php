@@ -27,6 +27,9 @@ class ShipmentOrder extends Model
         'pod_photo_path',
         'pod_signature_path',
         'pod_received_at',
+        'assigned_at',
+        'accepted_at',
+        'arrived_at',
         'created_by'
     ];
 
@@ -34,6 +37,9 @@ class ShipmentOrder extends Model
         'order_date' => 'date:Y-m-d',
         'expected_delivery_date' => 'date:Y-m-d',
         'pod_received_at' => 'datetime:Y-m-d H:i:s',
+        'assigned_at' => 'datetime:Y-m-d H:i:s',
+        'accepted_at' => 'datetime:Y-m-d H:i:s',
+        'arrived_at' => 'datetime:Y-m-d H:i:s',
     ];
 
     /**

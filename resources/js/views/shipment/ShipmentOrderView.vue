@@ -20,6 +20,9 @@
         </router-link>
       </template>
 
+      <template #cell(order_number)="{ value }">
+        <span class="fw-bold text-gray-900">{{ value }}</span>
+      </template>
       <template #cell(job_number)="{ value }">
         <span class="text-info fw-bold">{{ value }}</span>
       </template>
@@ -74,6 +77,7 @@ const orders = ref([]);
 
 const columns = [
   { accessorKey: 'no', header: 'No', meta: { disableSearch: true, width: '55px', align: 'center' } },
+  { accessorKey: 'order_number', header: 'Order Number' },
   { accessorKey: 'job_number', header: 'Job Number' },
   { accessorKey: 'customer.customer_name', header: 'Customer' },
   { accessorKey: 'order_date', header: 'Tgl Order' },

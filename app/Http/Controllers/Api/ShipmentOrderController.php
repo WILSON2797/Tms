@@ -90,4 +90,21 @@ class ShipmentOrderController extends Controller
             ], 422);
         }
     }
+
+    public function markArrived($id)
+    {
+        try {
+            $order = $this->shipmentOrderService->markAsArrived($id);
+            return response()->json([
+                'success' => true,
+                'message' => 'Status order berhasil diperbarui menjadi ARRIVED',
+                'data' => new ShipmentOrderResource($order)
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 422);
+        }
+    }
 }

@@ -182,6 +182,7 @@ const menuGroups = computed(() => {
       title: 'Master Data',
       items: [
         { name: 'Customers', icon: UserGroupIcon, path: '/master/customers' },
+        { name: 'Users', icon: UserCircleIcon, path: '/master/users' },
         { name: 'Vehicles', icon: BoxCubeIcon, path: '/master/vehicles' },
         { name: 'Transporters', icon: FolderIcon, path: '/master/transporters' }
       ]

@@ -4,7 +4,6 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Models\Customer;
-use App\Models\Driver;
 use App\Models\Transporter;
 use App\Models\Vehicle;
 use App\Models\ModeOfTransport;
@@ -60,43 +59,8 @@ class MasterDataSeeder extends Seeder
             Customer::updateOrCreate(['customer_code' => $cust['customer_code']], $cust);
         }
 
-        // 2. Seed Drivers
-        $drivers = [
-            [
-                'driver_code' => 'DRV-001',
-                'driver_name' => 'Ahmad Subarjo',
-                'phone' => '082155551111',
-                'sim_number' => '950812345678',
-                'sim_expired' => '2029-12-31',
-                'license_type' => 'BII Umum',
-                'address' => 'Kampung Melayu RT 05/02',
-                'is_active' => true,
-            ],
-            [
-                'driver_code' => 'DRV-002',
-                'driver_name' => 'Joko Susilo',
-                'phone' => '082155552222',
-                'sim_number' => '940312345678',
-                'sim_expired' => '2028-06-15',
-                'license_type' => 'BI Umum',
-                'address' => 'Senen Jaya Barat No. 12',
-                'is_active' => true,
-            ],
-            [
-                'driver_code' => 'DRV-003',
-                'driver_name' => 'Rian Hidayat',
-                'phone' => '082155553333',
-                'sim_number' => '960712345678',
-                'sim_expired' => '2027-08-20',
-                'license_type' => 'A',
-                'address' => 'Cengkareng Timur Indah',
-                'is_active' => true,
-            ],
-        ];
+        // Note: Drivers are now seeded as User models with driver role in RolePermissionSeeder.php
 
-        foreach ($drivers as $driver) {
-            Driver::updateOrCreate(['driver_code' => $driver['driver_code']], $driver);
-        }
 
         // 3. Seed Transporters
         $transporters = [
