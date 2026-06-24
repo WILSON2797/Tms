@@ -163,6 +163,7 @@ import { ref, reactive, onMounted, computed } from 'vue';
 import { useAuthStore } from '../../stores/auth';
 import axios from 'axios';
 import { useToast } from 'vue-toastification';
+import Swal from 'sweetalert2';
 import DataTable from '../../components/DataTable.vue';
 
 // Modal helper
@@ -178,14 +179,11 @@ const modalRef = ref(null);
 let bootstrapModal = null;
 
 const isEdit = ref(false);
-const currentId = ref(null);
+const editingId = ref(null);
 
 const form = reactive({
   customer_code: '',
   customer_name: '',
-  address: '',
-  city: '',
-  pic_name: '',
   phone: '',
   email: '',
   is_active: true
@@ -194,26 +192,13 @@ const form = reactive({
 // TanStack Table Columns definition
 const columns = [
   { accessorKey: 'no', header: 'No', meta: { disableSearch: true, width: '55px', align: 'center' } },
-  { accessorKey: 'customer_code', header: 'Kode' },
-  { accessorKey: 'customer_name', header: 'Nama' },
-  { accessorKey: 'city', header: 'Kota' },
-  { accessorKey: 'pic_name', header: 'PIC' },
+  { accessorKey: 'customer_code', header: 'Kode Customer' },
+  { accessorKey: 'customer_name', header: 'Nama Customer' },
   { accessorKey: 'phone', header: 'Telepon' },
+  { accessorKey: 'email', header: 'Email' },
   { accessorKey: 'is_active', header: 'Status' },
   { accessorKey: 'actions', header: 'Aksi' }
 ];
-
-// Computed data filtered by search query
-const filteredCustomers = computed(() => {
-  if (!searchQuery.value) return customers.value;
-  const query = searchQuery.value.toLowerCase();
-  return customers.value.filter(c => 
-    c.customer_name.toLowerCase().includes(query) ||
-    c.customer_code.toLowerCase().includes(query) ||
-    (c.city && c.city.toLowerCase().includes(query)) ||
-    (c.pic_name && c.pic_name.toLowerCase().includes(query))
-  );
-});
 
 onMounted(() => {
   bootstrapModal = new Modal(modalRef.value);
@@ -234,14 +219,11 @@ const fetchCustomers = async () => {
   }
 };
 
-const openAddModal = () => {
+const openCreateModal = () => {
   isEdit.value = false;
-  currentId.value = null;
+  editingId.value = null;
   form.customer_code = '';
   form.customer_name = '';
-  form.address = '';
-  form.city = '';
-  form.pic_name = '';
   form.phone = '';
   form.email = '';
   form.is_active = true;
@@ -250,14 +232,11 @@ const openAddModal = () => {
 
 const openEditModal = (customer) => {
   isEdit.value = true;
-  currentId.value = customer.id;
+  editingId.value = customer.id;
   form.customer_code = customer.customer_code;
   form.customer_name = customer.customer_name;
-  form.address = customer.address;
-  form.city = customer.city;
-  form.pic_name = customer.pic_name;
-  form.phone = customer.phone;
-  form.email = customer.email;
+  form.phone = customer.phone || '';
+  form.email = customer.email || '';
   form.is_active = customer.is_active;
   bootstrapModal.show();
 };
@@ -267,7 +246,7 @@ const handleSubmit = async () => {
   try {
     let response;
     if (isEdit.value) {
-      response = await axios.put(`/customers/${currentId.value}`, form);
+      response = await axios.put(`/customers/${editingId.value}`, form);
     } else {
       response = await axios.post('/customers', form);
     }
@@ -285,8 +264,18 @@ const handleSubmit = async () => {
 };
 
 const handleDelete = async (customer) => {
-  const confirmDelete = confirm(`Apakah Anda yakin ingin menghapus customer "${customer.customer_name}"?`);
-  if (!confirmDelete) return;
+  const result = await Swal.fire({
+    title: 'Hapus Customer?',
+    text: `Apakah Anda yakin ingin menghapus customer "${customer.customer_name}"? Tindakan ini tidak dapat dibatalkan.`,
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#d33',
+    cancelButtonColor: '#3085d6',
+    confirmButtonText: 'Ya, Hapus!',
+    cancelButtonText: 'Batal'
+  });
+
+  if (!result.isConfirmed) return;
 
   try {
     const response = await axios.delete(`/customers/${customer.id}`);
@@ -299,5 +288,3 @@ const handleDelete = async (customer) => {
   }
 };
 </script>
-
-

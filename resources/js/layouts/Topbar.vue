@@ -123,6 +123,7 @@ import { ref, computed, inject, onMounted, onUnmounted } from 'vue';
 import { useAuthStore } from '../stores/auth';
 import { useRouter } from 'vue-router';
 import { useToast } from 'vue-toastification';
+import Swal from 'sweetalert2';
 import { useSidebar } from '../composables/useSidebar';
 import { ChevronDownIcon, LogoutIcon, UserCircleIcon } from '../icons';
 
@@ -165,8 +166,18 @@ const userInitial = computed(() => {
 
 const handleLogout = async () => {
   closeDropdown();
-  const confirmLogout = confirm('Apakah Anda yakin ingin keluar dari sistem?');
-  if (confirmLogout) {
+  const result = await Swal.fire({
+    title: 'Keluar Sistem?',
+    text: 'Apakah Anda yakin ingin keluar dari sistem?',
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Ya, Keluar!',
+    cancelButtonText: 'Batal'
+  });
+
+  if (result.isConfirmed) {
     await authStore.logout();
     toast.info('Anda telah keluar dari sistem.');
     router.push({ name: 'Login' });

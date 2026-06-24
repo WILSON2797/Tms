@@ -64,6 +64,7 @@ import { ref, onMounted } from 'vue';
 import { useAuthStore } from '../../stores/auth';
 import axios from 'axios';
 import { useToast } from 'vue-toastification';
+import Swal from 'sweetalert2';
 import DataTable from '../../components/DataTable.vue';
 
 const authStore = useAuthStore();
@@ -103,8 +104,18 @@ const fetchOrders = async () => {
 };
 
 const handleDelete = async (order) => {
-  const confirmDelete = confirm(`Apakah Anda yakin ingin menghapus order "${order.job_number}"?`);
-  if (!confirmDelete) return;
+  const result = await Swal.fire({
+    title: 'Hapus Shipment Order?',
+    text: `Apakah Anda yakin ingin menghapus order "${order.job_number}"? Tindakan ini tidak dapat dibatalkan.`,
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#d33',
+    cancelButtonColor: '#3085d6',
+    confirmButtonText: 'Ya, Hapus!',
+    cancelButtonText: 'Batal'
+  });
+
+  if (!result.isConfirmed) return;
 
   try {
     const response = await axios.delete(`/shipment-orders/${order.id}`);

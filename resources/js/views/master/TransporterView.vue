@@ -154,6 +154,7 @@ import { ref, reactive, onMounted, computed } from 'vue';
 import { useAuthStore } from '../../stores/auth';
 import axios from 'axios';
 import { useToast } from 'vue-toastification';
+import Swal from 'sweetalert2';
 import DataTable from '../../components/DataTable.vue';
 import { Modal } from 'bootstrap';
 
@@ -268,8 +269,18 @@ const handleSubmit = async () => {
 };
 
 const handleDelete = async (transporter) => {
-  const confirmDelete = confirm(`Apakah Anda yakin ingin menghapus transporter "${transporter.transporter_name}"?`);
-  if (!confirmDelete) return;
+  const result = await Swal.fire({
+    title: 'Hapus Transporter?',
+    text: `Apakah Anda yakin ingin menghapus transporter "${transporter.transporter_name}"? Tindakan ini tidak dapat dibatalkan.`,
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#d33',
+    cancelButtonColor: '#3085d6',
+    confirmButtonText: 'Ya, Hapus!',
+    cancelButtonText: 'Batal'
+  });
+
+  if (!result.isConfirmed) return;
 
   try {
     const response = await axios.delete(`/transporters/${transporter.id}`);

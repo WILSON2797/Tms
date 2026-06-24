@@ -392,3 +392,152 @@ a {
   color: #111827 !important;
   background-color: #f3f4f6 !important;
 }
+
+/* ====== VUE SELECT PREMIUM GLOBAL STYLES ====== */
+.v-select {
+  background-color: transparent !important;
+  font-family: inherit !important;
+}
+
+.v-select .vs__dropdown-toggle {
+  border: 1px solid #d1d5db !important;
+  background-color: #f9fafb !important;
+  border-radius: 8px !important;
+  padding: 0 12px !important;
+  height: 38px !important;
+  display: flex !important;
+  align-items: center !important;
+  font-size: 14px !important;
+  transition: all 0.2s ease-in-out !important;
+}
+
+.dark .v-select .vs__dropdown-toggle {
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  background-color: rgba(10, 15, 26, 0.6) !important;
+}
+
+.v-select.vs--open .vs__dropdown-toggle {
+  background-color: #ffffff !important;
+  border-color: #0d6efd !important;
+  box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.12) !important;
+}
+
+.dark .v-select.vs--open .vs__dropdown-toggle {
+  background-color: #111827 !important;
+  border-color: #0d6efd !important;
+  box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.2) !important;
+}
+
+.v-select .vs__selected {
+  color: #1f2937 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.dark .v-select .vs__selected {
+  color: #ffffff !important;
+}
+
+.v-select .vs__search {
+  color: #1f2937 !important;
+  border: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.dark .v-select .vs__search {
+  color: #ffffff !important;
+}
+
+.vs__dropdown-menu {
+  background: #ffffff !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+  border-radius: 8px !important;
+  padding: 4px !important;
+  margin-top: 4px !important;
+  z-index: 999999 !important; /* Stand above everything, including Bootstrap/Custom modals */
+}
+
+.dark .vs__dropdown-menu {
+  background: #111827 !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+.vs__dropdown-option {
+  color: #4b5563 !important;
+  padding: 8px 12px !important;
+  border-radius: 6px !important;
+}
+
+.dark .vs__dropdown-option {
+  color: #9ca3af !important;
+}
+
+.vs__dropdown-option--highlight {
+  background: #0d6efd !important;
+  color: #ffffff !important;
+}
+
+.v-select .vs__actions svg {
+  fill: #6b7280 !important;
+}
+
+.dark .v-select .vs__actions svg {
+  fill: #9ca3af !important;
+}
+
+.v-select .vs__clear {
+  fill: #9ca3af !important;
+}
+
+/* ====== PLACEHOLDER STYLING ====== */
+::placeholder {
+  color: #9ca3af !important;
+  opacity: 0.8 !important;
+  font-weight: 400 !important;
+}
+
+.form-control::placeholder,
+.form-select::placeholder,
+.vs__search::placeholder,
+.dp__input::placeholder {
+  color: #9ca3af !important;
+  opacity: 0.8 !important;
+  font-weight: 400 !important;
+}
+
+/* ====== VUE DATEPICKER PREMIUM STYLE ====== */
+.dp__main {
+  font-family: inherit !important;
+}
+
+.dp__input {
+  background-color: #f9fafb !important;
+  border: 1px solid #d1d5db !important;
+  border-radius: 8px !important;
+  padding: 8px 12px 8px 35px !important;
+  font-size: 14px !important;
+  color: #1f2937 !important;
+  font-family: inherit !important;
+  height: 38px !important;
+  transition: all 0.2s ease-in-out !important;
+}
+
+.dark .dp__input {
+  background-color: rgba(10, 15, 26, 0.6) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  color: #ffffff !important;
+}
+
+.dp__input:focus {
+  background-color: #ffffff !important;
+  border-color: #0d6efd !important;
+  box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.12) !important;
+  outline: none !important;
+}
+
+.dark .dp__input:focus {
+  background-color: #111827 !important;
+  box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.2) !important;
+}

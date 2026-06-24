@@ -88,52 +88,85 @@
               <!-- Trip Date -->
               <div class="col-12 col-md-6">
                 <label class="form-label text-muted small mb-1">TANGGAL TRIP <span class="text-danger">*</span></label>
-                <input type="date" v-model="form.trip_date" class="form-control bg-dark-custom text-gray-900 border-secondary-custom" required />
+                <VueDatePicker
+                  v-model="form.trip_date"
+                  model-type="yyyy-MM-dd"
+                  :enable-time-picker="false"
+                  placeholder="Pilih Tanggal Trip..."
+                  :clearable="false"
+                  auto-position="bottom"
+                  auto-apply
+                  format="dd/MM/yyyy"
+                />
               </div>
 
               <!-- Mode Of Transport (MOT) -->
               <div class="col-12 col-md-6">
                 <label class="form-label text-muted small mb-1">MODE OF TRANSPORT (MOT) <span class="text-danger">*</span></label>
-                <select v-model="form.mot_id" class="form-select bg-dark-custom text-gray-900 border-secondary-custom" required>
-                  <option value="">Pilih Mode Of Transport...</option>
-                  <option v-for="m in mots" :key="m.id" :value="m.id">{{ m.name }}</option>
-                </select>
+                <v-select
+                  v-model="form.mot_id"
+                  :options="mots"
+                  label="name"
+                  :reduce="m => m.id"
+                  placeholder="Pilih Mode Of Transport..."
+                  :clearable="false"
+                  append-to-body
+                />
               </div>
 
               <!-- Mode Of Delivery (MOD) -->
               <div class="col-12 col-md-6">
                 <label class="form-label text-muted small mb-1">MODE OF DELIVERY (MOD) <span class="text-danger">*</span></label>
-                <select v-model="form.mod_id" class="form-select bg-dark-custom text-gray-900 border-secondary-custom" required>
-                  <option value="">Pilih Mode Of Delivery...</option>
-                  <option v-for="m in mods" :key="m.id" :value="m.id">{{ m.name }}</option>
-                </select>
+                <v-select
+                  v-model="form.mod_id"
+                  :options="mods"
+                  label="name"
+                  :reduce="m => m.id"
+                  placeholder="Pilih Mode Of Delivery..."
+                  :clearable="false"
+                  append-to-body
+                />
               </div>
 
               <!-- Transporter Vendor -->
               <div class="col-12 col-md-6">
                 <label class="form-label text-muted small mb-1">TRANSPORTER (VENDOR)</label>
-                <select v-model="form.transporter_id" class="form-select bg-dark-custom text-gray-900 border-secondary-custom">
-                  <option value="">Pilih Transporter...</option>
-                  <option v-for="t in transporters" :key="t.id" :value="t.id">{{ t.transporter_name }}</option>
-                </select>
+                <v-select
+                  v-model="form.transporter_id"
+                  :options="transporters"
+                  label="transporter_name"
+                  :reduce="t => t.id"
+                  placeholder="Pilih Transporter..."
+                  append-to-body
+                />
               </div>
 
               <!-- Driver -->
               <div class="col-12 col-md-6">
                 <label class="form-label text-muted small mb-1">DRIVER (SUPIR) <span class="text-danger">*</span></label>
-                <select v-model="form.driver_id" class="form-select bg-dark-custom text-gray-900 border-secondary-custom" required>
-                  <option value="">Pilih Driver...</option>
-                  <option v-for="d in drivers" :key="d.id" :value="d.id">{{ d.driver_name }}{{ d.license_type ? ' (' + d.license_type + ')' : '' }}</option>
-                </select>
+                <v-select
+                  v-model="form.driver_id"
+                  :options="drivers"
+                  label="driver_name"
+                  :reduce="d => d.id"
+                  placeholder="Pilih Driver..."
+                  :clearable="false"
+                  append-to-body
+                />
               </div>
 
               <!-- Vehicle -->
               <div class="col-12 col-md-6">
                 <label class="form-label text-muted small mb-1">VEHICLE (ARMADA TRUK) <span class="text-danger">*</span></label>
-                <select v-model="form.vehicle_id" class="form-select bg-dark-custom text-gray-900 border-secondary-custom" required>
-                  <option value="">Pilih Kendaraan...</option>
-                  <option v-for="v in vehicles" :key="v.id" :value="v.id">{{ v.vehicle_no }} - {{ v.vehicle_type }} ({{ v.brand }})</option>
-                </select>
+                <v-select
+                  v-model="form.vehicle_id"
+                  :options="vehicles"
+                  label="label"
+                  :reduce="v => v.id"
+                  placeholder="Pilih Kendaraan..."
+                  :clearable="false"
+                  append-to-body
+                />
               </div>
             </div>
 
@@ -297,7 +330,10 @@ const fetchMasterData = async () => {
     mods.value = modRes.data.data;
     transporters.value = trspRes.data.data.filter(t => t.is_active);
     drivers.value = drvRes.data.data.filter(d => d.is_active);
-    vehicles.value = vehRes.data.data.filter(v => v.is_active);
+    vehicles.value = vehRes.data.data.filter(v => v.is_active).map(v => ({
+      ...v,
+      label: `${v.vehicle_no} - ${v.vehicle_type} (${v.brand})`
+    }));
   } catch (err) {
     toast.error('Gagal mengambil data referensi master.');
   }
