@@ -93,6 +93,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/trips/{id}', [TripController::class, 'show']);
     });
 
+    // Trips - Edit (Accessible to planners/admins via edit-shipment and drivers via view-trip)
+    Route::middleware('permission:view-trip|edit-shipment')->put('/trips/{id}', [TripController::class, 'update']);
+
     // Shipment Orders - Create
     Route::middleware('permission:create-shipment')->group(function () {
         Route::post('/shipment-orders', [ShipmentOrderController::class, 'store']);
@@ -104,9 +107,6 @@ Route::middleware('auth:sanctum')->group(function () {
     // Shipment Orders - Edit
     Route::middleware('permission:edit-shipment')->group(function () {
         Route::put('/shipment-orders/{id}', [ShipmentOrderController::class, 'update']);
-        
-        // Trips - Edit
-        Route::put('/trips/{id}', [TripController::class, 'update']);
     });
 
     // Shipment Orders - Delete
