@@ -13,7 +13,8 @@ class TripLocationLog extends Model
     protected $fillable = [
         'trip_id',
         'latitude',
-        'longitude'
+        'longitude',
+        'created_at'
     ];
 
     /**

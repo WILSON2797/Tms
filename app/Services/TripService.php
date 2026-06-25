@@ -269,7 +269,8 @@ class TripService
             \App\Models\TripLocationLog::create([
                 'trip_id' => $trip->id,
                 'latitude' => $coordinates['latitude'],
-                'longitude' => $coordinates['longitude']
+                'longitude' => $coordinates['longitude'],
+                'created_at' => now()
             ]);
 
             return $trip->fresh();
