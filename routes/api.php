@@ -85,8 +85,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/shipment-orders', [ShipmentOrderController::class, 'index']);
         Route::get('/shipment-orders/unassigned', [TripController::class, 'unassignedOrders']);
         Route::get('/shipment-orders/{id}', [ShipmentOrderController::class, 'show']);
-        
-        // Trips - View
+    });
+
+    // Trips - View
+    Route::middleware('permission:view-trip')->group(function () {
         Route::get('/trips', [TripController::class, 'index']);
         Route::get('/trips/{id}', [TripController::class, 'show']);
     });

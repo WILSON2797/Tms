@@ -17,145 +17,148 @@
         </div>
       </div>
 
-    <!-- Table content -->
-    <div class="table-responsive">
-      <table class="table table-hover align-middle mb-0 table-premium">
-        <thead class="text-muted small">
-          <!-- Primary Header Titles -->
-          <tr v-for="headerGroup in table.getHeaderGroups()" :key="headerGroup.id">
-            <th v-for="header in headerGroup.headers" :key="header.id"
-              :style="{ 
+      <!-- Table content -->
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0 table-premium">
+          <thead class="text-muted small">
+            <!-- Primary Header Titles -->
+            <tr v-for="headerGroup in table.getHeaderGroups()" :key="headerGroup.id">
+              <th v-for="header in headerGroup.headers" :key="header.id" :style="{
                 width: header.column.columnDef.meta?.width || (shouldStretch(header.column.columnDef) ? 'auto' : '1%'),
                 minWidth: header.column.columnDef.meta?.width || (shouldStretch(header.column.columnDef) ? 'auto' : (isSearchDisabled(header.column.columnDef) ? 'auto' : '120px'))
               }"
-              :class="['fw-bold text-center align-middle', isNoColumn(header.column.columnDef) ? 'col-no' : '', isSelectColumn(header.column.columnDef) ? 'col-select' : '']">
-              <span v-if="!header.isPlaceholder">
-                <flex-render :render="header.column.columnDef.header" :props="header.getContext()" />
-              </span>
-            </th>
-          </tr>
-          <!-- Column-specific Search Filter Row -->
-          <tr v-for="headerGroup in table.getHeaderGroups()" :key="'filter-' + headerGroup.id" class="table-search">
-            <th v-for="header in headerGroup.headers" :key="'filter-cell-' + header.id"
-              :style="{ 
+                :class="['fw-bold text-center align-middle', isNoColumn(header.column.columnDef) ? 'col-no' : '', isSelectColumn(header.column.columnDef) ? 'col-select' : '']">
+                <span v-if="!header.isPlaceholder">
+                  <flex-render :render="header.column.columnDef.header" :props="header.getContext()" />
+                </span>
+              </th>
+            </tr>
+            <!-- Column-specific Search Filter Row -->
+            <tr v-for="headerGroup in table.getHeaderGroups()" :key="'filter-' + headerGroup.id" class="table-search">
+              <th v-for="header in headerGroup.headers" :key="'filter-cell-' + header.id" :style="{
                 width: header.column.columnDef.meta?.width || (shouldStretch(header.column.columnDef) ? 'auto' : '1%'),
                 minWidth: header.column.columnDef.meta?.width || (shouldStretch(header.column.columnDef) ? 'auto' : (isSearchDisabled(header.column.columnDef) ? 'auto' : '120px'))
               }"
-              :class="['p-2 border-bottom border-secondary-custom align-middle', isNoColumn(header.column.columnDef) ? 'col-no' : '', isSelectColumn(header.column.columnDef) ? 'col-select' : '']">
-              <div
-                v-if="!header.isPlaceholder && header.column.getCanFilter() && !isSearchDisabled(header.column.columnDef)"
-                class="w-100 px-1">
-                <input type="text" class="form-control form-control-sm rounded-3 w-100 bg-dark-custom text-gray-900 dark:text-white border-secondary-custom" placeholder="Search..."
-                  :value="header.column.getFilterValue() || ''"
-                  @input="header.column.setFilterValue($event.target.value)" :style="{
-                    fontSize: '13px',
-                    fontWeight: 'normal',
-                    padding: '6px 12px',
-                    width: '100%'
-                  }" />
-              </div>
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-if="loading && table.getRowModel().rows.length === 0">
-            <td :colspan="columns.length" class="text-center py-5">
-              <div class="spinner-border text-primary spinner-border-sm me-2" role="status"></div>
-              <span class="text-muted small">Loading records...</span>
-            </td>
-          </tr>
-          <tr v-else-if="table.getRowModel().rows.length === 0">
-            <td :colspan="columns.length" class="text-center py-5 text-muted small">
-              <i class="bi bi-inbox fs-3 mb-2 d-block"></i>
-              No records found.
-            </td>
-          </tr>
-          <template v-else>
-            <tr v-for="row in table.getRowModel().rows" :key="row.id">
-              <td v-for="cell in row.getVisibleCells()" :key="cell.id"
-                :class="[isCentered(cell.column.columnDef) ? 'text-center' : 'text-start', isNoColumn(cell.column.columnDef) ? 'col-no' : '', isSelectColumn(cell.column.columnDef) ? 'col-select' : '']"
-                :style="{ 
-                  width: cell.column.columnDef.meta?.width || (shouldStretch(cell.column.columnDef) ? 'auto' : '1%'),
-                  minWidth: cell.column.columnDef.meta?.width || (shouldStretch(cell.column.columnDef) ? 'auto' : (isSearchDisabled(cell.column.columnDef) ? 'auto' : '120px'))
-                }">
-                <!-- Slot support for custom column overrides -->
-                <slot :name="`cell(${cell.column.id})`" :value="cell.getValue()" :row="row.original" :index="row.index">
-                  <span v-if="isNoColumn(cell.column.columnDef)">
-                    {{ (table.getState().pagination.pageIndex * table.getState().pagination.pageSize) + row.index + 1 }}
-                  </span>
-                  <flex-render v-else :render="cell.column.columnDef.cell" :props="cell.getContext()" />
-                </slot>
+                :class="['p-2 border-bottom border-secondary-custom align-middle', isNoColumn(header.column.columnDef) ? 'col-no' : '', isSelectColumn(header.column.columnDef) ? 'col-select' : '']">
+                <div
+                  v-if="!header.isPlaceholder && header.column.getCanFilter() && !isSearchDisabled(header.column.columnDef)"
+                  class="w-100 px-1">
+                  <input type="text"
+                    class="form-control form-control-sm rounded-3 w-100 bg-dark-custom text-gray-900 dark:text-white border-secondary-custom"
+                    placeholder="Search..." :value="header.column.getFilterValue() || ''"
+                    @input="header.column.setFilterValue($event.target.value)" :style="{
+                      fontSize: '13px',
+                      fontWeight: 'normal',
+                      padding: '6px 12px',
+                      width: '100%'
+                    }" />
+                </div>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-if="loading && table.getRowModel().rows.length === 0">
+              <td :colspan="columns.length" class="text-center py-5">
+                <div class="spinner-border text-primary spinner-border-sm me-2" role="status"></div>
+                <span class="text-muted small">Loading records...</span>
               </td>
             </tr>
-          </template>
-        </tbody>
-      </table>
-    </div>
-
-    <!-- Pagination Footer matching Delivery-Update-V2 exactly -->
-    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mt-3 px-3 pb-3">
-      <!-- Entries Info -->
-      <div class="text-muted small fw-500">
-        Showing {{ table.getFilteredRowModel().rows.length > 0 ? table.getState().pagination.pageIndex *
-          table.getState().pagination.pageSize + 1 : 0 }}
-        to {{ Math.min((table.getState().pagination.pageIndex + 1) * table.getState().pagination.pageSize,
-          table.getFilteredRowModel().rows.length) }}
-        of {{ table.getFilteredRowModel().rows.length }} entries
+            <tr v-else-if="table.getRowModel().rows.length === 0">
+              <td :colspan="columns.length" class="text-center py-5 text-muted small">
+                <i class="bi bi-inbox fs-3 mb-2 d-block"></i>
+                No records found.
+              </td>
+            </tr>
+            <template v-else>
+              <tr v-for="row in table.getRowModel().rows" :key="row.id">
+                <td v-for="cell in row.getVisibleCells()" :key="cell.id"
+                  :class="[isCentered(cell.column.columnDef) ? 'text-center' : 'text-start', isNoColumn(cell.column.columnDef) ? 'col-no' : '', isSelectColumn(cell.column.columnDef) ? 'col-select' : '']"
+                  :style="{
+                    width: cell.column.columnDef.meta?.width || (shouldStretch(cell.column.columnDef) ? 'auto' : '1%'),
+                    minWidth: cell.column.columnDef.meta?.width || (shouldStretch(cell.column.columnDef) ? 'auto' : (isSearchDisabled(cell.column.columnDef) ? 'auto' : '120px'))
+                  }">
+                  <!-- Slot support for custom column overrides -->
+                  <slot :name="`cell(${cell.column.id})`" :value="cell.getValue()" :row="row.original"
+                    :index="row.index">
+                    <span v-if="isNoColumn(cell.column.columnDef)">
+                      {{ (table.getState().pagination.pageIndex * table.getState().pagination.pageSize) + row.index + 1
+                      }}
+                    </span>
+                    <flex-render v-else :render="cell.column.columnDef.cell" :props="cell.getContext()" />
+                  </slot>
+                </td>
+              </tr>
+            </template>
+          </tbody>
+        </table>
       </div>
 
-      <div class="d-flex align-items-center gap-3">
-        <!-- Rows per page -->
-        <div class="d-flex align-items-center">
-          <span class="me-2 small text-muted">Rows per page:</span>
-          <select class="form-select form-select-sm border-secondary-custom bg-dark-custom text-gray-900 dark:text-white rounded-3"
-            :value="table.getState().pagination.pageSize" @change="e => table.setPageSize(Number(e.target.value))"
-            style="width: auto;">
-            <option v-for="size in [10, 25, 50, 100]" :key="size" :value="size">{{ size }}</option>
-          </select>
+      <!-- Pagination Footer matching Delivery-Update-V2 exactly -->
+      <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mt-3 px-3 pb-3">
+        <!-- Entries Info -->
+        <div class="text-muted small fw-500">
+          Showing {{ table.getFilteredRowModel().rows.length > 0 ? table.getState().pagination.pageIndex *
+            table.getState().pagination.pageSize + 1 : 0 }}
+          to {{ Math.min((table.getState().pagination.pageIndex + 1) * table.getState().pagination.pageSize,
+            table.getFilteredRowModel().rows.length) }}
+          of {{ table.getFilteredRowModel().rows.length }} entries
         </div>
 
-        <!-- Navigation -->
-        <nav aria-label="Page navigation">
-          <ul class="pagination pagination-sm mb-0">
-            <!-- First Page -->
-            <li class="page-item" :class="{ disabled: !table.getCanPreviousPage() }">
-              <button class="page-link" @click="table.setPageIndex(0)" :disabled="!table.getCanPreviousPage()"
-                title="First Page">
-                <i class="bi bi-chevron-double-left" style="font-size: 12px;"></i>
-              </button>
-            </li>
-            <!-- Previous Page -->
-            <li class="page-item" :class="{ disabled: !table.getCanPreviousPage() }">
-              <button class="page-link" @click="table.previousPage()" :disabled="!table.getCanPreviousPage()"
-                title="Previous Page">
-                <i class="bi bi-chevron-left" style="font-size: 12px;"></i>
-              </button>
-            </li>
-            <!-- Page Indicator -->
-            <li class="page-item disabled">
-              <span class="page-link bg-dark-custom text-primary fw-bold px-3 border-secondary-custom">
-                {{ table.getState().pagination.pageIndex + 1 }} / {{ table.getPageCount() || 1 }}
-              </span>
-            </li>
-            <!-- Next Page -->
-            <li class="page-item" :class="{ disabled: !table.getCanNextPage() }">
-              <button class="page-link" @click="table.nextPage()" :disabled="!table.getCanNextPage()" title="Next Page">
-                <i class="bi bi-chevron-right" style="font-size: 12px;"></i>
-              </button>
-            </li>
-            <!-- Last Page -->
-            <li class="page-item" :class="{ disabled: !table.getCanNextPage() }">
-              <button class="page-link" @click="table.setPageIndex(table.getPageCount() - 1)"
-                :disabled="!table.getCanNextPage()" title="Last Page">
-                <i class="bi bi-chevron-double-right" style="font-size: 12px;"></i>
-              </button>
-            </li>
-          </ul>
-        </nav>
+        <div class="d-flex align-items-center gap-3">
+          <!-- Rows per page -->
+          <div class="d-flex align-items-center">
+            <span class="me-2 small text-muted">Rows per page:</span>
+            <select
+              class="form-select form-select-sm border-secondary-custom bg-dark-custom text-gray-900 dark:text-white rounded-3"
+              :value="table.getState().pagination.pageSize" @change="e => table.setPageSize(Number(e.target.value))"
+              style="width: auto;">
+              <option v-for="size in [10, 25, 50, 100]" :key="size" :value="size">{{ size }}</option>
+            </select>
+          </div>
+
+          <!-- Navigation -->
+          <nav aria-label="Page navigation">
+            <ul class="pagination pagination-sm mb-0">
+              <!-- First Page -->
+              <li class="page-item" :class="{ disabled: !table.getCanPreviousPage() }">
+                <button class="page-link" @click="table.setPageIndex(0)" :disabled="!table.getCanPreviousPage()"
+                  title="First Page">
+                  <i class="bi bi-chevron-double-left" style="font-size: 12px;"></i>
+                </button>
+              </li>
+              <!-- Previous Page -->
+              <li class="page-item" :class="{ disabled: !table.getCanPreviousPage() }">
+                <button class="page-link" @click="table.previousPage()" :disabled="!table.getCanPreviousPage()"
+                  title="Previous Page">
+                  <i class="bi bi-chevron-left" style="font-size: 12px;"></i>
+                </button>
+              </li>
+              <!-- Page Indicator -->
+              <li class="page-item disabled">
+                <span class="page-link bg-dark-custom text-primary fw-bold px-3 border-secondary-custom">
+                  {{ table.getState().pagination.pageIndex + 1 }} / {{ table.getPageCount() || 1 }}
+                </span>
+              </li>
+              <!-- Next Page -->
+              <li class="page-item" :class="{ disabled: !table.getCanNextPage() }">
+                <button class="page-link" @click="table.nextPage()" :disabled="!table.getCanNextPage()"
+                  title="Next Page">
+                  <i class="bi bi-chevron-right" style="font-size: 12px;"></i>
+                </button>
+              </li>
+              <!-- Last Page -->
+              <li class="page-item" :class="{ disabled: !table.getCanNextPage() }">
+                <button class="page-link" @click="table.setPageIndex(table.getPageCount() - 1)"
+                  :disabled="!table.getCanNextPage()" title="Last Page">
+                  <i class="bi bi-chevron-double-right" style="font-size: 12px;"></i>
+                </button>
+              </li>
+            </ul>
+          </nav>
+        </div>
       </div>
     </div>
   </div>
-</div>
 </template>
 
 <script setup>
@@ -387,6 +390,7 @@ const isCentered = (columnDef) => {
   overflow: hidden;
   z-index: 100;
 }
+
 .loading-line::after {
   content: '';
   position: absolute;
@@ -396,8 +400,14 @@ const isCentered = (columnDef) => {
   background-color: #0d6efd;
   animation: progressAnimation 1.2s infinite linear;
 }
+
 @keyframes progressAnimation {
-  0% { left: -50%; }
-  100% { left: 100%; }
+  0% {
+    left: -50%;
+  }
+
+  100% {
+    left: 100%;
+  }
 }
 </style>
