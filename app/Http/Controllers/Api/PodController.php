@@ -21,11 +21,25 @@ class PodController extends Controller
      */
     public function submit(Request $request, $id)
     {
-        $validated = $request->validate([
-            'pod_recipient_name' => 'required|string|max:255',
-            'pod_photo' => 'required|string', // Base64 data URL
-            'pod_signature' => 'required|string', // Base64 data URL
-        ]);
+        \Illuminate\Support\Facades\Log::info('POD Submit request for order ' . $id);
+        \Illuminate\Support\Facades\Log::info('Recipient: ' . $request->input('pod_recipient_name'));
+        \Illuminate\Support\Facades\Log::info('Photo length: ' . strlen($request->input('pod_photo', '')));
+        \Illuminate\Support\Facades\Log::info('Signature length: ' . strlen($request->input('pod_signature', '')));
+
+        try {
+            $validated = $request->validate([
+                'pod_recipient_name' => 'required|string|max:255',
+                'pod_photo' => 'required|string', // Base64 data URL
+                'pod_signature' => 'required|string', // Base64 data URL
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            \Illuminate\Support\Facades\Log::error('POD Validation Failed: ' . json_encode($e->errors()));
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation error',
+                'errors' => $e->errors()
+            ], 422);
+        }
 
         try {
             $order = $this->shipmentOrderService->submitPod($id, $validated);

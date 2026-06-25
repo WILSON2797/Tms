@@ -120,20 +120,56 @@ class ShipmentOrderService
                 $sigPath = $this->uploadBase64File($data['pod_signature'], 'pod_signatures');
             }
 
-            $order->update([
-                'status' => 'DELIVERED',
-                'pod_recipient_name' => $data['pod_recipient_name'],
-                'pod_photo_path' => $photoPath,
-                'pod_signature_path' => $sigPath,
-                'pod_received_at' => now(),
-            ]);
+            // Load trip and mode of delivery to check mode
+            $trip = $order->trip;
+            $isConsole = false;
+            if ($trip) {
+                $mod = $trip->modeOfDelivery; // belongsTo Relation
+                if ($mod && (stripos($mod->code, 'console') !== false || stripos($mod->name, 'console') !== false)) {
+                    $isConsole = true;
+                }
+            }
 
-            ShipmentStatusLog::create([
-                'shipment_order_id' => $order->id,
-                'status' => 'DELIVERED',
-                'description' => 'Proof of Delivery submitted. Received by ' . $data['pod_recipient_name'] . '.',
-                'changed_by' => auth()->id() ?? 1
-            ]);
+            // Find matching orders in the same trip
+            $query = \App\Models\ShipmentOrder::where('trip_id', $order->trip_id)
+                ->whereIn('status', ['ARRIVED', 'IN_TRANSIT', 'ASSIGNED']);
+
+            // If not console, only update orders with the EXACT same destination address
+            if (!$isConsole) {
+                $query->where('destination_city', $order->destination_city)
+                      ->where('detail_address', $order->detail_address);
+            }
+
+            $orderIds = $query->pluck('id')->toArray();
+
+            foreach ($orderIds as $id) {
+                \App\Models\ShipmentOrder::where('id', $id)->update([
+                    'status' => 'DELIVERED',
+                    'pod_recipient_name' => $data['pod_recipient_name'],
+                    'pod_photo_path' => $photoPath,
+                    'pod_signature_path' => $sigPath,
+                    'pod_received_at' => now(),
+                ]);
+
+                ShipmentStatusLog::create([
+                    'shipment_order_id' => $id,
+                    'status' => 'DELIVERED',
+                    'description' => $isConsole
+                        ? 'Proof of Delivery submitted (Consolidated - Console). Received by ' . $data['pod_recipient_name'] . '.'
+                        : 'Proof of Delivery submitted. Received by ' . $data['pod_recipient_name'] . '.',
+                    'changed_by' => auth()->id() ?? 1
+                ]);
+            }
+
+            // Auto-complete trip if all orders are delivered
+            if ($order->trip_id) {
+                $allDelivered = !\App\Models\ShipmentOrder::where('trip_id', $order->trip_id)
+                    ->where('status', '!=', 'DELIVERED')
+                    ->exists();
+                if ($allDelivered) {
+                    \App\Models\Trip::where('id', $order->trip_id)->update(['status' => 'DELIVERED']);
+                }
+            }
 
             return $order->fresh();
         });
@@ -154,17 +190,45 @@ class ShipmentOrderService
                 throw new \Exception('Only orders in IN_TRANSIT status can be marked as ARRIVED.');
             }
 
-            $order->update([
+            $destinationCity = $order->destination_city;
+            $detailAddress = $order->detail_address;
+
+            // Load trip and mode of delivery to check mode
+            $trip = $order->trip;
+            $isConsole = false;
+            if ($trip) {
+                $mod = $trip->modeOfDelivery; // belongsTo Relation
+                if ($mod && (stripos($mod->code, 'console') !== false || stripos($mod->name, 'console') !== false)) {
+                    $isConsole = true;
+                }
+            }
+
+            $query = \App\Models\ShipmentOrder::where('trip_id', $order->trip_id)
+                ->where('status', 'IN_TRANSIT');
+
+            // If not console, only update orders on this trip with the EXACT same destination address
+            if (!$isConsole) {
+                $query->where('destination_city', $destinationCity)
+                      ->where('detail_address', $detailAddress);
+            }
+
+            $orderIds = $query->pluck('id')->toArray();
+            
+            $query->update([
                 'status' => 'ARRIVED',
                 'arrived_at' => now(),
             ]);
 
-            ShipmentStatusLog::create([
-                'shipment_order_id' => $order->id,
-                'status' => 'ARRIVED',
-                'description' => 'Driver arrived at destination.',
-                'changed_by' => auth()->id() ?? $order->trip->driver_id ?? 1
-            ]);
+            foreach ($orderIds as $id) {
+                ShipmentStatusLog::create([
+                    'shipment_order_id' => $id,
+                    'status' => 'ARRIVED',
+                    'description' => $isConsole 
+                        ? 'Driver arrived at destination (Consolidated - Console).' 
+                        : 'Driver arrived at destination.',
+                    'changed_by' => auth()->id() ?? $order->trip->driver_id ?? 1
+                ]);
+            }
 
             return $order->fresh();
         });

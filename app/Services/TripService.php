@@ -36,7 +36,8 @@ class TripService
         return DB::transaction(function () use ($data, $shipmentOrderIds) {
             $data['trip_number'] = $this->tripRepository->generateTripNumber();
             $data['created_by'] = auth()->id() ?? 1;
-            $data['status'] = 'DRAFT';
+            // Set status to ASSIGNED if driver is already allocated, otherwise DRAFT
+            $data['status'] = !empty($data['driver_id']) ? 'ASSIGNED' : 'DRAFT';
 
             $trip = $this->tripRepository->create($data);
 
