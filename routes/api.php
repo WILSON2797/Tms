@@ -19,6 +19,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/modes-of-transport', [\App\Http\Controllers\Api\ModeController::class, 'modesOfTransport']);
     Route::get('/modes-of-delivery', [\App\Http\Controllers\Api\ModeController::class, 'modesOfDelivery']);
+    Route::get('/cities', [\App\Http\Controllers\Api\CityController::class, 'index']);
 
     Route::get('/drivers', function () {
         $drivers = \App\Models\User::whereHas('role', function ($query) {
@@ -48,6 +49,12 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/transporters/{transporter}', [TransporterController::class, 'show']);
         Route::get('/users', [\App\Http\Controllers\Api\UserController::class, 'index']);
         Route::get('/users/{id}', [\App\Http\Controllers\Api\UserController::class, 'show']);
+        Route::get('/modes-of-transport/all', [\App\Http\Controllers\Api\ModeController::class, 'indexTransport']);
+        Route::get('/modes-of-transport/{id}', [\App\Http\Controllers\Api\ModeController::class, 'showTransport']);
+        Route::get('/modes-of-delivery/all', [\App\Http\Controllers\Api\ModeController::class, 'indexDelivery']);
+        Route::get('/modes-of-delivery/{id}', [\App\Http\Controllers\Api\ModeController::class, 'showDelivery']);
+        Route::get('/cities/all', [\App\Http\Controllers\Api\CityController::class, 'indexAll']);
+        Route::get('/cities/{id}', [\App\Http\Controllers\Api\CityController::class, 'show']);
         Route::get('/roles', function () {
             return response()->json([
                 'success' => true,
@@ -62,6 +69,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/vehicles', [VehicleController::class, 'store']);
         Route::post('/transporters', [TransporterController::class, 'store']);
         Route::post('/users', [\App\Http\Controllers\Api\UserController::class, 'store']);
+        Route::post('/modes-of-transport', [\App\Http\Controllers\Api\ModeController::class, 'storeTransport']);
+        Route::post('/modes-of-delivery', [\App\Http\Controllers\Api\ModeController::class, 'storeDelivery']);
+        Route::post('/cities', [\App\Http\Controllers\Api\CityController::class, 'store']);
     });
 
     // Master Data - Edit
@@ -70,6 +80,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/vehicles/{vehicle}', [VehicleController::class, 'update']);
         Route::put('/transporters/{transporter}', [TransporterController::class, 'update']);
         Route::put('/users/{id}', [\App\Http\Controllers\Api\UserController::class, 'update']);
+        Route::put('/modes-of-transport/{id}', [\App\Http\Controllers\Api\ModeController::class, 'updateTransport']);
+        Route::put('/modes-of-delivery/{id}', [\App\Http\Controllers\Api\ModeController::class, 'updateDelivery']);
+        Route::put('/cities/{id}', [\App\Http\Controllers\Api\CityController::class, 'update']);
     });
 
     // Master Data - Delete
@@ -78,6 +91,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('/vehicles/{vehicle}', [VehicleController::class, 'destroy']);
         Route::delete('/transporters/{transporter}', [TransporterController::class, 'destroy']);
         Route::delete('/users/{id}', [\App\Http\Controllers\Api\UserController::class, 'destroy']);
+        Route::delete('/modes-of-transport/{id}', [\App\Http\Controllers\Api\ModeController::class, 'destroyTransport']);
+        Route::delete('/modes-of-delivery/{id}', [\App\Http\Controllers\Api\ModeController::class, 'destroyDelivery']);
+        Route::delete('/cities/{id}', [\App\Http\Controllers\Api\CityController::class, 'destroy']);
     });
 
     // Shipment Orders - View

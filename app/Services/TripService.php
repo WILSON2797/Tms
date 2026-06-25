@@ -40,6 +40,16 @@ class TripService
     public function createTrip(array $data, array $shipmentOrderIds)
     {
         return DB::transaction(function () use ($data, $shipmentOrderIds) {
+            if (!empty($shipmentOrderIds)) {
+                $citiesCount = ShipmentOrder::whereIn('id', $shipmentOrderIds)
+                    ->distinct()
+                    ->count('destination_city');
+
+                if ($citiesCount > 1) {
+                    throw new \Exception('Semua Shipment Order dalam satu trip harus memiliki kota tujuan (Destination City) yang sama.');
+                }
+            }
+
             $data['trip_number'] = $this->tripRepository->generateTripNumber();
             $data['created_by'] = auth()->id() ?? 1;
             // Set status to ASSIGNED if driver is already allocated, otherwise DRAFT
@@ -75,6 +85,16 @@ class TripService
     public function updateTrip($id, array $data, ?array $shipmentOrderIds = null)
     {
         return DB::transaction(function () use ($id, $data, $shipmentOrderIds) {
+            if ($shipmentOrderIds !== null && !empty($shipmentOrderIds)) {
+                $citiesCount = ShipmentOrder::whereIn('id', $shipmentOrderIds)
+                    ->distinct()
+                    ->count('destination_city');
+
+                if ($citiesCount > 1) {
+                    throw new \Exception('Semua Shipment Order dalam satu trip harus memiliki kota tujuan (Destination City) yang sama.');
+                }
+            }
+
             $trip = $this->tripRepository->find($id);
             if (!$trip) {
                 throw new \Exception('Trip not found.');

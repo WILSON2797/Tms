@@ -192,6 +192,7 @@ import { ref, onMounted, computed, reactive, h } from 'vue';
 import axios from 'axios';
 import { useToast } from 'vue-toastification';
 import DataTable from '../../components/DataTable.vue';
+import Swal from 'sweetalert2';
 
 const toast = useToast();
 
@@ -199,6 +200,16 @@ const loading = ref(false);
 const submitLoading = ref(false);
 const unassignedOrders = ref([]);
 const selectedOrderIds = ref([]);
+
+const hasDifferentDestinations = computed(() => {
+  if (selectedOrderIds.value.length <= 1) return false;
+  const firstSelectedOrder = unassignedOrders.value.find(o => o.id === selectedOrderIds.value[0]);
+  if (!firstSelectedOrder) return false;
+  return selectedOrderIds.value.some(id => {
+    const order = unassignedOrders.value.find(o => o.id === id);
+    return order && order.destination_city !== firstSelectedOrder.destination_city;
+  });
+});
 
 const showModal = ref(false);
 
@@ -341,6 +352,28 @@ const fetchMasterData = async () => {
 
 const openCreateTripModal = () => {
   if (selectedOrderIds.value.length === 0) return;
+
+  // Check if they selected different destination cities
+  const firstSelectedOrder = unassignedOrders.value.find(o => o.id === selectedOrderIds.value[0]);
+  if (firstSelectedOrder) {
+    const hasDifferentDest = selectedOrderIds.value.some(id => {
+      const order = unassignedOrders.value.find(o => o.id === id);
+      return order && order.destination_city !== firstSelectedOrder.destination_city;
+    });
+
+    if (hasDifferentDest) {
+      Swal.fire({
+        title: 'Gagal Membuat Trip',
+        text: 'Semua order yang digrup harus memiliki kota tujuan (Destination City) yang sama! Pilihan Anda akan di-rollback (direset).',
+        icon: 'error',
+        confirmButtonColor: '#3085d6',
+        confirmButtonText: 'OK'
+      });
+      selectedOrderIds.value = []; // Rollback all selections!
+      return;
+    }
+  }
+
   // Reset form values to default
   form.trip_date = new Date().toISOString().split('T')[0];
   form.mot_id = '';
@@ -359,6 +392,41 @@ const handleSubmit = async () => {
   if (selectedOrderIds.value.length === 0) {
     toast.warning('Silakan pilih minimal 1 Shipment Order!');
     return;
+  }
+
+  // Double-check destination city matching before submission
+  const firstSelectedOrder = unassignedOrders.value.find(o => o.id === selectedOrderIds.value[0]);
+  if (firstSelectedOrder) {
+    const hasDifferentDest = selectedOrderIds.value.some(id => {
+      const order = unassignedOrders.value.find(o => o.id === id);
+      return order && order.destination_city !== firstSelectedOrder.destination_city;
+    });
+
+    if (hasDifferentDest) {
+      toast.error('Tidak dapat menyimpan rencana trip! Ada order terpilih dengan kota tujuan yang berbeda.');
+      return;
+    }
+  }
+
+  // Validate Mode of Delivery (MOD) rules based on order count
+  const selectedMod = mods.value.find(m => m.id === form.mod_id);
+  if (selectedMod) {
+    const isConsoleOrMultidrop = (
+      selectedMod.code.toLowerCase().includes('console') ||
+      selectedMod.name.toLowerCase().includes('console') ||
+      selectedMod.code.toLowerCase().includes('multidrop') ||
+      selectedMod.name.toLowerCase().includes('multidrop')
+    );
+
+    if (selectedOrderIds.value.length > 1 && !isConsoleOrMultidrop) {
+      toast.error('Untuk pengiriman lebih dari 1 order, Mode of Delivery (MOD) harus bertipe Console atau Multidrop.');
+      return;
+    }
+
+    if (selectedOrderIds.value.length === 1 && isConsoleOrMultidrop) {
+      toast.error('Untuk pengiriman 1 order, Mode of Delivery (MOD) tidak boleh bertipe Console atau Multidrop.');
+      return;
+    }
   }
 
   const payload = {
@@ -386,15 +454,13 @@ const handleSubmit = async () => {
 
 <style scoped>
 
-/* Modal styles */
 .modal-backdrop-custom {
   position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
-  background-color: rgba(0, 0, 0, 0.8);
-  backdrop-filter: blur(4px);
+  background-color: transparent;
   z-index: 1050;
 }
 

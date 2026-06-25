@@ -58,17 +58,15 @@
           <!-- Origin City -->
           <div class="col-12 col-md-6">
             <label class="form-label text-muted small mb-1">KOTA ASAL <span class="text-danger">*</span></label>
-            <input type="text" v-model="form.origin_city"
-              class="form-control bg-dark-custom text-gray-900 border-secondary-custom" placeholder="E.g. Karawang"
-              required :disabled="isEdit && form.status !== 'DRAFT'" />
+            <v-select v-model="form.origin_city" :options="cities" label="label" :reduce="c => c.name"
+              placeholder="Pilih Kota Asal..." :clearable="false" :disabled="isEdit && form.status !== 'DRAFT'" />
           </div>
 
           <!-- Destination City -->
           <div class="col-12 col-md-6">
             <label class="form-label text-muted small mb-1">KOTA TUJUAN <span class="text-danger">*</span></label>
-            <input type="text" v-model="form.destination_city"
-              class="form-control bg-dark-custom text-gray-900 border-secondary-custom" placeholder="E.g. Jakarta"
-              required :disabled="isEdit && form.status !== 'DRAFT'" />
+            <v-select v-model="form.destination_city" :options="cities" label="label" :reduce="c => c.name"
+              placeholder="Pilih Kota Tujuan..." :clearable="false" :disabled="isEdit && form.status !== 'DRAFT'" />
           </div>
 
           <!-- Detail Address (Destination Detail) -->
@@ -118,12 +116,7 @@
               :clearable="false" :disabled="isEdit && form.status !== 'DRAFT'" />
           </div>
 
-          <!-- Transporter Vendor -->
-          <div class="col-12 col-md-4">
-            <label class="form-label text-muted small mb-1">TRANSPORTER (VENDOR EXPIRED / OPSIONAL)</label>
-            <v-select v-model="form.transporter_id" :options="transporters" label="transporter_name" :reduce="t => t.id"
-              placeholder="Pilih Transporter..." />
-          </div>
+
 
           <!-- Status selection (if editing) -->
           <div class="col-12 col-md-4" v-if="isEdit">
@@ -162,7 +155,7 @@ const submitLoading = ref(false);
 const jobNumber = ref('');
 
 const customers = ref([]);
-const transporters = ref([]);
+const cities = ref([]);
 
 const form = reactive({
   customer_id: '',
@@ -171,7 +164,7 @@ const form = reactive({
   origin_city: '',
   destination_city: '',
   detail_address: '',
-  transporter_id: '',
+
   recipient_name: '',
   recipient_company: '',
   expected_delivery_date: new Date(Date.now() + 86400000).toISOString().split('T')[0], // Default tomorrow
@@ -196,16 +189,20 @@ onMounted(async () => {
 
 const fetchMasterData = async () => {
   try {
-    const [custRes, trspRes] = await Promise.all([
+    const [custRes, citiesRes] = await Promise.all([
       axios.get('/customers'),
-      axios.get('/transporters')
+      axios.get('/cities')
     ]);
 
     customers.value = custRes.data.data.filter(c => c.is_active).map(c => ({
       ...c,
       label: `${c.customer_name} (${c.customer_code})`
     }));
-    transporters.value = trspRes.data.data.filter(t => t.is_active);
+
+    cities.value = citiesRes.data.data.map(c => ({
+      ...c,
+      label: `${c.type} ${c.name} (${c.province})`
+    }));
   } catch (err) {
     toast.error('Gagal mengambil data referensi master.');
   }
@@ -223,7 +220,7 @@ const fetchOrderDetails = async (id) => {
       form.origin_city = data.origin_city;
       form.destination_city = data.destination_city;
       form.detail_address = data.detail_address;
-      form.transporter_id = data.transporter_id || '';
+
       form.recipient_name = data.recipient_name;
       form.recipient_company = data.recipient_company;
       form.expected_delivery_date = data.expected_delivery_date;
@@ -238,7 +235,6 @@ const fetchOrderDetails = async (id) => {
 const handleSubmit = async () => {
   const payload = {
     ...form,
-    transporter_id: form.transporter_id || null,
   };
 
   submitLoading.value = true;

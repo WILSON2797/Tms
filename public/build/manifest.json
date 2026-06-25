@@ -1,17 +1,22 @@
 {
-  "_DataTable-CtYdkaSu.css": {
-    "file": "assets/DataTable-CtYdkaSu.css",
-    "src": "_DataTable-CtYdkaSu.css"
-  },
-  "_DataTable-jC4H4oO1.js": {
-    "file": "assets/DataTable-jC4H4oO1.js",
+  "_DataTable-D6YYVCD2.js": {
+    "file": "assets/DataTable-D6YYVCD2.js",
     "name": "DataTable",
     "imports": [
-      "resources/js/app.js"
+      "resources/js/app.js",
+      "__plugin-vue_export-helper-DlAUqK2U.js"
     ],
     "css": [
-      "assets/DataTable-CtYdkaSu.css"
+      "assets/DataTable-DPUC9wRZ.css"
     ]
+  },
+  "_DataTable-DPUC9wRZ.css": {
+    "file": "assets/DataTable-DPUC9wRZ.css",
+    "src": "_DataTable-DPUC9wRZ.css"
+  },
+  "__plugin-vue_export-helper-DlAUqK2U.js": {
+    "file": "assets/_plugin-vue_export-helper-DlAUqK2U.js",
+    "name": "_plugin-vue_export-helper"
   },
   "_bootstrap.esm-DO1gfUiZ.js": {
     "file": "assets/bootstrap.esm-DO1gfUiZ.js",
@@ -22,7 +27,7 @@
     "name": "sweetalert2.esm.all"
   },
   "resources/css/app.css": {
-    "file": "assets/app-DDLsDl2Z.css",
+    "file": "assets/app-D-eupncL.css",
     "src": "resources/css/app.css",
     "isEntry": true,
     "name": "app",
@@ -31,7 +36,7 @@
     ]
   },
   "resources/js/app.js": {
-    "file": "assets/app-CkxH7oJ_.js",
+    "file": "assets/app-DY8Oyykv.js",
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true,
@@ -43,6 +48,9 @@
       "resources/js/views/master/UserView.vue",
       "resources/js/views/master/VehicleView.vue",
       "resources/js/views/master/TransporterView.vue",
+      "resources/js/views/master/ModeOfTransportView.vue",
+      "resources/js/views/master/ModeOfDeliveryView.vue",
+      "resources/js/views/master/CityView.vue",
       "resources/js/views/shipment/ShipmentOrderView.vue",
       "resources/js/views/shipment/ShipmentOrderForm.vue",
       "resources/js/views/shipment/ShipmentOrderForm.vue",
@@ -54,66 +62,70 @@
       "resources/js/views/ProfileView.vue"
     ],
     "css": [
-      "assets/app-D_V47PBG.css",
-      "assets/app-DDLsDl2Z.css"
+      "assets/app-B5szBCRU.css",
+      "assets/app-D-eupncL.css"
     ]
   },
   "resources/js/layouts/MainLayout.vue": {
-    "file": "assets/MainLayout-DIWMmXy1.js",
+    "file": "assets/MainLayout-BjZ51M2K.js",
     "name": "MainLayout",
     "src": "resources/js/layouts/MainLayout.vue",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.js",
+      "__plugin-vue_export-helper-DlAUqK2U.js",
       "_sweetalert2.esm.all-DE6NlnlT.js"
     ],
     "css": [
-      "assets/MainLayout-cJXgUfaC.css",
-      "assets/app-DDLsDl2Z.css"
+      "assets/MainLayout-hJ4izHOB.css",
+      "assets/app-D-eupncL.css"
     ]
   },
   "resources/js/views/DashboardView.vue": {
-    "file": "assets/DashboardView-POqgGP9X.js",
+    "file": "assets/DashboardView-DEIoUf8f.js",
     "name": "DashboardView",
     "src": "resources/js/views/DashboardView.vue",
     "isDynamicEntry": true,
     "imports": [
-      "resources/js/app.js"
+      "resources/js/app.js",
+      "__plugin-vue_export-helper-DlAUqK2U.js"
     ],
     "css": [
       "assets/DashboardView-B8YxaumG.css",
-      "assets/app-DDLsDl2Z.css"
+      "assets/app-D-eupncL.css"
     ]
   },
   "resources/js/views/LoginView.vue": {
-    "file": "assets/LoginView-BZ1lOqFH.js",
+    "file": "assets/LoginView-CjJaYUNC.js",
     "name": "LoginView",
     "src": "resources/js/views/LoginView.vue",
     "isDynamicEntry": true,
     "imports": [
-      "resources/js/app.js"
+      "resources/js/app.js",
+      "__plugin-vue_export-helper-DlAUqK2U.js"
     ],
     "css": [
       "assets/LoginView-BE_0-M6t.css",
-      "assets/app-DDLsDl2Z.css"
+      "assets/app-D-eupncL.css"
     ]
   },
   "resources/js/views/PODView.vue": {
-    "file": "assets/PODView-BhS4Vh-Z.js",
+    "file": "assets/PODView-DaVIdmAY.js",
     "name": "PODView",
     "src": "resources/js/views/PODView.vue",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.js",
-      "_DataTable-jC4H4oO1.js"
+      "_DataTable-D6YYVCD2.js",
+      "__plugin-vue_export-helper-DlAUqK2U.js"
     ],
     "css": [
       "assets/PODView-W2ZyE4rT.css",
-      "assets/app-DDLsDl2Z.css"
+      "assets/app-D-eupncL.css"
     ]
   },
   "resources/js/views/ProfileView.vue": {
-    "file": "assets/ProfileView-Blgjo7dp.js",
+    "file": "assets/ProfileView-dN8YgY1h.js",
     "name": "ProfileView",
     "src": "resources/js/views/ProfileView.vue",
     "isDynamicEntry": true,
@@ -121,148 +133,207 @@
       "resources/js/app.js"
     ],
     "css": [
-      "assets/app-DDLsDl2Z.css"
+      "assets/app-D-eupncL.css"
     ]
   },
   "resources/js/views/ReportView.vue": {
-    "file": "assets/ReportView-BU2fzPOp.js",
+    "file": "assets/ReportView-4_7obpY7.js",
     "name": "ReportView",
     "src": "resources/js/views/ReportView.vue",
     "isDynamicEntry": true,
     "imports": [
+      "__plugin-vue_export-helper-DlAUqK2U.js",
       "resources/js/app.js"
     ],
     "css": [
-      "assets/app-DDLsDl2Z.css"
+      "assets/app-D-eupncL.css"
     ]
   },
   "resources/js/views/TrackingView.vue": {
-    "file": "assets/TrackingView-tscuHQaK.js",
+    "file": "assets/TrackingView-BPP0qpJq.js",
     "name": "TrackingView",
     "src": "resources/js/views/TrackingView.vue",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.js",
-      "_DataTable-jC4H4oO1.js"
+      "_DataTable-D6YYVCD2.js",
+      "__plugin-vue_export-helper-DlAUqK2U.js"
     ],
     "css": [
-      "assets/TrackingView-DcUHHQSr.css",
-      "assets/app-DDLsDl2Z.css"
+      "assets/TrackingView-MMVOZLvp.css",
+      "assets/app-D-eupncL.css"
+    ]
+  },
+  "resources/js/views/master/CityView.vue": {
+    "file": "assets/CityView-DxmzDgap.js",
+    "name": "CityView",
+    "src": "resources/js/views/master/CityView.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js",
+      "_sweetalert2.esm.all-DE6NlnlT.js",
+      "_DataTable-D6YYVCD2.js",
+      "_bootstrap.esm-DO1gfUiZ.js",
+      "__plugin-vue_export-helper-DlAUqK2U.js"
+    ],
+    "css": [
+      "assets/app-D-eupncL.css"
     ]
   },
   "resources/js/views/master/CustomerView.vue": {
-    "file": "assets/CustomerView-BWv1G7uL.js",
+    "file": "assets/CustomerView-DOAw7tH4.js",
     "name": "CustomerView",
     "src": "resources/js/views/master/CustomerView.vue",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.js",
       "_sweetalert2.esm.all-DE6NlnlT.js",
-      "_DataTable-jC4H4oO1.js",
-      "_bootstrap.esm-DO1gfUiZ.js"
+      "_DataTable-D6YYVCD2.js",
+      "_bootstrap.esm-DO1gfUiZ.js",
+      "__plugin-vue_export-helper-DlAUqK2U.js"
     ],
     "css": [
-      "assets/app-DDLsDl2Z.css"
+      "assets/app-D-eupncL.css"
+    ]
+  },
+  "resources/js/views/master/ModeOfDeliveryView.vue": {
+    "file": "assets/ModeOfDeliveryView-CUZVxaHJ.js",
+    "name": "ModeOfDeliveryView",
+    "src": "resources/js/views/master/ModeOfDeliveryView.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js",
+      "_sweetalert2.esm.all-DE6NlnlT.js",
+      "_DataTable-D6YYVCD2.js",
+      "_bootstrap.esm-DO1gfUiZ.js",
+      "__plugin-vue_export-helper-DlAUqK2U.js"
+    ],
+    "css": [
+      "assets/app-D-eupncL.css"
+    ]
+  },
+  "resources/js/views/master/ModeOfTransportView.vue": {
+    "file": "assets/ModeOfTransportView-D1stdIat.js",
+    "name": "ModeOfTransportView",
+    "src": "resources/js/views/master/ModeOfTransportView.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js",
+      "_sweetalert2.esm.all-DE6NlnlT.js",
+      "_DataTable-D6YYVCD2.js",
+      "_bootstrap.esm-DO1gfUiZ.js",
+      "__plugin-vue_export-helper-DlAUqK2U.js"
+    ],
+    "css": [
+      "assets/app-D-eupncL.css"
     ]
   },
   "resources/js/views/master/TransporterView.vue": {
-    "file": "assets/TransporterView-C7FEg2Ci.js",
+    "file": "assets/TransporterView-CwkBeWDV.js",
     "name": "TransporterView",
     "src": "resources/js/views/master/TransporterView.vue",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.js",
       "_sweetalert2.esm.all-DE6NlnlT.js",
-      "_DataTable-jC4H4oO1.js",
-      "_bootstrap.esm-DO1gfUiZ.js"
+      "_DataTable-D6YYVCD2.js",
+      "_bootstrap.esm-DO1gfUiZ.js",
+      "__plugin-vue_export-helper-DlAUqK2U.js"
     ],
     "css": [
-      "assets/app-DDLsDl2Z.css"
+      "assets/app-D-eupncL.css"
     ]
   },
   "resources/js/views/master/UserView.vue": {
-    "file": "assets/UserView-95Ry_NQv.js",
+    "file": "assets/UserView-CPJrE864.js",
     "name": "UserView",
     "src": "resources/js/views/master/UserView.vue",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.js",
       "_sweetalert2.esm.all-DE6NlnlT.js",
-      "_DataTable-jC4H4oO1.js",
-      "_bootstrap.esm-DO1gfUiZ.js"
+      "_DataTable-D6YYVCD2.js",
+      "_bootstrap.esm-DO1gfUiZ.js",
+      "__plugin-vue_export-helper-DlAUqK2U.js"
     ],
     "css": [
-      "assets/app-DDLsDl2Z.css"
+      "assets/app-D-eupncL.css"
     ]
   },
   "resources/js/views/master/VehicleView.vue": {
-    "file": "assets/VehicleView-Bi0teB1V.js",
+    "file": "assets/VehicleView-DhEqEjoq.js",
     "name": "VehicleView",
     "src": "resources/js/views/master/VehicleView.vue",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.js",
       "_sweetalert2.esm.all-DE6NlnlT.js",
-      "_DataTable-jC4H4oO1.js",
-      "_bootstrap.esm-DO1gfUiZ.js"
+      "_DataTable-D6YYVCD2.js",
+      "_bootstrap.esm-DO1gfUiZ.js",
+      "__plugin-vue_export-helper-DlAUqK2U.js"
     ],
     "css": [
-      "assets/app-DDLsDl2Z.css"
+      "assets/app-D-eupncL.css"
     ]
   },
   "resources/js/views/shipment/ShipmentOrderForm.vue": {
-    "file": "assets/ShipmentOrderForm-DFVZtNq5.js",
+    "file": "assets/ShipmentOrderForm-Bk2PspC2.js",
     "name": "ShipmentOrderForm",
     "src": "resources/js/views/shipment/ShipmentOrderForm.vue",
     "isDynamicEntry": true,
     "imports": [
-      "resources/js/app.js"
+      "resources/js/app.js",
+      "__plugin-vue_export-helper-DlAUqK2U.js"
     ],
     "css": [
       "assets/ShipmentOrderForm-tn0RQdqM.css",
-      "assets/app-DDLsDl2Z.css"
+      "assets/app-D-eupncL.css"
     ]
   },
   "resources/js/views/shipment/ShipmentOrderView.vue": {
-    "file": "assets/ShipmentOrderView-BYobM6rq.js",
+    "file": "assets/ShipmentOrderView-Z46BusC-.js",
     "name": "ShipmentOrderView",
     "src": "resources/js/views/shipment/ShipmentOrderView.vue",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.js",
       "_sweetalert2.esm.all-DE6NlnlT.js",
-      "_DataTable-jC4H4oO1.js"
+      "_DataTable-D6YYVCD2.js",
+      "__plugin-vue_export-helper-DlAUqK2U.js"
     ],
     "css": [
-      "assets/app-DDLsDl2Z.css"
+      "assets/app-D-eupncL.css"
     ]
   },
   "resources/js/views/shipment/TripPlanningView.vue": {
-    "file": "assets/TripPlanningView-QbdQOPAE.js",
+    "file": "assets/TripPlanningView-DccHCO42.js",
     "name": "TripPlanningView",
     "src": "resources/js/views/shipment/TripPlanningView.vue",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.js",
-      "_DataTable-jC4H4oO1.js"
+      "_DataTable-D6YYVCD2.js",
+      "_sweetalert2.esm.all-DE6NlnlT.js",
+      "__plugin-vue_export-helper-DlAUqK2U.js"
     ],
     "css": [
-      "assets/TripPlanningView-C0dYW65I.css",
-      "assets/app-DDLsDl2Z.css"
+      "assets/TripPlanningView-zbTKAooI.css",
+      "assets/app-D-eupncL.css"
     ]
   },
   "resources/js/views/shipment/TripView.vue": {
-    "file": "assets/TripView-GyXN4uI8.js",
+    "file": "assets/TripView-B2JSt-TZ.js",
     "name": "TripView",
     "src": "resources/js/views/shipment/TripView.vue",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.js",
-      "_DataTable-jC4H4oO1.js"
+      "_DataTable-D6YYVCD2.js",
+      "__plugin-vue_export-helper-DlAUqK2U.js"
     ],
     "css": [
       "assets/TripView-TlJwfoQa.css",
-      "assets/app-DDLsDl2Z.css"
+      "assets/app-D-eupncL.css"
     ]
   }
 }

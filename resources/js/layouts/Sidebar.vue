@@ -67,7 +67,7 @@
                     ? 'lg:justify-center'
                     : 'lg:justify-start',
                 ]">
-                  <span :class="[
+                  <span v-if="item.icon" :class="[
                     isSubmenuOpen(groupIndex, index)
                       ? 'menu-item-icon-active'
                       : 'menu-item-icon-inactive',
@@ -114,13 +114,16 @@
                     <ul class="mt-2 space-y-1 ml-9 list-none p-0">
                       <li v-for="subItem in item.subItems" :key="subItem.name">
                         <router-link :to="subItem.path" :class="[
-                          'menu-dropdown-item no-underline',
+                          'menu-dropdown-item no-underline flex items-center gap-2',
                           {
                             'menu-dropdown-item-active': isActive(subItem.path),
                             'menu-dropdown-item-inactive': !isActive(subItem.path),
                           },
                         ]">
-                          {{ subItem.name }}
+                          <span v-if="subItem.icon" class="w-4 h-4 flex items-center justify-center">
+                            <component :is="subItem.icon" class="w-4 h-4" />
+                          </span>
+                          <span>{{ subItem.name }}</span>
                         </router-link>
                       </li>
                     </ul>
@@ -136,7 +139,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import { useAuthStore } from '../stores/auth';
 import { useSidebar } from '../composables/useSidebar';
@@ -154,6 +157,7 @@ import {
   BarChartIcon,
   HorizontalDots,
   ChevronDownIcon,
+  SettingsIcon,
 } from '../icons';
 
 const route = useRoute();
@@ -165,6 +169,18 @@ const isActive = (path) => {
   return route.path.startsWith(path);
 };
 
+onMounted(() => {
+  if (openSubmenu.value === null) {
+    menuGroups.value.forEach((group, gIdx) => {
+      group.items.forEach((item, iIdx) => {
+        if (item.subItems?.some((subItem) => isActive(subItem.path))) {
+          openSubmenu.value = `${gIdx}-${iIdx}`;
+        }
+      });
+    });
+  }
+});
+
 const menuGroups = computed(() => {
   const groups = [];
 
@@ -175,19 +191,6 @@ const menuGroups = computed(() => {
       { name: 'Dashboard', icon: GridIcon, path: '/' }
     ]
   });
-
-  // Master Data
-  if (authStore.hasPermission('view-master')) {
-    groups.push({
-      title: 'Master Data',
-      items: [
-        { name: 'Customers', icon: UserGroupIcon, path: '/master/customers' },
-        { name: 'Users', icon: UserCircleIcon, path: '/master/users' },
-        { name: 'Vehicles', icon: BoxCubeIcon, path: '/master/vehicles' },
-        { name: 'Transporters', icon: FolderIcon, path: '/master/transporters' }
-      ]
-    });
-  }
 
   // Operasional
   const opItems = [];
@@ -214,6 +217,28 @@ const menuGroups = computed(() => {
     });
   }
 
+  // Master Data
+  if (authStore.hasPermission('view-master')) {
+    groups.push({
+      title: 'Pengaturan',
+      items: [
+        {
+          name: 'Master Setting',
+          icon: SettingsIcon,
+          subItems: [
+            { name: 'Customers', icon: UserGroupIcon, path: '/master/customers' },
+            { name: 'Users', icon: UserCircleIcon, path: '/master/users' },
+            { name: 'Vehicles', icon: BoxCubeIcon, path: '/master/vehicles' },
+            { name: 'Transporters', icon: FolderIcon, path: '/master/transporters' },
+            { name: 'Mode of Transport', icon: BoxCubeIcon, path: '/master/modes-of-transport' },
+            { name: 'Mode of Delivery', icon: BoxCubeIcon, path: '/master/modes-of-delivery' },
+            { name: 'Kabupaten/Kota', icon: BoxCubeIcon, path: '/master/cities' }
+          ]
+        }
+      ]
+    });
+  }
+
   return groups;
 });
 
@@ -233,13 +258,7 @@ const isAnySubmenuRouteActive = computed(() => {
 
 const isSubmenuOpen = (groupIndex, itemIndex) => {
   const key = `${groupIndex}-${itemIndex}`;
-  return (
-    openSubmenu.value === key ||
-    (isAnySubmenuRouteActive.value &&
-      menuGroups.value[groupIndex].items[itemIndex].subItems?.some((subItem) =>
-        isActive(subItem.path)
-      ))
-  );
+  return openSubmenu.value === key;
 };
 
 const startTransition = (el) => {

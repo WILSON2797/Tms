@@ -14,7 +14,7 @@ class StoreShipmentOrderRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'order_number' => 'required|string',
+            'order_number' => 'required|string|unique:shipment_orders,order_number',
             'customer_id' => 'required|exists:customers,id',
             'order_date' => 'required|date',
             'origin_city' => 'required|string',
@@ -26,6 +26,13 @@ class StoreShipmentOrderRequest extends FormRequest
             'expected_delivery_date' => 'required|date',
             'order_type' => 'required|string|in:REGULAR,URGENT',
             'status' => 'nullable|string|in:DRAFT,ASSIGNED,IN_TRANSIT,DELIVERED,CANCELLED',
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'order_number.unique' => 'Nomor order / shipment customer sudah terdaftar di sistem (tidak boleh duplikat).',
         ];
     }
 }

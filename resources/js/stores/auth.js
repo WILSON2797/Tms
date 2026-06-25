@@ -33,6 +33,7 @@ export const useAuthStore = defineStore('auth', {
           
           localStorage.setItem('access_token', access_token);
           localStorage.setItem('user', JSON.stringify(user));
+          localStorage.setItem('last_active_time', Date.now().toString());
           
           // Configure Axios Authorization Header
           axios.defaults.headers.common['Authorization'] = `Bearer ${access_token}`;

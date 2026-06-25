@@ -14,7 +14,7 @@ class UpdateShipmentOrderRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'order_number' => 'sometimes|required|string',
+            'order_number' => 'sometimes|required|string|unique:shipment_orders,order_number,' . $this->route('id'),
             'customer_id' => 'sometimes|required|exists:customers,id',
             'order_date' => 'sometimes|required|date',
             'origin_city' => 'sometimes|required|string',
@@ -26,6 +26,13 @@ class UpdateShipmentOrderRequest extends FormRequest
             'expected_delivery_date' => 'sometimes|required|date',
             'order_type' => 'sometimes|required|string|in:REGULAR,URGENT',
             'status' => 'sometimes|required|string|in:DRAFT,ASSIGNED,IN_TRANSIT,DELIVERED,CANCELLED',
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'order_number.unique' => 'Nomor order / shipment customer sudah terdaftar di sistem (tidak boleh duplikat).',
         ];
     }
 }

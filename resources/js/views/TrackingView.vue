@@ -317,12 +317,41 @@ const closeModal = () => {
   currentAddress.value = '';
   addressDetails.value = null;
 };
+const resolveCoord = async (cityName, fallback) => {
+  if (!cityName) return fallback;
+  const offline = getCityCoord(cityName);
+  if (offline) return offline;
+
+  try {
+    const response = await axios.get('https://nominatim.openstreetmap.org/search', {
+      params: {
+        format: 'json',
+        q: `${cityName}, Indonesia`,
+        limit: 1
+      }
+    });
+    if (response.data && response.data.length > 0) {
+      return [parseFloat(response.data[0].lat), parseFloat(response.data[0].lon)];
+    }
+  } catch (e) {
+    console.error('Gagal mengambil koordinat geocoding untuk kota:', cityName, e);
+  }
+  return fallback;
+};
 
 const initMap = async () => {
   if (!selectedOrder.value) return;
 
   const L = await loadLeaflet();
   if (!L) return;
+
+  // Fix Leaflet default icon paths pointing to invalid local assets under bundlers like Vite
+  delete L.Icon.Default.prototype._getIconUrl;
+  L.Icon.Default.mergeOptions({
+    iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
+    iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+    shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+  });
 
   await nextTick();
   const mapElement = document.getElementById('map');
@@ -333,8 +362,8 @@ const initMap = async () => {
     mapInstance.value = null;
   }
 
-  const originCoord = getCityCoord(selectedOrder.value.origin_city) || [-6.2088, 106.8456];
-  const destCoord = getCityCoord(selectedOrder.value.destination_city) || [-6.9175, 107.6191];
+  const originCoord = await resolveCoord(selectedOrder.value.origin_city, [-6.2088, 106.8456]);
+  const destCoord = await resolveCoord(selectedOrder.value.destination_city, [-6.9175, 107.6191]);
 
   const map = L.map('map').setView(originCoord, 10);
   mapInstance.value = map;
@@ -358,13 +387,11 @@ const initMap = async () => {
     isFallbackToOrigin = true;
   }
 
-  // Origin Marker (Only display if truck is not still at the origin)
-  if (!isFallbackToOrigin) {
-    const originMarker = L.marker(originCoord)
-      .bindPopup(`<strong>Kota Asal:</strong> ${selectedOrder.value.origin_city}`)
-      .addTo(map);
-    mapMarkers.value.push(originMarker);
-  }
+  // Origin Marker
+  const originMarker = L.marker(originCoord)
+    .bindPopup(`<strong>Kota Asal:</strong> ${selectedOrder.value.origin_city}`)
+    .addTo(map);
+  mapMarkers.value.push(originMarker);
 
   // Destination Marker
   const destMarker = L.marker(destCoord)

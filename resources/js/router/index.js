@@ -43,6 +43,24 @@ const routes = [
         meta: { permission: 'view-master' }
       },
       {
+        path: 'master/modes-of-transport',
+        name: 'ModeOfTransport',
+        component: () => import('../views/master/ModeOfTransportView.vue'),
+        meta: { permission: 'view-master' }
+      },
+      {
+        path: 'master/modes-of-delivery',
+        name: 'ModeOfDelivery',
+        component: () => import('../views/master/ModeOfDeliveryView.vue'),
+        meta: { permission: 'view-master' }
+      },
+      {
+        path: 'master/cities',
+        name: 'Cities',
+        component: () => import('../views/master/CityView.vue'),
+        meta: { permission: 'view-master' }
+      },
+      {
         path: 'shipments',
         name: 'ShipmentOrders',
         component: () => import('../views/shipment/ShipmentOrderView.vue'),

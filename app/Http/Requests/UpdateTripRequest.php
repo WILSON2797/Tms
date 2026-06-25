@@ -25,4 +25,63 @@ class UpdateTripRequest extends FormRequest
             'shipment_order_ids.*' => 'exists:shipment_orders,id',
         ];
     }
+
+    public function withValidator($validator)
+    {
+        $validator->after(function ($validator) {
+            $tripId = $this->route('id');
+            $orderIds = $this->input('shipment_order_ids');
+            
+            if ($orderIds === null && $tripId) {
+                // Fetch existing shipment order IDs for the trip
+                $orderIds = \App\Models\ShipmentOrder::where('trip_id', $tripId)->pluck('id')->toArray();
+            }
+
+            if (!empty($orderIds)) {
+                if (count($orderIds) > 1) {
+                    $citiesCount = \App\Models\ShipmentOrder::whereIn('id', $orderIds)
+                        ->distinct()
+                        ->count('destination_city');
+
+                    if ($citiesCount > 1) {
+                        $validator->errors()->add(
+                            'shipment_order_ids',
+                            'Semua Shipment Order dalam satu trip harus memiliki kota tujuan (Destination City) yang sama.'
+                        );
+                    }
+                }
+
+                $modId = $this->input('mod_id');
+                if (!$modId && $tripId) {
+                    $modId = \App\Models\Trip::where('id', $tripId)->value('mod_id');
+                }
+
+                if ($modId) {
+                    $mod = \App\Models\ModeOfDelivery::find($modId);
+                    if ($mod) {
+                        $isConsoleOrMultidrop = (
+                            stripos($mod->code, 'console') !== false ||
+                            stripos($mod->name, 'console') !== false ||
+                            stripos($mod->code, 'multidrop') !== false ||
+                            stripos($mod->name, 'multidrop') !== false
+                        );
+
+                        if (count($orderIds) > 1 && !$isConsoleOrMultidrop) {
+                            $validator->errors()->add(
+                                'mod_id',
+                                'Untuk pengiriman lebih dari 1 order, Mode of Delivery (MOD) harus bertipe Console atau Multidrop.'
+                            );
+                        }
+
+                        if (count($orderIds) === 1 && $isConsoleOrMultidrop) {
+                            $validator->errors()->add(
+                                'mod_id',
+                                'Untuk pengiriman 1 order, Mode of Delivery (MOD) tidak boleh bertipe Console atau Multidrop.'
+                            );
+                        }
+                    }
+                }
+            }
+        });
+    }
 }
