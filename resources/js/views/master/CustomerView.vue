@@ -13,7 +13,7 @@
         <button 
           v-if="authStore.hasPermission('create-master')" 
           class="btn btn-primary d-flex align-items-center gap-2"
-          @click="openAddModal"
+          @click="openCreateModal"
         >
           <i class="bi bi-plus-lg"></i>
           <span>Tambah Customer</span>

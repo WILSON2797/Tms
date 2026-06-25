@@ -9,14 +9,14 @@
 
       <!-- Main Section -->
       <div
-        class="flex-1 transition-all duration-300 ease-in-out flex flex-col min-h-screen"
+        class="flex-1 min-w-0 transition-all duration-300 ease-in-out flex flex-col min-h-screen"
         :class="[isExpanded || isHovered ? 'lg:ml-[290px]' : 'lg:ml-[90px]']"
       >
         <!-- Modular Topbar / Header -->
         <Topbar />
 
         <!-- View Container -->
-        <div class="p-4 md:p-6 flex-grow w-full">
+        <div class="p-4 md:p-6 flex-grow w-full min-w-0">
           <router-view />
         </div>
 
