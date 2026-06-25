@@ -18,10 +18,16 @@ class TripService
 
     public function getAllTrips()
     {
-        return $this->tripRepository->getModel()
+        $query = $this->tripRepository->getModel()
             ->with(['driver', 'vehicle', 'transporter', 'creator', 'shipmentOrders', 'modeOfTransport', 'modeOfDelivery'])
-            ->orderBy('created_at', 'desc')
-            ->get();
+            ->orderBy('created_at', 'desc');
+
+        // If authenticated user is a driver, only return their assigned trips
+        if (auth()->check() && auth()->user()->hasRole('driver')) {
+            $query->where('driver_id', auth()->id());
+        }
+
+        return $query->get();
     }
 
     public function getTripById($id)
