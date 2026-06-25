@@ -30,6 +30,9 @@ class ShipmentOrderResource extends JsonResource
             'accepted_at' => $this->accepted_at?->toDateTimeString(),
             'arrived_at' => $this->arrived_at?->toDateTimeString(),
             'pod_received_at' => $this->pod_received_at?->toDateTimeString(),
+            'pod_recipient_name' => $this->pod_recipient_name,
+            'pod_photo_path' => $this->pod_photo_path,
+            'pod_signature_path' => $this->pod_signature_path,
             'created_by' => $this->created_by,
             'creator' => $this->whenLoaded('creator', function () {
                 return [

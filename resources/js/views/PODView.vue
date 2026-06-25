@@ -1,37 +1,32 @@
 <template>
   <div class="pod-view">
-    <!-- Data Table -->
-    <DataTable 
-      :columns="columns" 
-      :data="filteredOrders" 
-      :loading="loading" 
-      empty-text="Tidak ada shipment order untuk filter ini."
-      title="Proof of Delivery (POD)"
-      subtitle="Kelola bukti pengiriman (Nama Penerima, Foto Barang, Tanda Tangan Digital) untuk menyelesaikan shipment order."
-    >
-      <template #actions>
-        <div class="d-flex gap-2">
-          <button 
-            @click="statusFilter = 'ACTIVE'" 
-            class="btn btn-sm px-4 py-2"
-            :class="statusFilter === 'ACTIVE' ? 'btn-primary' : 'btn-outline-secondary'"
-          >
-            Aktif (ASSIGNED / IN_TRANSIT)
-          </button>
-          <button 
-            @click="statusFilter = 'DELIVERED'" 
-            class="btn btn-sm px-4 py-2"
-            :class="statusFilter === 'DELIVERED' ? 'btn-primary' : 'btn-outline-secondary'"
-          >
-            Selesai (DELIVERED)
-          </button>
-        </div>
-      </template>
+    <!-- Title and Subtitle manually rendered -->
+    <div class="mb-4">
+      <h3 class="fw-bold text-gray-900 mb-1" style="font-size: 22px;">Proof of Delivery (POD)</h3>
+      <p class="text-muted mb-0 small">Kelola bukti pengiriman (Nama Penerima, Foto Barang, Tanda Tangan Digital) untuk
+        menyelesaikan shipment order.</p>
+    </div>
 
+    <!-- Tabs Navigation -->
+    <div class="tabs-navigation-container mb-4">
+      <button @click="statusFilter = 'ACTIVE'" class="tab-card-item" :class="{ 'active': statusFilter === 'ACTIVE' }">
+        <i class="bi bi-clock-history me-2"></i>
+        Aktif (ASSIGNED / IN_TRANSIT)
+      </button>
+      <button @click="statusFilter = 'DELIVERED'" class="tab-card-item"
+        :class="{ 'active': statusFilter === 'DELIVERED' }">
+        <i class="bi bi-check2-all me-2"></i>
+        Selesai (DELIVERED)
+      </button>
+    </div>
+
+    <!-- Data Table -->
+    <DataTable :columns="columns" :data="filteredOrders" :loading="loading"
+      empty-text="Tidak ada shipment order untuk filter ini.">
       <template #cell(job_number)="{ value }">
         <span class="text-info fw-bold">{{ value }}</span>
       </template>
-      
+
       <template #cell(status)="{ value }">
         <span class="badge px-2 py-1" :class="getStatusBadgeClass(value)">
           {{ value }}
@@ -40,19 +35,13 @@
 
       <template #cell(actions)="{ row }">
         <div class="d-flex gap-2">
-          <button 
-            v-if="row.status === 'ASSIGNED' || row.status === 'IN_TRANSIT'"
-            class="btn btn-sm btn-primary d-flex align-items-center gap-1"
-            @click="openPodModal(row)"
-          >
+          <button v-if="row.status === 'ASSIGNED' || row.status === 'IN_TRANSIT'"
+            class="btn btn-sm btn-primary d-flex align-items-center gap-1" @click="openPodModal(row)">
             <i class="bi bi-file-earmark-arrow-up"></i>
             <span>Submit POD</span>
           </button>
-          <button 
-            v-else-if="row.status === 'DELIVERED'"
-            class="btn btn-sm btn-outline-success d-flex align-items-center gap-1"
-            @click="viewPodDetails(row)"
-          >
+          <button v-else-if="row.status === 'DELIVERED'"
+            class="btn btn-sm btn-outline-success d-flex align-items-center gap-1" @click="viewPodDetails(row)">
             <i class="bi bi-eye"></i>
             <span>Lihat POD</span>
           </button>
@@ -62,13 +51,11 @@
 
     <!-- Modal Submit POD -->
     <Teleport to="body">
-      <div 
-        v-if="showModal" 
-        class="modal-backdrop-custom d-flex align-items-center justify-content-center"
-        @click.self="closePodModal"
-      >
+      <div v-if="showModal" class="modal-backdrop-custom d-flex align-items-center justify-content-center"
+        @click.self="closePodModal">
         <div class="modal-dialog-custom bg-dark-card border-card p-4 rounded-4 shadow-lg text-gray-900">
-          <div class="d-flex justify-content-between align-items-center mb-3 border-bottom border-secondary-custom pb-2">
+          <div
+            class="d-flex justify-content-between align-items-center mb-3 border-bottom border-secondary-custom pb-2">
             <h5 class="fw-bold text-gray-900 mb-0">
               <i class="bi bi-file-earmark-check text-primary me-2"></i>
               Submit POD - {{ selectedOrder?.job_number }}
@@ -79,30 +66,18 @@
           <form @submit.prevent="submitPod">
             <div class="mb-3">
               <label class="form-label text-muted small fw-bold">NAMA PENERIMA</label>
-              <input 
-                type="text" 
-                v-model="podForm.pod_recipient_name" 
-                class="form-control bg-dark-custom text-gray-900 border-secondary-custom" 
-                placeholder="Masukkan nama lengkap penerima..." 
-                required 
-              />
+              <input type="text" v-model="podForm.pod_recipient_name"
+                class="form-control bg-dark-custom text-gray-900 border-secondary-custom"
+                placeholder="Masukkan nama lengkap penerima..." required />
             </div>
 
             <div class="mb-3">
               <label class="form-label text-muted small fw-bold">FOTO PENYERAHAN BARANG (POD)</label>
-              <div 
+              <div
                 class="photo-upload-zone border border-dashed border-secondary-custom rounded-3 p-3 text-center bg-dark-custom"
-                @click="$refs.photoInput.click()"
-                style="cursor: pointer;"
-              >
-                <input 
-                  type="file" 
-                  ref="photoInput" 
-                  class="d-none" 
-                  accept="image/*" 
-                  capture="environment"
-                  @change="handlePhotoUpload" 
-                />
+                @click="$refs.photoInput.click()" style="cursor: pointer;">
+                <input type="file" ref="photoInput" class="d-none" accept="image/*" capture="environment"
+                  @change="handlePhotoUpload" />
                 <div v-if="!podForm.pod_photo" class="py-3">
                   <i class="bi bi-camera fs-2 text-muted mb-2 d-block"></i>
                   <span class="text-gray-900 small">Klik untuk Mengambil Foto atau Mengunggah Berkas</span>
@@ -110,11 +85,8 @@
                 </div>
                 <div v-else class="position-relative d-inline-block">
                   <img :src="podForm.pod_photo" class="img-fluid rounded-2 max-h-150" alt="Preview Foto" />
-                  <button 
-                    type="button" 
-                    class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1 rounded-circle"
-                    @click.stop="clearPhoto"
-                  >
+                  <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1 rounded-circle"
+                    @click.stop="clearPhoto">
                     <i class="bi bi-x"></i>
                   </button>
                 </div>
@@ -124,23 +96,15 @@
             <div class="mb-4">
               <div class="d-flex justify-content-between align-items-center mb-1">
                 <label class="form-label text-muted small fw-bold mb-0">TANDA TANGAN DIGITAL</label>
-                <button type="button" class="btn btn-link btn-sm text-decoration-none text-danger p-0" @click="clearSignature">
+                <button type="button" class="btn btn-link btn-sm text-decoration-none text-danger p-0"
+                  @click="clearSignature">
                   <i class="bi bi-eraser me-1"></i>Bersihkan
                 </button>
               </div>
               <div class="signature-canvas-container border border-secondary-custom rounded-3 bg-white p-2">
-                <canvas 
-                  ref="canvasRef" 
-                  class="w-100" 
-                  height="150"
-                  @mousedown="startDrawing" 
-                  @mousemove="draw" 
-                  @mouseup="stopDrawing" 
-                  @mouseleave="stopDrawing"
-                  @touchstart="startDrawingTouch"
-                  @touchmove="drawTouch"
-                  @touchend="stopDrawing"
-                ></canvas>
+                <canvas ref="canvasRef" class="w-100" height="150" @mousedown="startDrawing" @mousemove="draw"
+                  @mouseup="stopDrawing" @mouseleave="stopDrawing" @touchstart="startDrawingTouch"
+                  @touchmove="drawTouch" @touchend="stopDrawing"></canvas>
               </div>
             </div>
 
@@ -158,13 +122,11 @@
 
     <!-- Modal View Detail POD -->
     <Teleport to="body">
-      <div 
-        v-if="showViewModal" 
-        class="modal-backdrop-custom d-flex align-items-center justify-content-center"
-        @click.self="closeViewModal"
-      >
+      <div v-if="showViewModal" class="modal-backdrop-custom d-flex align-items-center justify-content-center"
+        @click.self="closeViewModal">
         <div class="modal-dialog-custom bg-dark-card border-card p-4 rounded-4 shadow-lg text-gray-900">
-          <div class="d-flex justify-content-between align-items-center mb-3 border-bottom border-secondary-custom pb-2">
+          <div
+            class="d-flex justify-content-between align-items-center mb-3 border-bottom border-secondary-custom pb-2">
             <h5 class="fw-bold text-gray-900 mb-0">
               <i class="bi bi-file-earmark-text text-success me-2"></i>
               Detail Proof of Delivery - {{ selectedOrder?.job_number }}
@@ -186,15 +148,19 @@
           <div class="row g-3">
             <div class="col-6">
               <span class="text-muted d-block mb-1">FOTO DOKUMENTASI</span>
-              <div class="pod-image-preview-wrapper border border-secondary-custom rounded bg-white d-flex align-items-center justify-content-center overflow-hidden">
-                <img v-if="selectedOrder?.pod_photo_path" :src="`/storage/${selectedOrder.pod_photo_path}`" class="img-fluid" alt="Foto POD" />
+              <div
+                class="pod-image-preview-wrapper border border-secondary-custom rounded bg-white d-flex align-items-center justify-content-center overflow-hidden">
+                <img v-if="selectedOrder?.pod_photo_path" :src="`/storage/${selectedOrder.pod_photo_path}`"
+                  class="img-fluid" alt="Foto POD" />
                 <span v-else class="text-muted">Tidak ada foto</span>
               </div>
             </div>
             <div class="col-6">
               <span class="text-muted d-block mb-1">TANDA TANGAN</span>
-              <div class="pod-image-preview-wrapper border border-secondary-custom rounded bg-white p-2 d-flex align-items-center justify-content-center overflow-hidden">
-                <img v-if="selectedOrder?.pod_signature_path" :src="`/storage/${selectedOrder.pod_signature_path}`" class="img-fluid signature-filter" alt="Tanda Tangan POD" />
+              <div
+                class="pod-image-preview-wrapper border border-secondary-custom rounded bg-white p-2 d-flex align-items-center justify-content-center overflow-hidden">
+                <img v-if="selectedOrder?.pod_signature_path" :src="`/storage/${selectedOrder.pod_signature_path}`"
+                  class="img-fluid signature-filter" alt="Tanda Tangan POD" />
                 <span v-else class="text-muted">Tidak ada TTD</span>
               </div>
             </div>
@@ -301,7 +267,7 @@ const openPodModal = (order) => {
   podForm.value.pod_photo = '';
   podForm.value.pod_signature = '';
   showModal.value = true;
-  
+
   // Set up signature canvas on next tick once rendered
   nextTick(() => {
     setTimeout(() => {
@@ -329,7 +295,7 @@ const closeViewModal = () => {
 const handlePhotoUpload = (event) => {
   const file = event.target.files[0];
   if (!file) return;
-  
+
   if (!file.type.startsWith('image/')) {
     toast.error('Berkas harus berupa gambar.');
     return;
@@ -353,11 +319,11 @@ const clearPhoto = () => {
 const initCanvas = () => {
   const canvas = canvasRef.value;
   if (!canvas) return;
-  
+
   // Fit canvas width to parent container width dynamically
   const rect = canvas.getBoundingClientRect();
   canvas.width = rect.width;
-  
+
   const ctx = canvas.getContext('2d');
   ctx.strokeStyle = '#0f172a'; // dark stroke
   ctx.lineWidth = 3;
@@ -379,13 +345,13 @@ const draw = (e) => {
   const rect = canvas.getBoundingClientRect();
   const x = e.clientX - rect.left;
   const y = e.clientY - rect.top;
-  
+
   const ctx = canvas.getContext('2d');
   ctx.beginPath();
   ctx.moveTo(lastX, lastY);
   ctx.lineTo(x, y);
   ctx.stroke();
-  
+
   lastX = x;
   lastY = y;
 };
@@ -413,13 +379,13 @@ const drawTouch = (e) => {
   const rect = canvas.getBoundingClientRect();
   const x = touch.clientX - rect.left;
   const y = touch.clientY - rect.top;
-  
+
   const ctx = canvas.getContext('2d');
   ctx.beginPath();
   ctx.moveTo(lastX, lastY);
   ctx.lineTo(x, y);
   ctx.stroke();
-  
+
   lastX = x;
   lastY = y;
 };
@@ -440,7 +406,7 @@ const clearSignature = () => {
 const isCanvasBlank = () => {
   const canvas = canvasRef.value;
   if (!canvas) return true;
-  
+
   const blank = document.createElement('canvas');
   blank.width = canvas.width;
   blank.height = canvas.height;
@@ -486,7 +452,6 @@ const submitPod = async () => {
 </script>
 
 <style scoped>
-
 /* Modal styles */
 .modal-backdrop-custom {
   position: fixed;
@@ -538,5 +503,99 @@ const submitPod = async () => {
 
 .signature-filter {
   filter: contrast(130%);
+}
+
+/* Custom Tabs Styles */
+.tabs-navigation-container {
+  display: flex;
+  align-items: flex-end;
+  /* Align tabs to the bottom */
+  gap: 16px;
+  border-bottom: 1px solid #e2e8f0;
+  /* Clean bottom border line only */
+  padding-bottom: 0;
+  margin-bottom: 24px;
+}
+
+.tab-card-item {
+  display: flex;
+  align-items: center;
+  background: transparent;
+  border: 1px solid transparent;
+  padding: 10px 16px;
+  font-weight: 600;
+  font-size: 14.5px;
+  color: #64748b;
+  /* Slate 500 */
+  transition: all 0.15s ease-in-out;
+  outline: none;
+  cursor: pointer;
+  border-top-left-radius: 6px;
+  border-top-right-radius: 6px;
+  margin-bottom: -1px;
+  /* Overlap the bottom border line */
+  position: relative;
+  z-index: 1;
+}
+
+.tab-card-item i {
+  color: #94a3b8;
+  /* Slate 400 */
+  font-size: 16px;
+  transition: color 0.15s ease-in-out;
+}
+
+.tab-card-item:hover {
+  color: #0f172a;
+  /* Slate 900 */
+}
+
+.tab-card-item:hover i {
+  color: #475569;
+}
+
+.tab-card-item.active {
+  background-color: #ecf3ff;
+  /* Soft blue sidebar-like background */
+  color: #000000;
+  /* Black text */
+  border: 1px solid #c3daff;
+  border-bottom-color: #ecf3ff;
+  /* Cover the bottom line */
+  z-index: 2;
+}
+
+.tab-card-item.active i {
+  color: #000000;
+  /* Black icon */
+}
+
+/* Dark mode compatibility */
+.dark .tabs-navigation-container {
+  border-bottom-color: #334155;
+}
+
+.dark .tab-card-item {
+  color: #94a3b8;
+}
+
+.dark .tab-card-item i {
+  color: #64748b;
+}
+
+.dark .tab-card-item:hover {
+  color: #f1f5f9;
+}
+
+.dark .tab-card-item.active {
+  background-color: rgba(70, 95, 255, 0.15);
+  /* Soft brand blue for dark theme */
+  color: #ffffff;
+  border-color: rgba(70, 95, 255, 0.25);
+  border-bottom-color: rgba(70, 95, 255, 0.15);
+}
+
+.dark .tab-card-item.active i {
+  color: #38bdf8;
 }
 </style>
