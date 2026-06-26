@@ -6,3 +6,10 @@ use Illuminate\Support\Facades\Artisan;
 Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
+
+use Illuminate\Support\Facades\Schedule;
+
+Schedule::call(function () {
+    \App\Models\TripLocationLog::where('created_at', '<', now()->subDays(7))->delete();
+})->daily();
+

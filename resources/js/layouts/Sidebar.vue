@@ -158,6 +158,7 @@ import {
   HorizontalDots,
   ChevronDownIcon,
   SettingsIcon,
+  MapPinIcon,
 } from '../icons';
 
 const route = useRoute();
@@ -232,7 +233,7 @@ const menuGroups = computed(() => {
             { name: 'Transporters', icon: FolderIcon, path: '/master/transporters' },
             { name: 'Mode of Transport', icon: BoxCubeIcon, path: '/master/modes-of-transport' },
             { name: 'Mode of Delivery', icon: BoxCubeIcon, path: '/master/modes-of-delivery' },
-            { name: 'Kabupaten/Kota', icon: BoxCubeIcon, path: '/master/cities' }
+            { name: 'Master Location', icon: MapPinIcon, path: '/master/cities' }
           ]
         }
       ]

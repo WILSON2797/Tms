@@ -59,6 +59,10 @@ class ShipmentOrderService
                 throw new \Exception('Shipment Order not found.');
             }
 
+            if ($order->status !== 'DRAFT') {
+                throw new \Exception('Only Shipment Orders in DRAFT status can be updated.');
+            }
+
             $oldStatus = $order->status;
             $this->shipmentOrderRepository->update($id, $data);
             $order = $order->fresh();
@@ -124,9 +128,13 @@ class ShipmentOrderService
             $trip = $order->trip;
             $isConsole = false;
             if ($trip) {
-                $mod = $trip->modeOfDelivery; // belongsTo Relation
-                if ($mod && (stripos($mod->code, 'console') !== false || stripos($mod->name, 'console') !== false)) {
-                    $isConsole = true;
+                $mod = $trip->modeOfDelivery;
+                if ($mod) {
+                    $nameClean = str_replace([' ', '-'], '', strtolower($mod->name));
+                    $codeClean = str_replace([' ', '-'], '', strtolower($mod->code));
+                    if (str_contains($codeClean, 'console') || str_contains($nameClean, 'console') || $codeClean === 'cdm') {
+                        $isConsole = true;
+                    }
                 }
             }
 
@@ -197,9 +205,13 @@ class ShipmentOrderService
             $trip = $order->trip;
             $isConsole = false;
             if ($trip) {
-                $mod = $trip->modeOfDelivery; // belongsTo Relation
-                if ($mod && (stripos($mod->code, 'console') !== false || stripos($mod->name, 'console') !== false)) {
-                    $isConsole = true;
+                $mod = $trip->modeOfDelivery;
+                if ($mod) {
+                    $nameClean = str_replace([' ', '-'], '', strtolower($mod->name));
+                    $codeClean = str_replace([' ', '-'], '', strtolower($mod->code));
+                    if (str_contains($codeClean, 'console') || str_contains($nameClean, 'console') || $codeClean === 'cdm') {
+                        $isConsole = true;
+                    }
                 }
             }
 

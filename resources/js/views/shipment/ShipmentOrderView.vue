@@ -38,9 +38,9 @@
       </template>
       <template #cell(actions)="{ row }">
         <div class="d-flex gap-2">
-          <!-- Edit: allowed for editing -->
+          <!-- Edit: only allowed for DRAFT orders -->
           <router-link 
-            v-if="authStore.hasPermission('edit-shipment')" 
+            v-if="authStore.hasPermission('edit-shipment') && row.status === 'DRAFT'" 
             :to="{ name: 'EditShipmentOrder', params: { id: row.id } }"
             class="btn btn-sm btn-outline-info border-0"
             title="Edit Order"

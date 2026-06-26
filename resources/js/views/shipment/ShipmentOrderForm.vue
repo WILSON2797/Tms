@@ -54,19 +54,40 @@
         </div>
 
         <h5 class="fw-bold text-gray-900 mb-3 pb-2 border-bottom border-secondary-custom">Rute Pengiriman</h5>
-        <div class="row g-3 mb-4">
-          <!-- Origin City -->
+        
+        <!-- Rute Asal (Origin) -->
+        <h6 class="text-gray-900 small fw-bold mb-2"><i class="bi bi-geo-alt-fill text-primary"></i> Wilayah Asal (Origin)</h6>
+        <div class="row g-3 mb-3">
+          <!-- Origin Province -->
           <div class="col-12 col-md-6">
-            <label class="form-label text-muted small mb-1">KOTA ASAL <span class="text-danger">*</span></label>
-            <v-select v-model="form.origin_city" :options="cities" label="label" :reduce="c => c.name"
-              placeholder="Pilih Kota Asal..." :clearable="false" :disabled="isEdit && form.status !== 'DRAFT'" />
+            <label class="form-label text-muted small mb-1">PROVINSI ASAL <span class="text-danger">*</span></label>
+            <v-select v-model="form.origin_province" :options="provinces"
+              placeholder="Pilih Provinsi Asal..." :clearable="false" :disabled="isEdit && form.status !== 'DRAFT'" />
           </div>
 
-          <!-- Destination City -->
+          <!-- Origin City / Kec -->
           <div class="col-12 col-md-6">
-            <label class="form-label text-muted small mb-1">KOTA TUJUAN <span class="text-danger">*</span></label>
-            <v-select v-model="form.destination_city" :options="cities" label="label" :reduce="c => c.name"
-              placeholder="Pilih Kota Tujuan..." :clearable="false" :disabled="isEdit && form.status !== 'DRAFT'" />
+            <label class="form-label text-muted small mb-1">KOTA/KEC ASAL <span class="text-danger">*</span></label>
+            <v-select taggable push-tags v-model="form.origin_city" :options="filteredOriginCities"
+              placeholder="Pilih atau ketik Kota/Kec Asal..." :clearable="false" :disabled="isEdit && form.status !== 'DRAFT'" />
+          </div>
+        </div>
+
+        <!-- Rute Tujuan (Destination) -->
+        <h6 class="text-gray-900 small fw-bold mb-2 mt-3"><i class="bi bi-geo-fill text-success"></i> Wilayah Tujuan (Destination)</h6>
+        <div class="row g-3 mb-4">
+          <!-- Destination Province -->
+          <div class="col-12 col-md-6">
+            <label class="form-label text-muted small mb-1">PROVINSI TUJUAN <span class="text-danger">*</span></label>
+            <v-select v-model="form.destination_province" :options="provinces"
+              placeholder="Pilih Provinsi Tujuan..." :clearable="false" :disabled="isEdit && form.status !== 'DRAFT'" />
+          </div>
+
+          <!-- Destination City / Kec -->
+          <div class="col-12 col-md-6">
+            <label class="form-label text-muted small mb-1">KOTA/KEC TUJUAN <span class="text-danger">*</span></label>
+            <v-select taggable push-tags v-model="form.destination_city" :options="filteredDestCities"
+              placeholder="Pilih atau ketik Kota/Kec Tujuan..." :clearable="false" :disabled="isEdit && form.status !== 'DRAFT'" />
           </div>
 
           <!-- Detail Address (Destination Detail) -->
@@ -140,7 +161,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue';
+import { ref, reactive, onMounted, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import axios from 'axios';
 import { useToast } from 'vue-toastification';
@@ -162,7 +183,9 @@ const form = reactive({
   order_date: new Date().toISOString().split('T')[0],
   order_number: '',
   origin_city: '',
+  origin_province: '',
   destination_city: '',
+  destination_province: '',
   detail_address: '',
 
   recipient_name: '',
@@ -170,6 +193,27 @@ const form = reactive({
   expected_delivery_date: new Date(Date.now() + 86400000).toISOString().split('T')[0], // Default tomorrow
   order_type: 'REGULAR',
   status: 'DRAFT'
+});
+
+// Computed properties for structured location dropdowns
+const provinces = computed(() => {
+  if (!cities.value || cities.value.length === 0) return [];
+  const list = cities.value.map(c => c.province);
+  return [...new Set(list)].sort();
+});
+
+const filteredOriginCities = computed(() => {
+  if (!form.origin_province) return [];
+  return cities.value
+    .filter(c => c.province.toUpperCase() === form.origin_province.toUpperCase())
+    .map(c => c.name);
+});
+
+const filteredDestCities = computed(() => {
+  if (!form.destination_province) return [];
+  return cities.value
+    .filter(c => c.province.toUpperCase() === form.destination_province.toUpperCase())
+    .map(c => c.name);
 });
 
 onMounted(async () => {
@@ -218,7 +262,9 @@ const fetchOrderDetails = async (id) => {
       form.order_date = data.order_date;
       form.order_number = data.order_number;
       form.origin_city = data.origin_city;
+      form.origin_province = data.origin_province || '';
       form.destination_city = data.destination_city;
+      form.destination_province = data.destination_province || '';
       form.detail_address = data.detail_address;
 
       form.recipient_name = data.recipient_name;

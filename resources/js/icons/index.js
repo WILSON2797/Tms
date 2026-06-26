@@ -1,4 +1,5 @@
 import BoxCubeIcon from "./BoxCubeIcon.vue";
+import MapPinIcon from "./MapPinIcon.vue";
 import GridIcon from "./GridIcon.vue";
 import CalenderIcon from "./CalenderIcon.vue";
 import TaskIcon from "./TaskIcon.vue";
@@ -94,4 +95,5 @@ export {
   MailBox,
   SendIcon,
   DraftIcon,
+  MapPinIcon,
 };

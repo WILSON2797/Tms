@@ -47,11 +47,15 @@ class StoreTripRequest extends FormRequest
             if ($modId) {
                 $mod = \App\Models\ModeOfDelivery::find($modId);
                 if ($mod) {
+                    $nameClean = str_replace([' ', '-'], '', strtolower($mod->name));
+                    $codeClean = str_replace([' ', '-'], '', strtolower($mod->code));
                     $isConsoleOrMultidrop = (
-                        stripos($mod->code, 'console') !== false ||
-                        stripos($mod->name, 'console') !== false ||
-                        stripos($mod->code, 'multidrop') !== false ||
-                        stripos($mod->name, 'multidrop') !== false
+                        str_contains($codeClean, 'console') ||
+                        str_contains($nameClean, 'console') ||
+                        str_contains($codeClean, 'multidrop') ||
+                        str_contains($nameClean, 'multidrop') ||
+                        $codeClean === 'md' ||
+                        $codeClean === 'cdm'
                     );
 
                     if (count($orderIds) > 1 && !$isConsoleOrMultidrop) {

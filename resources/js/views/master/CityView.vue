@@ -5,9 +5,9 @@
       :columns="columns" 
       :data="cities" 
       :loading="loading" 
-      empty-text="Belum ada data kabupaten/kota."
-      title="Regency / City Management"
-      subtitle="Kelola daftar kabupaten/kota beserta provinsi untuk tujuan rute pengiriman."
+      empty-text="Belum ada data Kota/Kec."
+      title="Kota / Kec Management"
+      subtitle="Kelola daftar Kota/Kec beserta provinsi untuk tujuan rute pengiriman."
     >
       <template #actions>
         <button 
@@ -16,7 +16,7 @@
           @click="openAddModal"
         >
           <i class="bi bi-plus-lg"></i>
-          <span>Tambah Kabupaten/Kota</span>
+          <span>Tambah Kota/Kec</span>
         </button>
       </template>
 
@@ -58,7 +58,7 @@
         <div class="modal-content bg-dark-card border-card text-gray-900 dark:text-white">
           <div class="modal-header border-secondary-custom">
             <h5 class="modal-title fw-bold" id="cityModalLabel">
-              {{ isEdit ? 'Edit Kabupaten/Kota' : 'Tambah Kabupaten/Kota' }}
+              {{ isEdit ? 'Edit Kota/Kec' : 'Tambah Kota/Kec' }}
             </h5>
             <button type="button" class="btn-close dark:btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
@@ -76,12 +76,12 @@
                   />
                 </div>
                 <div class="col-12">
-                  <label class="form-label text-muted small mb-1">NAMA KABUPATEN / KOTA</label>
+                  <label class="form-label text-muted small mb-1">NAMA KOTA / KEC</label>
                   <input 
                     type="text" 
                     class="form-control bg-dark-custom text-gray-900 dark:text-white border-secondary-custom" 
                     v-model="form.name" 
-                    placeholder="E.g. Bekasi, Surabaya" 
+                    placeholder="E.g. Bekasi-cikarang selatan, Bandung-cimahi" 
                     required 
                   />
                 </div>
@@ -151,7 +151,7 @@ const form = reactive({
 const columns = [
   { accessorKey: 'no', header: 'No', meta: { disableSearch: true, width: '55px', align: 'center' } },
   { accessorKey: 'province', header: 'Provinsi' },
-  { accessorKey: 'name', header: 'Kabupaten/Kota' },
+  { accessorKey: 'name', header: 'Kota/Kec' },
   { accessorKey: 'type', header: 'Tipe' },
   { accessorKey: 'is_active', header: 'Status' },
   { accessorKey: 'actions', header: 'Aksi' }
@@ -170,7 +170,7 @@ const fetchCities = async () => {
       cities.value = response.data.data;
     }
   } catch (err) {
-    toast.error('Gagal mengambil data kabupaten/kota.');
+    toast.error('Gagal mengambil data Kota/Kec.');
   } finally {
     loading.value = false;
   }

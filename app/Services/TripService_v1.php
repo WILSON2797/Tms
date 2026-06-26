@@ -259,49 +259,19 @@ class TripService
                 throw new \Exception('Trip not found.');
             }
 
-            // Update live position on Trip (always updated for real-time map marker)
+            // Update live position on Trip
             $trip->update([
                 'current_latitude' => $coordinates['latitude'],
                 'current_longitude' => $coordinates['longitude']
             ]);
 
-            // Retrieve the last recorded log entry for this trip
-            $lastLog = \App\Models\TripLocationLog::where('trip_id', $trip->id)
-                ->orderBy('created_at', 'desc')
-                ->first();
-
-            $shouldLog = true;
-
-            if ($lastLog) {
-                // Haversine formula to compute distance in meters
-                $earthRadius = 6371000; // Earth radius in meters
-                $latFrom = deg2rad($lastLog->latitude);
-                $lonFrom = deg2rad($lastLog->longitude);
-                $latTo = deg2rad($coordinates['latitude']);
-                $lonTo = deg2rad($coordinates['longitude']);
-
-                $latDelta = $latTo - $latFrom;
-                $lonDelta = $lonTo - $lonFrom;
-
-                $angle = 2 * asin(sqrt(pow(sin($latDelta / 2), 2) +
-                    cos($latFrom) * cos($latTo) * pow(sin($lonDelta / 2), 2)));
-
-                $distance = $angle * $earthRadius; // Distance in meters
-
-                // Only insert a new history log if the driver has moved at least 50 meters
-                if ($distance < 50) {
-                    $shouldLog = false;
-                }
-            }
-
-            if ($shouldLog) {
-                \App\Models\TripLocationLog::create([
-                    'trip_id' => $trip->id,
-                    'latitude' => $coordinates['latitude'],
-                    'longitude' => $coordinates['longitude'],
-                    'created_at' => now()
-                ]);
-            }
+            // Create history log entry
+            \App\Models\TripLocationLog::create([
+                'trip_id' => $trip->id,
+                'latitude' => $coordinates['latitude'],
+                'longitude' => $coordinates['longitude'],
+                'created_at' => now()
+            ]);
 
             return $trip->fresh();
         });

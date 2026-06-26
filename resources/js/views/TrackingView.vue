@@ -1,9 +1,25 @@
 <template>
   <div class="tracking-view">
+    <!-- Tabs Navigation -->
+    <div class="tabs-navigation-container mb-4">
+      <button @click="statusFilter = 'IN_TRANSIT'" class="tab-card-item" :class="{ 'active': statusFilter === 'IN_TRANSIT' }">
+        <i class="bi bi-truck me-2"></i>
+        Sedang Dikirim (IN TRANSIT)
+      </button>
+      <button @click="statusFilter = 'DELIVERED'" class="tab-card-item" :class="{ 'active': statusFilter === 'DELIVERED' }">
+        <i class="bi bi-check2-all me-2"></i>
+        Selesai (DELIVERED)
+      </button>
+      <button @click="statusFilter = 'ALL'" class="tab-card-item" :class="{ 'active': statusFilter === 'ALL' }">
+        <i class="bi bi-list-ul me-2"></i>
+        Semua Status
+      </button>
+    </div>
+
     <!-- Data Table of Orders -->
     <DataTable 
       :columns="columns" 
-      :data="orders" 
+      :data="filteredOrders" 
       :loading="loading" 
       empty-text="Belum ada data shipment order."
       title="Live Shipment Tracking"
@@ -184,7 +200,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, nextTick } from 'vue';
+import { ref, onMounted, nextTick, computed } from 'vue';
 import axios from 'axios';
 import { useToast } from 'vue-toastification';
 import DataTable from '../components/DataTable.vue';
@@ -193,6 +209,14 @@ const toast = useToast();
 
 const loading = ref(false);
 const orders = ref([]);
+const statusFilter = ref('IN_TRANSIT');
+
+const filteredOrders = computed(() => {
+  if (statusFilter.value === 'ALL') {
+    return orders.value;
+  }
+  return orders.value.filter(o => o.status === statusFilter.value);
+});
 
 const showModal = ref(false);
 const modalLoading = ref(false);
@@ -362,8 +386,18 @@ const initMap = async () => {
     mapInstance.value = null;
   }
 
-  const originCoord = await resolveCoord(selectedOrder.value.origin_city, [-6.2088, 106.8456]);
-  const destCoord = await resolveCoord(selectedOrder.value.destination_city, [-6.9175, 107.6191]);
+  const originQuery = [
+    selectedOrder.value.origin_city,
+    selectedOrder.value.origin_province
+  ].filter(Boolean).join(', ');
+
+  const destQuery = [
+    selectedOrder.value.destination_city,
+    selectedOrder.value.destination_province
+  ].filter(Boolean).join(', ');
+
+  const originCoord = await resolveCoord(originQuery || selectedOrder.value.origin_city, [-6.2088, 106.8456]);
+  const destCoord = await resolveCoord(destQuery || selectedOrder.value.destination_city, [-6.9175, 107.6191]);
 
   const map = L.map('map').setView(originCoord, 10);
   mapInstance.value = map;
@@ -388,14 +422,24 @@ const initMap = async () => {
   }
 
   // Origin Marker
+  const originText = [
+    selectedOrder.value.origin_city,
+    selectedOrder.value.origin_province
+  ].filter(Boolean).join(', ');
+
   const originMarker = L.marker(originCoord)
-    .bindPopup(`<strong>Kota Asal:</strong> ${selectedOrder.value.origin_city}`)
+    .bindPopup(`<strong>Lokasi Asal:</strong> ${originText}`)
     .addTo(map);
   mapMarkers.value.push(originMarker);
 
   // Destination Marker
+  const destText = [
+    selectedOrder.value.destination_city,
+    selectedOrder.value.destination_province
+  ].filter(Boolean).join(', ');
+
   const destMarker = L.marker(destCoord)
-    .bindPopup(`<strong>Kota Tujuan:</strong> ${selectedOrder.value.destination_city}<br><small class="text-muted">${selectedOrder.value.detail_address}</small>`)
+    .bindPopup(`<strong>Lokasi Tujuan:</strong> ${destText}<br><small class="text-muted">${selectedOrder.value.detail_address}</small>`)
     .addTo(map);
   mapMarkers.value.push(destMarker);
 
@@ -660,5 +704,88 @@ const getStatusIconClass = (status) => {
   100% {
     box-shadow: 0 0 0 0px rgba(13, 110, 253, 0);
   }
+}
+
+/* Custom Tabs Styles */
+.tabs-navigation-container {
+  display: flex;
+  align-items: flex-end;
+  gap: 16px;
+  border-bottom: 1px solid #e2e8f0;
+  padding-bottom: 0;
+  margin-bottom: 24px;
+}
+
+.tab-card-item {
+  display: flex;
+  align-items: center;
+  background: transparent;
+  border: 1px solid transparent;
+  padding: 10px 16px;
+  font-weight: 600;
+  font-size: 14.5px;
+  color: #64748b;
+  transition: all 0.15s ease-in-out;
+  outline: none;
+  cursor: pointer;
+  border-top-left-radius: 6px;
+  border-top-right-radius: 6px;
+  margin-bottom: -1px;
+  position: relative;
+  z-index: 1;
+}
+
+.tab-card-item i {
+  color: #94a3b8;
+  font-size: 16px;
+  transition: color 0.15s ease-in-out;
+}
+
+.tab-card-item:hover {
+  color: #0f172a;
+}
+
+.tab-card-item:hover i {
+  color: #475569;
+}
+
+.tab-card-item.active {
+  background-color: #ecf3ff;
+  color: #000000;
+  border: 1px solid #c3daff;
+  border-bottom-color: #ecf3ff;
+  z-index: 2;
+}
+
+.tab-card-item.active i {
+  color: #000000;
+}
+
+/* Dark mode compatibility */
+.dark .tabs-navigation-container {
+  border-bottom-color: #334155;
+}
+
+.dark .tab-card-item {
+  color: #94a3b8;
+}
+
+.dark .tab-card-item i {
+  color: #64748b;
+}
+
+.dark .tab-card-item:hover {
+  color: #f1f5f9;
+}
+
+.dark .tab-card-item.active {
+  background-color: rgba(70, 95, 255, 0.15);
+  color: #ffffff;
+  border-color: rgba(70, 95, 255, 0.25);
+  border-bottom-color: rgba(70, 95, 255, 0.15);
+}
+
+.dark .tab-card-item.active i {
+  color: #38bdf8;
 }
 </style>
