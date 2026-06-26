@@ -99,6 +99,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Shipment Orders - View
     Route::middleware('permission:view-shipment')->group(function () {
         Route::get('/shipment-orders', [ShipmentOrderController::class, 'index']);
+        Route::get('/shipment-orders/export', [ShipmentOrderController::class, 'exportExcel']);
         Route::get('/shipment-orders/unassigned', [TripController::class, 'unassignedOrders']);
         Route::get('/shipment-orders/{id}', [ShipmentOrderController::class, 'show']);
     });

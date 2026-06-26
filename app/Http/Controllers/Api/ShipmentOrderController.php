@@ -107,4 +107,26 @@ class ShipmentOrderController extends Controller
             ], 422);
         }
     }
+
+    public function exportExcel()
+    {
+        $orders = $this->shipmentOrderService->getAllOrders();
+        $export = new \App\Exports\ShipmentOrderExport($orders);
+        $spreadsheet = $export->export();
+
+        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+        $filename = 'Laporan_TMS_' . date('Ymd_His') . '.xlsx';
+
+        return response()->stream(
+            function () use ($writer) {
+                $writer->save('php://output');
+            },
+            200,
+            [
+                'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+                'Cache-Control' => 'max-age=0',
+            ]
+        );
+    }
 }

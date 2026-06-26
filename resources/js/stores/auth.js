@@ -28,7 +28,7 @@ export const useAuthStore = defineStore('auth', {
         const response = await axios.post('/login', { username, password, client: 'web' });
         if (response.data.success) {
           const { access_token, user } = response.data.data;
-          
+
           if (user.role === 'driver') {
             this.error = 'Username atau password salah.';
             return false;
@@ -36,14 +36,14 @@ export const useAuthStore = defineStore('auth', {
 
           this.token = access_token;
           this.user = user;
-          
+
           localStorage.setItem('access_token', access_token);
           localStorage.setItem('user', JSON.stringify(user));
           localStorage.setItem('last_active_time', Date.now().toString());
-          
+
           // Configure Axios Authorization Header
           axios.defaults.headers.common['Authorization'] = `Bearer ${access_token}`;
-          
+
           // Fetch complete profile with permissions
           await this.fetchUser();
           return true;
@@ -57,17 +57,17 @@ export const useAuthStore = defineStore('auth', {
     },
     async fetchUser() {
       if (!this.token) return;
-      
+
       // Ensure authorization header is set
       axios.defaults.headers.common['Authorization'] = `Bearer ${this.token}`;
-      
+
       try {
         const response = await axios.get('/me');
         if (response.data.success) {
           const { permissions, role, role_name, name, email, id } = response.data.data;
           this.user = { id, name, email, role, role_name };
           this.permissions = permissions;
-          
+
           localStorage.setItem('user', JSON.stringify(this.user));
           localStorage.setItem('permissions', JSON.stringify(permissions));
         }

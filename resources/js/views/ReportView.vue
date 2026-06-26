@@ -9,6 +9,19 @@
       title="Laporan TMS (Shipment Report)"
       subtitle="Data historis lengkap dari seluruh shipment order beserta status penugasan trip dan tonggak waktu (milestone)."
     >
+      <template #actions>
+        <button 
+          class="btn btn-success d-flex align-items-center gap-2 rounded-3 py-2 px-3 border-0 shadow-sm"
+          style="background-color: #10b981;"
+          @click="exportToExcel"
+          :disabled="loading"
+          title="Download Laporan Excel"
+        >
+          <i class="bi bi-file-earmark-excel-fill"></i>
+          <span class="fw-semibold small">Download XLSX</span>
+        </button>
+      </template>
+
       <template #cell(order_number)="{ value }">
         <span class="fw-bold text-gray-900">{{ value }}</span>
       </template>
@@ -165,6 +178,39 @@ const fetchReportData = async () => {
     toast.error('Gagal mengambil data laporan TMS.');
   } finally {
     loading.value = false;
+  }
+};
+
+const exportToExcel = async () => {
+  try {
+    const response = await axios.get('/shipment-orders/export', {
+      responseType: 'blob'
+    });
+    
+    const blob = new Blob([response.data], {
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    
+    const contentDisposition = response.headers['content-disposition'];
+    let filename = `Laporan_TMS_${new Date().toISOString().slice(0, 10)}.xlsx`;
+    if (contentDisposition) {
+      const filenameMatch = contentDisposition.match(/filename="(.+?)"/);
+      if (filenameMatch && filenameMatch[1]) {
+        filename = filenameMatch[1];
+      }
+    }
+    
+    link.setAttribute('download', filename);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+  } catch (err) {
+    console.error(err);
+    toast.error('Gagal mendownload laporan Excel.');
   }
 };
 
