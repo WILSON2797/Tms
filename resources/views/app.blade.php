@@ -6,6 +6,7 @@
 
     <title>Transportation Management System</title>
     <meta name="description" content="Aplikasi pengelolaan logistik, shipment order, driver assignment, dan POD terintegrasi.">
+    <link rel="icon" type="image/png" href="{{ asset('Logo.png') }}">
 
     <!-- CSS and JS Bundled Assets -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
