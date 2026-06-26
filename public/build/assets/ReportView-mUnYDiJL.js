@@ -1,1 +1,0 @@
-import{_ as t}from"./_plugin-vue_export-helper-DlAUqK2U.js";import{o,c as r,d as s}from"./app-CXiE7giN.js";/* empty css            */const c={},a={class:"p-4"};function n(i,e){return o(),r("div",a,[...e[0]||(e[0]=[s("h3",{class:"text-white"},"Placeholder",-1)])])}const p=t(c,[["render",n]]);export{p as default};

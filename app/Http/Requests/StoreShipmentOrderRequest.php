@@ -19,6 +19,7 @@ class StoreShipmentOrderRequest extends FormRequest
             'order_date' => 'required|date',
             'origin_city' => 'required|string',
             'origin_province' => 'required|string|max:100',
+            'origin_address' => 'nullable|string',
             'destination_city' => 'required|string',
             'destination_province' => 'required|string|max:100',
             'detail_address' => 'required|string',

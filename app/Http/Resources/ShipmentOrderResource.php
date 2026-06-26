@@ -19,6 +19,7 @@ class ShipmentOrderResource extends JsonResource
             'origin_city' => $this->origin_city,
             'origin_province' => $this->origin_province,
             'origin_district' => $this->origin_district,
+            'origin_address' => $this->origin_address,
             'destination_city' => $this->destination_city,
             'destination_province' => $this->destination_province,
             'destination_district' => $this->destination_district,

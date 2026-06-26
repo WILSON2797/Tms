@@ -25,9 +25,15 @@ export const useAuthStore = defineStore('auth', {
       this.loading = true;
       this.error = null;
       try {
-        const response = await axios.post('/login', { username, password });
+        const response = await axios.post('/login', { username, password, client: 'web' });
         if (response.data.success) {
           const { access_token, user } = response.data.data;
+          
+          if (user.role === 'driver') {
+            this.error = 'Username atau password salah.';
+            return false;
+          }
+
           this.token = access_token;
           this.user = user;
           

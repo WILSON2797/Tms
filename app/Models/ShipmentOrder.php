@@ -16,6 +16,7 @@ class ShipmentOrder extends Model
         'origin_city',
         'origin_province',
         'origin_district',
+        'origin_address',
         'destination_city',
         'destination_province',
         'destination_district',

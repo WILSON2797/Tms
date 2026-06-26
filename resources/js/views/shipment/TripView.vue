@@ -30,11 +30,23 @@
         <div class="d-flex gap-2">
           <!-- View Detail Action Button -->
           <button 
-            class="btn btn-sm btn-outline-info border-0" 
+            class="btn btn-sm border-0 p-1" 
+            style="color: #0284c7;"
             @click="openDetailModal(row)"
             title="Lihat Detail Trip"
           >
-            <i class="bi bi-eye"></i>
+            <i class="bi bi-eye fs-5"></i>
+          </button>
+
+          <!-- Re-assign Action Button -->
+          <button 
+            v-if="row.status !== 'DELIVERED' && row.status !== 'CANCELLED' && authStore.hasPermission('edit-shipment')"
+            class="btn btn-sm border-0 p-1 text-warning-custom" 
+            style="color: #d97706;"
+            @click="openReassignModal(row)"
+            title="Re-assign Driver/Vehicle"
+          >
+            <i class="bi bi-person-gear fs-5"></i>
           </button>
         </div>
       </template>
@@ -134,11 +146,73 @@
         </div>
       </div>
     </div>
+
+    <!-- Re-assign Driver/Vehicle Modal -->
+    <Teleport to="body">
+      <div 
+        v-if="showReassignModal" 
+        class="modal-backdrop-custom d-flex align-items-center justify-content-center"
+        @click.self="closeReassignModal"
+      >
+        <div class="modal-dialog-custom bg-dark-card border-card p-4 rounded-4 shadow-lg text-gray-900 dark:text-white" style="max-width: 550px;">
+          <div class="d-flex justify-content-between align-items-center mb-3 border-bottom border-secondary-custom pb-2">
+            <h5 class="fw-bold text-gray-900 dark:text-white mb-0">
+              <i class="bi bi-person-gear text-warning me-2"></i>
+              Re-assign Driver & Kendaraan - {{ selectedTripForReassign?.trip_number }}
+            </h5>
+            <button type="button" class="btn-close dark:btn-close-white" @click="closeReassignModal"></button>
+          </div>
+
+          <form @submit.prevent="handleReassign">
+            <div class="row g-3">
+              <!-- Driver -->
+              <div class="col-12">
+                <label class="form-label text-muted small mb-1 fw-bold">PILIH DRIVER BARU</label>
+                <v-select
+                  v-model="reassignForm.driver_id"
+                  :options="drivers"
+                  label="driver_name"
+                  :reduce="d => d.id"
+                  placeholder="Pilih Driver..."
+                  :clearable="true"
+                  append-to-body
+                />
+              </div>
+
+              <!-- Vehicle -->
+              <div class="col-12">
+                <label class="form-label text-muted small mb-1 fw-bold">PILIH KENDARAAN BARU</label>
+                <v-select
+                  v-model="reassignForm.vehicle_id"
+                  :options="vehicles"
+                  label="label"
+                  :reduce="v => v.id"
+                  placeholder="Pilih Kendaraan..."
+                  :clearable="true"
+                  append-to-body
+                />
+              </div>
+            </div>
+
+            <div class="d-flex justify-content-end gap-2 border-top border-secondary-custom mt-4 pt-3">
+              <button type="button" class="btn btn-secondary" @click="closeReassignModal" :disabled="reassignLoading">
+                Batal
+              </button>
+              <button type="submit" class="btn btn-warning text-dark d-flex align-items-center gap-2" :disabled="reassignLoading">
+                <span v-if="reassignLoading" class="spinner-border spinner-border-sm" role="status"></span>
+                <i class="bi bi-check2-circle"></i>
+                <span class="fw-bold">Update Penugasan</span>
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </Teleport>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, reactive } from 'vue';
 import { useAuthStore } from '../../stores/auth';
 import axios from 'axios';
 import { useToast } from 'vue-toastification';
@@ -154,6 +228,17 @@ const trips = ref([]);
 const showDetailModal = ref(false);
 const detailLoading = ref(false);
 const selectedTrip = ref(null);
+
+// Reassign state
+const showReassignModal = ref(false);
+const reassignLoading = ref(false);
+const selectedTripForReassign = ref(null);
+const reassignForm = reactive({
+  driver_id: null,
+  vehicle_id: null
+});
+const drivers = ref([]);
+const vehicles = ref([]);
 
 const columns = [
   { accessorKey: 'no', header: 'No', meta: { disableSearch: true, width: '55px', align: 'center' } },
@@ -171,7 +256,24 @@ const columns = [
 
 onMounted(() => {
   fetchTrips();
+  fetchDriversAndVehicles();
 });
+
+const fetchDriversAndVehicles = async () => {
+  try {
+    const [drvRes, vehRes] = await Promise.all([
+      axios.get('/drivers'),
+      axios.get('/vehicles')
+    ]);
+    drivers.value = drvRes.data.data.filter(d => d.is_active);
+    vehicles.value = vehRes.data.data.filter(v => v.is_active).map(v => ({
+      ...v,
+      label: `${v.vehicle_no} - ${v.vehicle_type} (${v.brand})`
+    }));
+  } catch (err) {
+    toast.error('Gagal mengambil data driver dan kendaraan.');
+  }
+};
 
 const fetchTrips = async () => {
   loading.value = true;
@@ -207,6 +309,40 @@ const openDetailModal = async (trip) => {
 const closeDetailModal = () => {
   showDetailModal.value = false;
   selectedTrip.value = null;
+};
+
+const openReassignModal = (trip) => {
+  selectedTripForReassign.value = trip;
+  reassignForm.driver_id = trip.driver_id;
+  reassignForm.vehicle_id = trip.vehicle_id;
+  showReassignModal.value = true;
+};
+
+const closeReassignModal = () => {
+  showReassignModal.value = false;
+  selectedTripForReassign.value = null;
+  reassignForm.driver_id = null;
+  reassignForm.vehicle_id = null;
+};
+
+const handleReassign = async () => {
+  if (!selectedTripForReassign.value) return;
+  reassignLoading.value = true;
+  try {
+    const response = await axios.put(`/trips/${selectedTripForReassign.value.id}`, {
+      driver_id: reassignForm.driver_id,
+      vehicle_id: reassignForm.vehicle_id
+    });
+    if (response.data.success) {
+      toast.success('Driver dan armada trip berhasil diperbarui.');
+      closeReassignModal();
+      fetchTrips();
+    }
+  } catch (err) {
+    toast.error(err.response?.data?.message || 'Gagal melakukan re-assign.');
+  } finally {
+    reassignLoading.value = false;
+  }
 };
 
 const formatDate = (dateStr) => {

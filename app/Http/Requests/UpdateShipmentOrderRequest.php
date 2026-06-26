@@ -19,6 +19,7 @@ class UpdateShipmentOrderRequest extends FormRequest
             'order_date' => 'sometimes|required|date',
             'origin_city' => 'sometimes|required|string',
             'origin_province' => 'sometimes|required|string|max:100',
+            'origin_address' => 'sometimes|nullable|string',
             'destination_city' => 'sometimes|required|string',
             'destination_province' => 'sometimes|required|string|max:100',
             'detail_address' => 'sometimes|required|string',

@@ -19,7 +19,7 @@ class ShipmentOrderService
     public function getAllOrders()
     {
         return $this->shipmentOrderRepository->getModel()
-            ->with(['customer', 'transporter', 'creator', 'trip.driver'])
+            ->with(['customer', 'transporter', 'creator', 'trip.driver', 'trip.vehicle'])
             ->orderBy('created_at', 'desc')
             ->get();
     }

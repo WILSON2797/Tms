@@ -71,6 +71,16 @@
             <v-select taggable push-tags v-model="form.origin_city" :options="filteredOriginCities"
               placeholder="Pilih atau ketik Kota/Kec Asal..." :clearable="false" :disabled="isEdit && form.status !== 'DRAFT'" />
           </div>
+
+          <!-- Detail Address (Origin Detail) -->
+          <div class="col-12">
+            <label class="form-label text-muted small mb-1">DETAIL ALAMAT ASAL <span
+                class="text-danger">*</span></label>
+            <textarea v-model="form.origin_address"
+              class="form-control bg-dark-custom text-gray-900 border-secondary-custom" rows="2"
+              placeholder="Alamat lengkap muat/asal pengiriman..." required
+              :disabled="isEdit && form.status !== 'DRAFT'"></textarea>
+          </div>
         </div>
 
         <!-- Rute Tujuan (Destination) -->
@@ -184,6 +194,7 @@ const form = reactive({
   order_number: '',
   origin_city: '',
   origin_province: '',
+  origin_address: '',
   destination_city: '',
   destination_province: '',
   detail_address: '',
@@ -263,6 +274,7 @@ const fetchOrderDetails = async (id) => {
       form.order_number = data.order_number;
       form.origin_city = data.origin_city;
       form.origin_province = data.origin_province || '';
+      form.origin_address = data.origin_address || '';
       form.destination_city = data.destination_city;
       form.destination_province = data.destination_province || '';
       form.detail_address = data.detail_address;

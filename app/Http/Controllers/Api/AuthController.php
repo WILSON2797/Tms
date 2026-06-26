@@ -15,9 +15,15 @@ class AuthController extends Controller
         $credentials = $request->validate([
             'username' => 'required|string',
             'password' => 'required|string',
+            'client' => 'nullable|string',
         ]);
 
-        if (!auth()->attempt($credentials)) {
+        $attemptCredentials = [
+            'username' => $credentials['username'],
+            'password' => $credentials['password']
+        ];
+
+        if (!auth()->attempt($attemptCredentials)) {
             return response()->json([
                 'success' => false,
                 'message' => 'Username atau password salah',
@@ -25,8 +31,15 @@ class AuthController extends Controller
         }
 
         $user = auth()->user();
-        // Load the role relationship
         $user->load('role');
+
+        if ($request->input('client') === 'web' && $user->role && $user->role->slug === 'driver') {
+            auth()->logout();
+            return response()->json([
+                'success' => false,
+                'message' => 'Username atau password salah',
+            ], 401);
+        }
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
