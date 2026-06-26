@@ -33,12 +33,22 @@ class AuthController extends Controller
         $user = auth()->user();
         $user->load('role');
 
-        if ($request->input('client') === 'web' && $user->role && $user->role->slug === 'driver') {
-            auth()->logout();
-            return response()->json([
-                'success' => false,
-                'message' => 'Username atau password salah',
-            ], 401);
+        if ($request->input('client') === 'web') {
+            if ($user->role && $user->role->slug === 'driver') {
+                auth()->logout();
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Username atau password salah',
+                ], 401);
+            }
+        } else {
+            if (!$user->role || $user->role->slug !== 'driver') {
+                auth()->logout();
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Username atau password salah',
+                ], 401);
+            }
         }
 
         $token = $user->createToken('auth_token')->plainTextToken;
