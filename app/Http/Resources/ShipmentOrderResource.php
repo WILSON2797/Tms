@@ -37,6 +37,13 @@ class ShipmentOrderResource extends JsonResource
             'pod_received_at' => $this->pod_received_at?->toDateTimeString(),
             'pod_recipient_name' => $this->pod_recipient_name,
             'pod_photo_path' => $this->pod_photo_path,
+            'pod_photos' => $this->photos ? $this->photos->map(function ($photo) {
+                return [
+                    'id' => $photo->id,
+                    'photo_path' => $photo->photo_path,
+                    'url' => asset('storage/' . $photo->photo_path)
+                ];
+            }) : [],
             'pod_signature_path' => $this->pod_signature_path,
             'created_by' => $this->created_by,
             'creator' => $this->whenLoaded('creator', function () {

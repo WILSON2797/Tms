@@ -29,7 +29,8 @@ class PodController extends Controller
         try {
             $validated = $request->validate([
                 'pod_recipient_name' => 'required|string|max:255',
-                'pod_photo' => 'required|string', // Base64 data URL
+                'pod_photo' => 'nullable|string', // Single photo (legacy)
+                'pod_photos' => 'nullable|array', // Multiple photos
                 'pod_signature' => 'required|string', // Base64 data URL
             ]);
         } catch (\Illuminate\Validation\ValidationException $e) {

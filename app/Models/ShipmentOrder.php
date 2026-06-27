@@ -86,4 +86,12 @@ class ShipmentOrder extends Model
     {
         return $this->belongsTo(User::class, 'created_by');
     }
+
+    /**
+     * Get the photos uploaded for the proof of delivery (POD).
+     */
+    public function photos(): HasMany
+    {
+        return $this->hasMany(ShipmentOrderPhoto::class, 'shipment_order_id');
+    }
 }

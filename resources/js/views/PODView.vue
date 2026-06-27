@@ -148,7 +148,15 @@
           <div class="row g-3">
             <div class="col-6">
               <span class="text-muted d-block mb-1">FOTO DOKUMENTASI</span>
-              <div
+              <div v-if="selectedOrder?.pod_photos && selectedOrder.pod_photos.length > 0" class="d-flex flex-wrap gap-2">
+                <div v-for="photo in selectedOrder.pod_photos" :key="photo.id"
+                  class="pod-image-preview-wrapper border border-secondary-custom rounded bg-white d-flex align-items-center justify-content-center overflow-hidden"
+                  style="width: 80px; height: 80px; cursor: pointer;"
+                  @click="openImageWindow(photo.url)">
+                  <img :src="photo.url" class="img-fluid" alt="Foto POD" />
+                </div>
+              </div>
+              <div v-else
                 class="pod-image-preview-wrapper border border-secondary-custom rounded bg-white d-flex align-items-center justify-content-center overflow-hidden">
                 <img v-if="selectedOrder?.pod_photo_path" :src="`/storage/${selectedOrder.pod_photo_path}`"
                   class="img-fluid" alt="Foto POD" />
@@ -448,6 +456,10 @@ const submitPod = async () => {
   } finally {
     submitting.value = false;
   }
+};
+
+const openImageWindow = (url) => {
+  window.open(url, '_blank');
 };
 </script>
 

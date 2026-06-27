@@ -27,7 +27,7 @@ class ShipmentOrderService
     public function getOrderById($id)
     {
         return $this->shipmentOrderRepository->getModel()
-            ->with(['customer', 'transporter', 'creator', 'statusLogs.changer', 'trip.driver', 'trip.vehicle', 'trip.locationLogs'])
+            ->with(['customer', 'transporter', 'creator', 'statusLogs.changer', 'trip.driver', 'trip.vehicle', 'trip.locationLogs', 'photos'])
             ->find($id);
     }
 
@@ -111,12 +111,28 @@ class ShipmentOrderService
 
             $photoPath = null;
             $sigPath = null;
+            $allPhotoPaths = [];
 
+            // 1. Process Single Photo (Legacy / Flutter fallback)
             if (isset($data['pod_photo']) && $data['pod_photo']) {
                 if ($data['pod_photo'] instanceof \Illuminate\Http\UploadedFile) {
                     $photoPath = $data['pod_photo']->store('pod_photos', 'public');
                 } else {
                     $photoPath = $this->uploadBase64File($data['pod_photo'], 'pod_photos');
+                }
+                $allPhotoPaths[] = $photoPath;
+            }
+
+            // 2. Process Multiple Photos
+            if (isset($data['pod_photos']) && is_array($data['pod_photos'])) {
+                foreach ($data['pod_photos'] as $base64Photo) {
+                    if ($base64Photo) {
+                        $savedPath = $this->uploadBase64File($base64Photo, 'pod_photos');
+                        $allPhotoPaths[] = $savedPath;
+                        if (!$photoPath) {
+                            $photoPath = $savedPath;
+                        }
+                    }
                 }
             }
 
@@ -151,13 +167,24 @@ class ShipmentOrderService
             $orderIds = $query->pluck('id')->toArray();
 
             foreach ($orderIds as $id) {
-                \App\Models\ShipmentOrder::where('id', $id)->update([
-                    'status' => 'DELIVERED',
-                    'pod_recipient_name' => $data['pod_recipient_name'],
-                    'pod_photo_path' => $photoPath,
-                    'pod_signature_path' => $sigPath,
-                    'pod_received_at' => now(),
-                ]);
+                $itemOrder = \App\Models\ShipmentOrder::find($id);
+                if ($itemOrder) {
+                    $itemOrder->update([
+                        'status' => 'DELIVERED',
+                        'pod_recipient_name' => $data['pod_recipient_name'],
+                        'pod_photo_path' => $photoPath,
+                        'pod_signature_path' => $sigPath,
+                        'pod_received_at' => now(),
+                    ]);
+
+                    // Save all photos to the separate table
+                    foreach ($allPhotoPaths as $path) {
+                        \App\Models\ShipmentOrderPhoto::create([
+                            'shipment_order_id' => $id,
+                            'photo_path' => $path
+                        ]);
+                    }
+                }
 
                 ShipmentStatusLog::create([
                     'shipment_order_id' => $id,
