@@ -233,7 +233,8 @@ const menuGroups = computed(() => {
             { name: 'Transporters', icon: FolderIcon, path: '/master/transporters' },
             { name: 'Mode of Transport', icon: BoxCubeIcon, path: '/master/modes-of-transport' },
             { name: 'Mode of Delivery', icon: BoxCubeIcon, path: '/master/modes-of-delivery' },
-            { name: 'Master Location', icon: MapPinIcon, path: '/master/cities' }
+            { name: 'Master Location', icon: MapPinIcon, path: '/master/cities' },
+            { name: 'Mobile App Settings', icon: SettingsIcon, path: '/settings/mobile' }
           ]
         }
       ]

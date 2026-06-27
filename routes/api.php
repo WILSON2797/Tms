@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\ShipmentOrderController;
 use App\Http\Controllers\Api\TripController;
 
 Route::post('/login', [AuthController::class, 'login']);
+Route::get('/app-version', [\App\Http\Controllers\Api\SettingController::class, 'getAppVersion']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
@@ -61,6 +62,7 @@ Route::middleware('auth:sanctum')->group(function () {
                 'data' => \App\Models\Role::orderBy('name')->get()
             ]);
         });
+        Route::get('/settings/mobile', [\App\Http\Controllers\Api\SettingController::class, 'getMobileSettings']);
     });
 
     // Master Data - Create
@@ -83,6 +85,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/modes-of-transport/{id}', [\App\Http\Controllers\Api\ModeController::class, 'updateTransport']);
         Route::put('/modes-of-delivery/{id}', [\App\Http\Controllers\Api\ModeController::class, 'updateDelivery']);
         Route::put('/cities/{id}', [\App\Http\Controllers\Api\CityController::class, 'update']);
+        Route::put('/settings/mobile', [\App\Http\Controllers\Api\SettingController::class, 'updateMobileSettings']);
     });
 
     // Master Data - Delete

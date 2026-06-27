@@ -112,6 +112,12 @@ const routes = [
         path: 'profile',
         name: 'Profile',
         component: () => import('../views/ProfileView.vue')
+      },
+      {
+        path: 'settings/mobile',
+        name: 'MobileSettings',
+        component: () => import('../views/master/MobileSettingsView.vue'),
+        meta: { permission: 'view-master' }
       }
     ]
   }
