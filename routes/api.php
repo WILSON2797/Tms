@@ -16,6 +16,7 @@ Route::get('/app-version', [\App\Http\Controllers\Api\SettingController::class, 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/me', [AuthController::class, 'me']);
+    Route::post('/users/fcm-token', [AuthController::class, 'updateFcmToken']);
     Route::get('/dashboard/stats', [\App\Http\Controllers\Api\DashboardController::class, 'stats']);
 
     Route::get('/modes-of-transport', [\App\Http\Controllers\Api\ModeController::class, 'modesOfTransport']);

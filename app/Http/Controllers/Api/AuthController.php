@@ -104,4 +104,23 @@ class AuthController extends Controller
             ]
         ]);
     }
+
+    /**
+     * Update user's FCM Token for push notifications.
+     */
+    public function updateFcmToken(Request $request)
+    {
+        $request->validate([
+            'fcm_token' => 'required|string',
+        ]);
+
+        $request->user()->update([
+            'fcm_token' => $request->input('fcm_token'),
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'FCM Token berhasil diperbarui',
+        ]);
+    }
 }
