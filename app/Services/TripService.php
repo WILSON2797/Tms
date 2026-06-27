@@ -78,6 +78,10 @@ class TripService
                 }
             }
 
+            if (!empty($trip->driver_id)) {
+                $this->sendTripNotification($trip);
+            }
+
             return $trip->load(['driver', 'vehicle', 'transporter', 'shipmentOrders', 'modeOfTransport', 'modeOfDelivery']);
         });
     }
@@ -210,6 +214,10 @@ class TripService
                 }
             }
 
+            if (!empty($trip->driver_id)) {
+                $this->sendTripNotification($trip);
+            }
+
             return $trip->load(['driver', 'vehicle', 'transporter', 'shipmentOrders', 'modeOfTransport', 'modeOfDelivery']);
         });
     }
@@ -305,5 +313,27 @@ class TripService
 
             return $trip->fresh();
         });
+    }
+
+    /**
+     * Send trip assignment notification to the driver.
+     */
+    protected function sendTripNotification($trip)
+    {
+        if ($trip && !empty($trip->driver_id)) {
+            $driver = \App\Models\User::find($trip->driver_id);
+            if ($driver && !empty($driver->fcm_token)) {
+                \App\Services\FcmService::sendNotification(
+                    $driver->fcm_token,
+                    'Penugasan Perjalanan Baru',
+                    'Anda telah ditugaskan untuk Trip baru #' . $trip->trip_number . '. Silakan periksa daftar tugas Anda.',
+                    [
+                        'type' => 'trip_assigned',
+                        'trip_id' => (string)$trip->id,
+                        'trip_number' => $trip->trip_number,
+                    ]
+                );
+            }
+        }
     }
 }
