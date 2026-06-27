@@ -540,7 +540,7 @@ const initMap = async () => {
 };
 
 const getDriverStatus = (trip) => {
-  if (!trip || !trip.location_logs || trip.location_logs.length === 0) {
+  if (!trip || !trip.updated_at) {
     return {
       status: 'OFFLINE',
       text: 'GPS Tidak Aktif',
@@ -549,10 +549,7 @@ const getDriverStatus = (trip) => {
     };
   }
 
-  const sortedLogs = [...trip.location_logs].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-  const latestLog = sortedLogs[0];
-  
-  const lastTime = new Date(latestLog.created_at);
+  const lastTime = new Date(trip.updated_at);
   const now = new Date();
   const diffMs = now - lastTime;
   const diffMins = Math.floor(diffMs / 60000);
@@ -563,7 +560,7 @@ const getDriverStatus = (trip) => {
     status: isOnline ? 'ONLINE' : 'OFFLINE',
     text: isOnline ? 'Aktif mengirim lokasi' : 'Sinyal Hilang / GPS Nonaktif',
     badgeClass: isOnline ? 'bg-success' : 'bg-danger',
-    timeText: formatDateTime(latestLog.created_at)
+    timeText: formatDateTime(trip.updated_at)
   };
 };
 
