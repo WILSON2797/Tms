@@ -10,6 +10,7 @@ class City extends Model
 
     protected $fillable = [
         'name',
+        'district',
         'type',
         'province',
         'is_active'

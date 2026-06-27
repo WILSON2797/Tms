@@ -76,13 +76,22 @@
                   />
                 </div>
                 <div class="col-12">
-                  <label class="form-label text-muted small mb-1">NAMA KOTA / KEC</label>
+                  <label class="form-label text-muted small mb-1">KABUPATEN / KOTA</label>
                   <input 
                     type="text" 
                     class="form-control bg-dark-custom text-gray-900 dark:text-white border-secondary-custom" 
                     v-model="form.name" 
-                    placeholder="E.g. Bekasi-cikarang selatan, Bandung-cimahi" 
+                    placeholder="E.g. Bekasi, Bandung, Toba Samosir" 
                     required 
+                  />
+                </div>
+                <div class="col-12">
+                  <label class="form-label text-muted small mb-1">KECAMATAN (DISTRICT)</label>
+                  <input 
+                    type="text" 
+                    class="form-control bg-dark-custom text-gray-900 dark:text-white border-secondary-custom" 
+                    v-model="form.district" 
+                    placeholder="E.g. Cikarang Selatan, Cimahi, Ajibata" 
                   />
                 </div>
                 <div class="col-12">
@@ -143,6 +152,7 @@ const currentId = ref(null);
 
 const form = reactive({
   name: '',
+  district: '',
   type: 'Kota',
   province: '',
   is_active: true
@@ -151,7 +161,8 @@ const form = reactive({
 const columns = [
   { accessorKey: 'no', header: 'No', meta: { disableSearch: true, width: '55px', align: 'center' } },
   { accessorKey: 'province', header: 'Provinsi' },
-  { accessorKey: 'name', header: 'Kota/Kec' },
+  { accessorKey: 'name', header: 'Kota/Kabupaten' },
+  { accessorKey: 'district', header: 'Kecamatan' },
   { accessorKey: 'type', header: 'Tipe' },
   { accessorKey: 'is_active', header: 'Status' },
   { accessorKey: 'actions', header: 'Aksi' }
@@ -180,6 +191,7 @@ const openAddModal = () => {
   isEdit.value = false;
   currentId.value = null;
   form.name = '';
+  form.district = '';
   form.type = 'Kota';
   form.province = '';
   form.is_active = true;
@@ -190,6 +202,7 @@ const openEditModal = (city) => {
   isEdit.value = true;
   currentId.value = city.id;
   form.name = city.name;
+  form.district = city.district || '';
   form.type = city.type;
   form.province = city.province;
   form.is_active = city.is_active;

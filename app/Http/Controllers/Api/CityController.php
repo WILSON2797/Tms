@@ -51,16 +51,18 @@ class CityController extends Controller
                 'required',
                 'string',
                 'max:255',
-                // Unique check on combination of name and province
+                // Unique check on combination of name, district and province
                 Rule::unique('cities')->where(function ($query) use ($request) {
-                    return $query->where('province', $request->province);
+                    return $query->where('province', $request->province)
+                                 ->where('district', $request->district);
                 })
             ],
+            'district' => 'nullable|string|max:255',
             'type' => 'required|string|in:Kabupaten,Kota',
             'province' => 'required|string|max:255',
             'is_active' => 'required|boolean'
         ], [
-            'name.unique' => 'Kabupaten/Kota dengan nama tersebut sudah ada di provinsi yang sama.'
+            'name.unique' => 'Kabupaten/Kota dengan nama dan kecamatan tersebut sudah ada di provinsi yang sama.'
         ]);
 
         $city = City::create($validated);
@@ -97,16 +99,18 @@ class CityController extends Controller
                 'required',
                 'string',
                 'max:255',
-                // Unique check on combination of name and province, excluding current ID
+                // Unique check on combination of name, district and province, excluding current ID
                 Rule::unique('cities')->where(function ($query) use ($request) {
-                    return $query->where('province', $request->province);
+                    return $query->where('province', $request->province)
+                                 ->where('district', $request->district);
                 })->ignore($city->id)
             ],
+            'district' => 'nullable|string|max:255',
             'type' => 'required|string|in:Kabupaten,Kota',
             'province' => 'required|string|max:255',
             'is_active' => 'required|boolean'
         ], [
-            'name.unique' => 'Kabupaten/Kota dengan nama tersebut sudah ada di provinsi yang sama.'
+            'name.unique' => 'Kabupaten/Kota dengan nama dan kecamatan tersebut sudah ada di provinsi yang sama.'
         ]);
 
         $city->update($validated);

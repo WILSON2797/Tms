@@ -2,11 +2,13 @@
   <div class="tracking-view">
     <!-- Tabs Navigation -->
     <div class="tabs-navigation-container mb-4">
-      <button @click="statusFilter = 'IN_TRANSIT'" class="tab-card-item" :class="{ 'active': statusFilter === 'IN_TRANSIT' }">
+      <button @click="statusFilter = 'IN_TRANSIT'" class="tab-card-item"
+        :class="{ 'active': statusFilter === 'IN_TRANSIT' }">
         <i class="bi bi-truck me-2"></i>
         Sedang Dikirim (IN TRANSIT)
       </button>
-      <button @click="statusFilter = 'DELIVERED'" class="tab-card-item" :class="{ 'active': statusFilter === 'DELIVERED' }">
+      <button @click="statusFilter = 'DELIVERED'" class="tab-card-item"
+        :class="{ 'active': statusFilter === 'DELIVERED' }">
         <i class="bi bi-check2-all me-2"></i>
         Selesai (DELIVERED)
       </button>
@@ -17,14 +19,9 @@
     </div>
 
     <!-- Data Table of Orders -->
-    <DataTable 
-      :columns="columns" 
-      :data="filteredOrders" 
-      :loading="loading" 
-      empty-text="Belum ada data shipment order."
+    <DataTable :columns="columns" :data="filteredOrders" :loading="loading" empty-text="Belum ada data shipment order."
       title="Live Shipment Tracking"
-      subtitle="Daftar seluruh shipment order. Klik ikon peta pada kolom aksi untuk melacak posisi pengiriman dan lini masa perjalanan secara real-time."
-    >
+      subtitle="Daftar seluruh shipment order. Klik ikon peta pada kolom aksi untuk melacak posisi pengiriman dan lini masa perjalanan secara real-time.">
       <template #cell(order_number)="{ value }">
         <span class="fw-bold text-gray-900">{{ value }}</span>
       </template>
@@ -55,12 +52,8 @@
       </template>
 
       <template #cell(actions)="{ row }">
-        <button 
-          type="button" 
-          class="btn btn-sm btn-outline-info d-flex align-items-center gap-1 border-0"
-          @click="trackOrder(row)"
-          title="Lacak Lokasi & Lini Masa"
-        >
+        <button type="button" class="btn btn-sm btn-outline-info d-flex align-items-center gap-1 border-0"
+          @click="trackOrder(row)" title="Lacak Lokasi & Lini Masa">
           <i class="bi bi-geo-alt-fill fs-5"></i>
         </button>
       </template>
@@ -68,13 +61,11 @@
 
     <!-- Live Tracking Map & Timeline Modal (Side-by-Side) -->
     <Teleport to="body">
-      <div 
-        v-if="showModal" 
-        class="modal-backdrop-custom d-flex align-items-center justify-content-center"
-        @click.self="closeModal"
-      >
+      <div v-if="showModal" class="modal-backdrop-custom d-flex align-items-center justify-content-center"
+        @click.self="closeModal">
         <div class="modal-dialog-custom bg-dark-card border-card p-4 rounded-4 shadow-lg text-gray-900">
-          <div class="d-flex justify-content-between align-items-center mb-3 border-bottom border-secondary-custom pb-2">
+          <div
+            class="d-flex justify-content-between align-items-center mb-3 border-bottom border-secondary-custom pb-2">
             <h5 class="fw-bold text-gray-900 mb-0">
               <i class="bi bi-geo-alt text-primary me-2"></i>
               Live Tracking - {{ selectedOrder?.order_number }} ({{ selectedOrder?.job_number }})
@@ -89,25 +80,40 @@
 
           <div v-else>
             <!-- Driver GPS Signal / Online Status Bar -->
-            <div v-if="selectedOrder?.trip" class="mb-3 p-2 px-3 rounded bg-dark-custom border border-secondary-custom d-flex flex-wrap align-items-center justify-content-between gap-2" style="font-size: 13px;">
+            <div v-if="selectedOrder?.trip"
+              class="mb-3 p-2 px-3 rounded bg-dark-custom border border-secondary-custom d-flex flex-wrap align-items-center justify-content-between gap-2"
+              style="font-size: 13px;">
               <div class="d-flex align-items-center gap-3">
                 <span class="d-flex align-items-center gap-1">
-                  <i class="bi bi-person-fill text-muted me-1"></i>Supir: <strong class="text-gray-900">{{ selectedOrder.trip.driver?.driver_name || '-' }}</strong>
+                  <i class="bi bi-person-fill text-muted me-1"></i>Supir: <strong class="text-gray-900">{{
+                    selectedOrder.trip.driver?.driver_name || '-' }}</strong>
                 </span>
                 <span class="text-muted">|</span>
                 <span class="d-flex align-items-center gap-1">
-                  <i class="bi bi-truck text-muted me-1"></i>Plat: <strong class="text-gray-900">{{ selectedOrder.trip.vehicle?.vehicle_no || '-' }}</strong>
+                  <i class="bi bi-truck text-muted me-1"></i>Plat: <strong class="text-gray-900">{{
+                    selectedOrder.trip.vehicle?.vehicle_no || '-' }}</strong>
                 </span>
               </div>
-              
+
               <div class="d-flex align-items-center gap-3">
                 <div class="d-flex align-items-center gap-2">
-                  <span class="legend-dot" :class="getDriverStatus(selectedOrder.trip).badgeClass" style="width: 8px; height: 8px; margin-right: 0;"></span>
-                  <span class="fw-bold" :class="getDriverStatus(selectedOrder.trip).status === 'ONLINE' ? 'text-success' : 'text-danger'">
+                  <span class="legend-dot" :class="getDriverStatus(selectedOrder.trip).badgeClass"
+                    style="width: 8px; height: 8px; margin-right: 0;"></span>
+                  <span class="fw-bold"
+                    :class="getDriverStatus(selectedOrder.trip).status === 'ONLINE' ? 'text-success' : 'text-danger'">
                     {{ getDriverStatus(selectedOrder.trip).status }}
                   </span>
-                  <span class="text-muted" style="font-size: 12px;">({{ getDriverStatus(selectedOrder.trip).text }})</span>
+                  <span class="text-muted" style="font-size: 12px;">({{ getDriverStatus(selectedOrder.trip).text
+                    }})</span>
                 </div>
+
+                <span v-if="getDriverStatus(selectedOrder.trip).status === 'ONLINE'" class="text-muted">|</span>
+                <span v-if="getDriverStatus(selectedOrder.trip).status === 'ONLINE'"
+                  class="d-flex align-items-center gap-1" style="font-size: 12px;">
+                  Status: <strong :class="getDriverStatus(selectedOrder.trip).motionClass">{{
+                    getDriverStatus(selectedOrder.trip).motionText }}</strong>
+                </span>
+
                 <span class="text-muted">|</span>
                 <span class="text-muted" style="font-size: 12px;">
                   Update Terakhir: <strong class="text-info">{{ getDriverStatus(selectedOrder.trip).timeText }}</strong>
@@ -120,72 +126,80 @@
               <div class="col-6 col-md-3">
                 <div class="p-2.5 rounded bg-dark-custom border border-secondary-custom text-center h-100">
                   <span class="text-muted d-block small mb-1">ASSIGNED DATE</span>
-                  <strong class="text-gray-900">{{ selectedOrder?.assigned_at ? formatDateTime(selectedOrder.assigned_at) : '-' }}</strong>
+                  <strong class="text-gray-900">{{ selectedOrder?.assigned_at ?
+                    formatDateTime(selectedOrder.assigned_at) :
+                    '-' }}</strong>
                 </div>
               </div>
               <div class="col-6 col-md-3">
                 <div class="p-2.5 rounded bg-dark-custom border border-secondary-custom text-center h-100">
                   <span class="text-muted d-block small mb-1">TASK ACCEPT DATE</span>
-                  <strong class="text-gray-900">{{ selectedOrder?.accepted_at ? formatDateTime(selectedOrder.accepted_at) : '-' }}</strong>
+                  <strong class="text-gray-900">{{ selectedOrder?.accepted_at ?
+                    formatDateTime(selectedOrder.accepted_at) :
+                    '-' }}</strong>
                 </div>
               </div>
               <div class="col-6 col-md-3">
                 <div class="p-2.5 rounded bg-dark-custom border border-secondary-custom text-center h-100">
                   <span class="text-muted d-block small mb-1">ARRIVED DATE</span>
-                  <strong class="text-gray-900">{{ selectedOrder?.arrived_at ? formatDateTime(selectedOrder.arrived_at) : '-' }}</strong>
+                  <strong class="text-gray-900">{{ selectedOrder?.arrived_at ? formatDateTime(selectedOrder.arrived_at)
+                    :
+                    '-' }}</strong>
                 </div>
               </div>
               <div class="col-6 col-md-3">
                 <div class="p-2.5 rounded bg-dark-custom border border-secondary-custom text-center h-100">
                   <span class="text-muted d-block small mb-1">HANDOVER DATE (HO)</span>
-                  <strong class="text-gray-900">{{ selectedOrder?.pod_received_at ? formatDateTime(selectedOrder.pod_received_at) : '-' }}</strong>
+                  <strong class="text-gray-900">{{ selectedOrder?.pod_received_at ?
+                    formatDateTime(selectedOrder.pod_received_at) : '-' }}</strong>
                 </div>
               </div>
             </div>
 
             <div class="row g-4">
-            <!-- Left: Map Container -->
-            <div class="col-12 col-lg-7">
-              <div id="map-container" class="position-relative border border-secondary-custom rounded-3 overflow-hidden bg-light" style="height: 450px;">
-                <div id="map" class="w-100 h-100" style="position: absolute; top:0; bottom:0; left:0; right:0;"></div>
+              <!-- Left: Map Container -->
+              <div class="col-12 col-lg-9">
+                <div id="map-container"
+                  class="position-relative border border-secondary-custom rounded-3 overflow-hidden bg-light"
+                  style="height: 450px;">
+                  <div id="map" class="w-100 h-100" style="position: absolute; top:0; bottom:0; left:0; right:0;"></div>
+                </div>
+                <div class="mt-2 text-muted small d-flex align-items-center gap-3 justify-content-center flex-wrap"
+                  style="font-size: 11.5px;">
+                  <span><span class="legend-dot bg-primary"></span> Rencana Rute</span>
+                  <span><span class="legend-dot bg-success"></span> Lintasan GPS Supir</span>
+                  <span><span class="legend-dot bg-warning"></span> Posisi Truk Live</span>
+                </div>
               </div>
-              <div class="mt-2 text-muted small d-flex align-items-center gap-3 justify-content-center flex-wrap">
-                <span><span class="legend-dot bg-primary"></span> Rencana Rute</span>
-                <span><span class="legend-dot bg-success"></span> Lintasan GPS Supir</span>
-                <span><span class="legend-dot bg-warning"></span> Posisi Truk Live</span>
-              </div>
-            </div>
 
-            <!-- Right: Vertical Timeline -->
-            <div class="col-12 col-lg-5 d-flex flex-column">
-              <h6 class="fw-bold text-gray-900 mb-3 border-bottom border-secondary-custom pb-2">Lini Masa Perjalanan</h6>
-              <div class="timeline flex-grow-1 overflow-auto pe-2" style="max-height: 400px;">
-                <div 
-                  v-for="(log, idx) in selectedOrder?.status_logs" 
-                  :key="log.id" 
-                  class="timeline-item"
-                  :class="{ 'first-item': idx === 0 }"
-                >
-                  <!-- Icon/Marker -->
-                  <div class="timeline-marker" :class="getStatusMarkerClass(log.status)">
-                    <i class="bi" :class="getStatusIconClass(log.status)"></i>
-                  </div>
-                  
-                  <!-- Content -->
-                  <div class="timeline-content">
-                    <div class="d-flex align-items-center justify-content-between mb-1">
-                      <h6 class="fw-bold text-gray-900 mb-0" style="font-size: 14px;">{{ log.status }}</h6>
-                      <span class="text-muted small">{{ formatDateTime(log.created_at) }}</span>
+              <!-- Right: Vertical Timeline -->
+              <div class="col-12 col-lg-3 d-flex flex-column">
+                <h6 class="fw-bold text-gray-900 mb-3 border-bottom border-secondary-custom pb-2"
+                  style="font-size: 13px;">
+                  Lini Masa Perjalanan</h6>
+                <div class="timeline flex-grow-1 overflow-auto pe-2" style="max-height: 400px; font-size: 11px;">
+                  <div v-for="(log, idx) in selectedOrder?.status_logs" :key="log.id" class="timeline-item"
+                    :class="{ 'first-item': idx === 0 }">
+                    <!-- Icon/Marker -->
+                    <div class="timeline-marker" :class="getStatusMarkerClass(log.status)">
+                      <i class="bi" :class="getStatusIconClass(log.status)" style="font-size: 10px;"></i>
                     </div>
-                    <p class="text-muted small mb-1">{{ log.description }}</p>
-                    <span class="text-info small fs-7" v-if="log.changer">
-                      <i class="bi bi-person me-1"></i>Oleh: {{ log.changer.name }}
-                    </span>
+
+                    <!-- Content -->
+                    <div class="timeline-content" style="padding: 8px 10px;">
+                      <div class="d-flex align-items-center justify-content-between mb-1">
+                        <h6 class="fw-bold text-gray-900 mb-0" style="font-size: 11.5px;">{{ log.status }}</h6>
+                        <span class="text-muted" style="font-size: 9.5px;">{{ formatDateTime(log.created_at) }}</span>
+                      </div>
+                      <p class="text-muted mb-1" style="font-size: 10.5px; line-height: 1.35;">{{ log.description }}</p>
+                      <span class="text-info" style="font-size: 10px;" v-if="log.changer">
+                        <i class="bi bi-person me-1"></i>Oleh: {{ log.changer.name }}
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
           </div>
 
           <div class="d-flex justify-content-end border-top border-secondary-custom mt-4 pt-3">
@@ -346,20 +360,41 @@ const resolveCoord = async (cityName, fallback) => {
   const offline = getCityCoord(cityName);
   if (offline) return offline;
 
-  try {
-    const response = await axios.get('https://nominatim.openstreetmap.org/search', {
-      params: {
-        format: 'json',
-        q: `${cityName}, Indonesia`,
-        limit: 1
-      }
-    });
-    if (response.data && response.data.length > 0) {
-      return [parseFloat(response.data[0].lat), parseFloat(response.data[0].lon)];
+  // Build a list of fallback queries to try in sequence for better geocoding success rate
+  const queries = [cityName];
+
+  if (cityName.includes('-')) {
+    const parts = cityName.split('-').map(p => p.trim());
+    const suffix = cityName.includes(',') ? cityName.substring(cityName.indexOf(',')) : '';
+
+    queries.push(parts[1] ? parts[1] : parts[0] + suffix);
+    queries.push(parts[0] + suffix);
+    queries.push(parts[0]);
+    if (parts[1]) {
+      queries.push(parts[1].replace(suffix, '').trim());
     }
-  } catch (e) {
-    console.error('Gagal mengambil koordinat geocoding untuk kota:', cityName, e);
   }
+
+  for (const q of queries) {
+    try {
+      const cleanQ = q.trim();
+      if (!cleanQ) continue;
+
+      const response = await axios.get('https://nominatim.openstreetmap.org/search', {
+        params: {
+          format: 'json',
+          q: `${cleanQ}, Indonesia`,
+          limit: 1
+        }
+      });
+      if (response.data && response.data.length > 0) {
+        return [parseFloat(response.data[0].lat), parseFloat(response.data[0].lon)];
+      }
+    } catch (e) {
+      console.error('Gagal mengambil koordinat geocoding untuk kota:', q, e);
+    }
+  }
+
   return fallback;
 };
 
@@ -421,13 +456,25 @@ const initMap = async () => {
     isFallbackToOrigin = true;
   }
 
+  const originIcon = L.divIcon({
+    html: `
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#ef4444" width="32" height="32">
+        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+      </svg>
+    `,
+    className: 'custom-origin-icon',
+    iconSize: [32, 32],
+    iconAnchor: [16, 32],
+    popupAnchor: [0, -32]
+  });
+
   // Origin Marker
   const originText = [
     selectedOrder.value.origin_city,
     selectedOrder.value.origin_province
   ].filter(Boolean).join(', ');
 
-  const originMarker = L.marker(originCoord)
+  const originMarker = L.marker(originCoord, { icon: originIcon })
     .bindPopup(`<strong>Lokasi Asal:</strong> ${originText}`)
     .addTo(map);
   mapMarkers.value.push(originMarker);
@@ -490,22 +537,22 @@ const initMap = async () => {
       axios.get(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${liveCoord[0]}&lon=${liveCoord[1]}`, {
         headers: { 'Accept-Language': 'id' }
       })
-      .then(res => {
-        const address = res.data.display_name || 'Alamat tidak terdeteksi';
-        currentAddress.value = address;
-        
-        const addr = res.data.address || {};
-        addressDetails.value = {
-          jalan: addr.road || addr.construction || addr.pedestrian || null,
-          kelurahan: addr.suburb || addr.village || addr.neighbourhood || addr.hamlet || null,
-          kecamatan: addr.city_district || addr.subdistrict || addr.municipality || null,
-          kota: addr.city || addr.regency || addr.county || null,
-          provinsi: addr.state || null,
-          kodepos: addr.postcode || null
-        };
-        
-        // Update popup content dynamically if the marker exists
-        truckMarker.setPopupContent(`
+        .then(res => {
+          const address = res.data.display_name || 'Alamat tidak terdeteksi';
+          currentAddress.value = address;
+
+          const addr = res.data.address || {};
+          addressDetails.value = {
+            jalan: addr.road || addr.construction || addr.pedestrian || null,
+            kelurahan: addr.suburb || addr.village || addr.neighbourhood || addr.hamlet || null,
+            kecamatan: addr.city_district || addr.subdistrict || addr.municipality || null,
+            kota: addr.city || addr.regency || addr.county || null,
+            provinsi: addr.state || null,
+            kodepos: addr.postcode || null
+          };
+
+          // Update popup content dynamically if the marker exists
+          truckMarker.setPopupContent(`
           <strong style="color:#111827">Live Tracking Armada</strong><br>
           <span style="color:#4b5563">Supir: ${trip.driver?.driver_name || '-'}</span><br>
           <span style="color:#4b5563">Plat: ${trip.vehicle?.vehicle_no || '-'}</span>
@@ -513,11 +560,11 @@ const initMap = async () => {
             <strong>Lokasi Saat Ini:</strong><br>${address}
           </div>
         `);
-      })
-      .catch(() => {
-        const fallbackTxt = `Koordinat GPS: ${liveCoord[0]}, ${liveCoord[1]}`;
-        currentAddress.value = fallbackTxt;
-        truckMarker.setPopupContent(`
+        })
+        .catch(() => {
+          const fallbackTxt = `Koordinat GPS: ${liveCoord[0]}, ${liveCoord[1]}`;
+          currentAddress.value = fallbackTxt;
+          truckMarker.setPopupContent(`
           <strong style="color:#111827">Live Tracking Armada</strong><br>
           <span style="color:#4b5563">Supir: ${trip.driver?.driver_name || '-'}</span><br>
           <span style="color:#4b5563">Plat: ${trip.vehicle?.vehicle_no || '-'}</span>
@@ -525,7 +572,7 @@ const initMap = async () => {
             <strong>Lokasi Saat Ini:</strong><br>${fallbackTxt} (Gagal mengambil nama alamat)
           </div>
         `);
-      });
+        });
     }
   }
 
@@ -545,7 +592,10 @@ const getDriverStatus = (trip) => {
       status: 'OFFLINE',
       text: 'GPS Tidak Aktif',
       badgeClass: 'bg-secondary',
-      timeText: '-'
+      timeText: '-',
+      motionStatus: '-',
+      motionText: '-',
+      motionClass: 'text-muted'
     };
   }
 
@@ -556,11 +606,50 @@ const getDriverStatus = (trip) => {
 
   const isOnline = diffMins >= 0 && diffMins <= 15;
 
+  let motionStatus = 'PARKIR';
+  let motionText = 'Parkir / Berhenti';
+  let motionClass = 'text-warning';
+
+  if (isOnline) {
+    if (trip.location_logs && trip.location_logs.length >= 2) {
+      const sortedLogs = [...trip.location_logs].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+      const latest = sortedLogs[0];
+      const previous = sortedLogs[1];
+
+      const lat1 = parseFloat(latest.latitude);
+      const lon1 = parseFloat(latest.longitude);
+      const lat2 = parseFloat(previous.latitude);
+      const lon2 = parseFloat(previous.longitude);
+
+      const R = 6371000; // Earth radius in meters
+      const dLat = (lat2 - lat1) * Math.PI / 180;
+      const dLon = (lon2 - lon1) * Math.PI / 180;
+      const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      const dist = R * c;
+
+      if (dist > 10) {
+        motionStatus = 'SEDANG JALAN';
+        motionText = 'Sedang Jalan';
+        motionClass = 'text-success fw-bold';
+      }
+    }
+  } else {
+    motionStatus = '-';
+    motionText = '-';
+    motionClass = 'text-muted';
+  }
+
   return {
     status: isOnline ? 'ONLINE' : 'OFFLINE',
     text: isOnline ? 'Aktif mengirim lokasi' : 'Sinyal Hilang / GPS Nonaktif',
     badgeClass: isOnline ? 'bg-success' : 'bg-danger',
-    timeText: formatDateTime(trip.updated_at)
+    timeText: formatDateTime(trip.updated_at),
+    motionStatus,
+    motionText,
+    motionClass
   };
 };
 
@@ -695,9 +784,11 @@ const getStatusIconClass = (status) => {
   0% {
     box-shadow: 0 0 0 0px rgba(13, 110, 253, 0.4);
   }
+
   70% {
     box-shadow: 0 0 0 6px rgba(13, 110, 253, 0);
   }
+
   100% {
     box-shadow: 0 0 0 0px rgba(13, 110, 253, 0);
   }

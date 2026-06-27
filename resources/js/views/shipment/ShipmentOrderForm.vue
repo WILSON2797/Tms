@@ -217,14 +217,14 @@ const filteredOriginCities = computed(() => {
   if (!form.origin_province) return [];
   return cities.value
     .filter(c => c.province.toUpperCase() === form.origin_province.toUpperCase())
-    .map(c => c.name);
+    .map(c => c.district ? `${c.name} - ${c.district}` : c.name);
 });
 
 const filteredDestCities = computed(() => {
   if (!form.destination_province) return [];
   return cities.value
     .filter(c => c.province.toUpperCase() === form.destination_province.toUpperCase())
-    .map(c => c.name);
+    .map(c => c.district ? `${c.name} - ${c.district}` : c.name);
 });
 
 onMounted(async () => {
@@ -272,10 +272,10 @@ const fetchOrderDetails = async (id) => {
       form.customer_id = data.customer_id;
       form.order_date = data.order_date;
       form.order_number = data.order_number;
-      form.origin_city = data.origin_city;
+      form.origin_city = data.origin_district ? `${data.origin_city} - ${data.origin_district}` : data.origin_city;
       form.origin_province = data.origin_province || '';
       form.origin_address = data.origin_address || '';
-      form.destination_city = data.destination_city;
+      form.destination_city = data.destination_district ? `${data.destination_city} - ${data.destination_district}` : data.destination_city;
       form.destination_province = data.destination_province || '';
       form.detail_address = data.detail_address;
 
@@ -291,8 +291,28 @@ const fetchOrderDetails = async (id) => {
 };
 
 const handleSubmit = async () => {
+  let originCity = form.origin_city || '';
+  let originDistrict = '';
+  if (originCity.includes(' - ')) {
+    const parts = originCity.split(' - ');
+    originCity = parts[0].trim();
+    originDistrict = parts[1].trim();
+  }
+
+  let destCity = form.destination_city || '';
+  let destDistrict = '';
+  if (destCity.includes(' - ')) {
+    const parts = destCity.split(' - ');
+    destCity = parts[0].trim();
+    destDistrict = parts[1].trim();
+  }
+
   const payload = {
     ...form,
+    origin_city: originCity,
+    origin_district: originDistrict,
+    destination_city: destCity,
+    destination_district: destDistrict,
   };
 
   submitLoading.value = true;
